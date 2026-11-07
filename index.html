@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KİFA</title>
+<meta name="description" content="Kişisel finans durumunu tek bakışta gösteren, verileri yalnızca cihazda tutan uygulama.">
+<meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1016" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="KİFA">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" href="figtree-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:500;font-display:swap;src:url(bricolage-grotesque-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:500;font-display:swap;src:url(bricolage-grotesque-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:700;font-display:swap;src:url(bricolage-grotesque-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Bricolage Grotesque';font-style:normal;font-weight:700;font-display:swap;src:url(bricolage-grotesque-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:400;font-display:swap;src:url(figtree-latin-ext-400-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:400;font-display:swap;src:url(figtree-latin-400-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:500;font-display:swap;src:url(figtree-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:500;font-display:swap;src:url(figtree-latin-500-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:600;font-display:swap;src:url(figtree-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Figtree';font-style:normal;font-weight:600;font-display:swap;src:url(figtree-latin-600-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+/* Layout: tek sütun mobil gösterge paneli; üstte net varlık, altta sabit sekme çubuğu, düzenleme alttan açılan panelde */
+:root{
+  --bg:#EDF0F3; --surface:#FFFFFF; --ink:#141A24; --muted:#5B6474; --line:#D8DDE4;
+  --accent:#3346C8; --accent-soft:#E2E6FA; --on-accent:#FFFFFF;
+  --good:#1D7F52; --good-soft:#DDF1E6; --warn:#9A6210; --warn-soft:#F8ECD6; --bad:#B9372F; --bad-soft:#F7E0DE;
+  --scrim:rgba(14,18,26,.45);
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Figtree", -apple-system, "Segoe UI", Roboto, system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0D1016; --surface:#161A22; --ink:#E8EBF1; --muted:#97A0AF; --line:#262C37;
+  --accent:#8E9CFF; --accent-soft:#1E2442; --on-accent:#0D1016;
+  --good:#4CC38A; --good-soft:#15291F; --warn:#E3A944; --warn-soft:#2B2213; --bad:#F0716A; --bad-soft:#2E1718;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --bg:#0D1016; --surface:#161A22; --ink:#E8EBF1; --muted:#97A0AF; --line:#262C37;
+  --accent:#8E9CFF; --accent-soft:#1E2442; --on-accent:#0D1016;
+  --good:#4CC38A; --good-soft:#15291F; --warn:#E3A944; --warn-soft:#2B2213; --bad:#F0716A; --bad-soft:#2E1718;
+  --scrim:rgba(0,0,0,.6); color-scheme:dark; }
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;color-scheme:light}
+body{margin:0;min-height:100vh;-webkit-tap-highlight-color:transparent;overscroll-behavior-y:none}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:560px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.top{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0 14px}
+.brand{font-family:var(--display);font-weight:700;font-size:1.05rem;letter-spacing:-.01em}
+.brand span{color:var(--accent)}
+.brand-sub{font-family:var(--body);font-weight:500;font-size:.72rem;color:var(--muted);margin-left:6px;letter-spacing:0}
+.today{color:var(--muted);font-size:.85rem}
+.view{display:flex;flex-direction:column;gap:14px}
+h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+/* hero */
+.hero{padding:4px 2px 6px;display:flex;flex-direction:column;gap:6px}
+.big{font-family:var(--display);font-weight:700;font-size:clamp(2.3rem,11vw,3.1rem);line-height:1.05;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.hero-sub{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;color:var(--muted);font-size:.9rem}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:.8rem;font-weight:600;font-variant-numeric:tabular-nums}
+.chip.good{background:var(--good-soft);color:var(--good)} .chip.bad{background:var(--bad-soft);color:var(--bad)} .chip.neutral{background:var(--accent-soft);color:var(--accent)}
+
+/* banner */
+.banner{background:var(--accent-soft);color:var(--ink);border-radius:12px;padding:12px 14px;display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center;justify-content:space-between;font-size:.88rem}
+.banner.warn{background:var(--warn-soft)}
+
+/* score */
+.score{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.ring{position:relative;width:96px;height:96px}
+.ring svg{display:block}
+.ring .val{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--display);font-weight:700;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.ring .val small{display:block;font-size:.62rem;font-family:var(--body);font-weight:600;color:var(--muted);text-align:center;margin-top:-4px;letter-spacing:.04em}
+.score-txt{display:flex;flex-direction:column;gap:4px;min-width:0}
+.score-label{font-family:var(--display);font-weight:700;font-size:1.25rem}
+.metrics{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.metric{display:grid;grid-template-columns:1fr auto auto;gap:4px 10px;align-items:center}
+.metric .m-name{font-size:.9rem}
+.metric .m-val{font-weight:600;font-variant-numeric:tabular-nums}
+.metric .m-bar{grid-column:1/-1;height:5px;border-radius:3px;background:var(--line);overflow:hidden}
+.metric .m-bar i{display:block;height:100%;border-radius:3px}
+.pill{font-size:.72rem;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.na{background:var(--accent-soft);color:var(--muted)}
+.fill-good{background:var(--good)} .fill-warn{background:var(--warn)} .fill-bad{background:var(--bad)} .fill-accent{background:var(--accent)}
+
+/* insights */
+.insights{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.insights li{display:grid;grid-template-columns:8px 1fr;gap:10px;align-items:start;font-size:.92rem}
+.insights li::before{content:"";width:8px;height:8px;border-radius:50%;margin-top:.45em;background:var(--dot,var(--accent))}
+
+/* flow */
+.stack{display:flex;height:14px;border-radius:7px;overflow:hidden;background:var(--line)}
+.stack i{display:block;height:100%}
+.legend{display:flex;flex-direction:column;gap:6px}
+.legend div{display:grid;grid-template-columns:10px 1fr auto;gap:10px;align-items:center;font-size:.9rem}
+.legend b{width:10px;height:10px;border-radius:3px}
+.legend span:last-child{font-weight:600;font-variant-numeric:tabular-nums}
+.legend .total{border-top:1px solid var(--line);padding-top:6px}
+
+/* rows */
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;cursor:pointer}
+.row:last-child{border-bottom:0}
+.row .r-name{font-weight:600;min-width:0;overflow-wrap:anywhere}
+.row .r-amt{font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.row .r-sub{color:var(--muted);font-size:.82rem;min-width:0}
+.row .r-sub2{color:var(--muted);font-size:.82rem;text-align:right;font-variant-numeric:tabular-nums}
+.row .r-bar{grid-column:1/-1;height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:4px}
+.row .r-bar i{display:block;height:100%}
+.due-days{font-weight:600}
+.due-days.soon{color:var(--bad)}
+
+/* buttons */
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:600;cursor:pointer;font-size:.9rem}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.ghost{background:none;border-color:transparent;color:var(--accent);padding:6px 8px}
+.btn.danger{color:var(--bad)}
+.btn.armed{background:var(--bad);color:#fff;border-color:var(--bad)}
+.btn-row{display:flex;flex-wrap:wrap;gap:8px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,.row:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* goals */
+.goal{display:flex;flex-direction:column;gap:6px;padding:12px 0;border-bottom:1px solid var(--line);background:none;border-left:0;border-right:0;border-top:0;text-align:left;width:100%;cursor:pointer}
+.goal:last-child{border-bottom:0}
+.goal .g-top{display:flex;justify-content:space-between;gap:10px;font-weight:600}
+.goal .g-bar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.goal .g-bar i{display:block;height:100%;background:var(--accent)}
+.goal .g-sub{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:.82rem;font-variant-numeric:tabular-nums;flex-wrap:wrap}
+
+/* chart */
+.chart{width:100%;min-width:0}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+
+.empty{text-align:center;padding:28px 12px;display:flex;flex-direction:column;gap:10px;align-items:center}
+.empty p{margin:0;max-width:34ch}
+
+/* nav */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:max(8px,env(safe-area-inset-left,0px));padding-right:max(8px,env(safe-area-inset-right,0px))}
+.tabs-in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.tab{background:none;border:0;padding:9px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.72rem;font-weight:600;color:var(--muted);cursor:pointer}
+.tab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab[aria-current="page"]{color:var(--accent)}
+
+/* sheet */
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:30}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;max-height:calc(100% - 40px - env(safe-area-inset-top,0px));overflow:auto;background:var(--surface);border-radius:18px 18px 0 0;border-top:1px solid var(--line);padding-top:8px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet-in{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 4px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:.82rem;font-weight:600;color:var(--muted)}
+.field input,.field select,textarea{width:100%;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:11px 12px;font-size:16px}
+.field .hint{font-size:.78rem;color:var(--muted)}
+.field .err{font-size:.8rem;color:var(--bad)}
+.sheet-actions{display:flex;gap:8px;justify-content:space-between;align-items:center;flex-wrap:wrap}
+.sheet-actions .right{display:flex;gap:8px;margin-left:auto}
+textarea{min-height:110px;font-family:ui-monospace,Menlo,monospace;font-size:13px;resize:vertical}
+
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(78px + env(safe-area-inset-bottom,0px));z-index:40;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-size:.88rem;max-width:calc(100% - 32px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
+@media (prefers-reduced-motion: no-preference){
+  .sheet:not([hidden]){animation:up .22s ease-out}
+  @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}}
+  .m-bar i,.g-bar i,.r-bar i{transition:width .4s ease}
+}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div class="brand">Kİ<span>FA</span> <small class="brand-sub">Kişisel Finans Analizi</small></div><div class="today" id="today"></div></div>
+  <section class="view" id="v-ozet"></section>
+  <section class="view" id="v-hesaplar" hidden></section>
+  <section class="view" id="v-hedefler" hidden></section>
+  <section class="view" id="v-ayarlar" hidden></section>
+</div>
+
+<nav class="tabs" aria-label="Bölümler"><div class="tabs-in">
+  <button class="tab" data-tab="ozet"><svg viewBox="0 0 24 24"><path d="M4 13a8 8 0 0 1 16 0"/><path d="M12 13l4-4"/><path d="M4 18h16"/></svg>Özet</button>
+  <button class="tab" data-tab="hesaplar"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="2.5"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>Hesaplar</button>
+  <button class="tab" data-tab="hedefler"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/></svg>Hedefler</button>
+  <button class="tab" data-tab="ayarlar"><svg viewBox="0 0 24 24"><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/><circle cx="12" cy="12" r="4.5"/></svg>Ayarlar</button>
+</div></nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <form class="sheet-in" id="sheetForm" novalidate>
+    <div class="grab"></div>
+    <h2 id="sheetTitle"></h2>
+    <div id="sheetFields" style="display:flex;flex-direction:column;gap:12px"></div>
+    <div class="sheet-actions">
+      <button type="button" class="btn danger" id="sheetDel" hidden>Sil</button>
+      <div class="right"><button type="button" class="btn" id="sheetCancel">Vazgeç</button><button type="submit" class="btn primary">Kaydet</button></div>
+    </div>
+  </form>
+</section>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+const KEY = 'kifa.v1', OLD_KEY = 'cep-bilanco.v1';
+const APP_VERSION = '1.0';
+const MONTHS = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+const MONTHS_L = ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
+const KINDS = {
+  asset: [['banka','Banka hesabı'],['nakit','Nakit'],['mevduat','Vadeli mevduat'],['doviz','Döviz'],['altin','Altın'],['yatirim','Yatırım / fon / hisse'],['diger','Diğer varlık']],
+  debt:  [['kart','Kredi kartı'],['kredi','Kredi'],['kmh','Ek hesap (KMH)'],['diger','Diğer borç']]
+};
+const LIQUID = ['banka','nakit','mevduat','doviz'];
+const kindLabel = (side,k)=> (KINDS[side].find(x=>x[0]===k)||[,'Diğer'])[1];
+const nf = new Intl.NumberFormat('tr-TR',{maximumFractionDigits:0});
+const tl = n => (n<0?'−':'')+'₺'+nf.format(Math.abs(Math.round(n||0)));
+const pct = n => '%'+new Intl.NumberFormat('tr-TR',{maximumFractionDigits:0}).format(n*100);
+const dec1 = n => new Intl.NumberFormat('tr-TR',{maximumFractionDigits:1,minimumFractionDigits:1}).format(n);
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const mkey = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const mlabel = k => { const [y,m]=k.split('-'); return MONTHS[+m-1]+" ’"+y.slice(2); };
+const clamp = (x,a,b)=>Math.max(a,Math.min(b,x));
+
+function parseMoney(s){
+  s = String(s??'').trim().replace(/[₺\s]/g,'');
+  if(!s) return 0;
+  if(s.includes(',')) s = s.replace(/\./g,'').replace(',','.');
+  else if(/^-?\d{1,3}(\.\d{3})+$/.test(s)) s = s.replace(/\./g,'');
+  const n = parseFloat(s);
+  return isFinite(n) ? n : NaN;
+}
+
+/* ---------- veri ---------- */
+function empty(){ return {v:1,sample:false,income:0,expenses:0,accounts:[],goals:[],snaps:{}}; }
+function sample(){
+  const now = new Date();
+  const acc = [
+    {id:uid(),side:'asset',kind:'banka',name:'Maaş hesabı',balance:18500},
+    {id:uid(),side:'asset',kind:'mevduat',name:'Vadeli mevduat',balance:120000},
+    {id:uid(),side:'asset',kind:'altin',name:'Gram altın',balance:64000},
+    {id:uid(),side:'asset',kind:'yatirim',name:'Para piyasası fonu',balance:30000},
+    {id:uid(),side:'debt',kind:'kart',name:'Kredi kartı A',balance:42000,limit:60000,payment:12600,dueDay:12},
+    {id:uid(),side:'debt',kind:'kart',name:'Kredi kartı B',balance:9500,limit:40000,payment:2850,dueDay:25},
+    {id:uid(),side:'debt',kind:'kredi',name:'İhtiyaç kredisi',balance:145000,payment:8900,dueDay:5}
+  ];
+  const hist = [[205000,228000],[211000,221000],[214000,215500],[221000,209000],[226500,203000]];
+  const snaps = {};
+  hist.forEach((h,i)=>{ const d=new Date(now.getFullYear(), now.getMonth()-(5-i), 1); snaps[mkey(d)]={a:h[0],d:h[1]}; });
+  return {v:1,sample:true,income:85000,expenses:52000,accounts:acc,snaps,
+    goals:[
+      {id:uid(),name:'Acil durum fonu',target:230000,current:138500,deadline:''},
+      {id:uid(),name:'Kart borçlarını kapat',target:51500,current:12000,deadline:mkey(new Date(now.getFullYear(),now.getMonth()+6,1))}
+    ]};
+}
+let storageOK = true;
+function load(){
+  try{ const r = localStorage.getItem(KEY) || localStorage.getItem(OLD_KEY); if(r){ const o=JSON.parse(r); if(o&&Array.isArray(o.accounts)) return normalize(o); } }
+  catch(e){ storageOK = false; }
+  return null;
+}
+function normalize(o){
+  const s = Object.assign(empty(), o);
+  s.accounts = (s.accounts||[]).map(a=>Object.assign({id:uid(),side:'asset',kind:'diger',name:'',balance:0},a));
+  s.goals = (s.goals||[]).map(g=>Object.assign({id:uid(),name:'',target:0,current:0,deadline:''},g));
+  s.snaps = s.snaps||{};
+  return s;
+}
+function persist(){
+  const c = calc();
+  S.snaps[mkey(new Date())] = {a:c.assets, d:c.debts};
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); storageOK = true; }catch(e){ storageOK = false; }
+}
+let S = load() || sample();
+
+/* ---------- hesaplama ---------- */
+function lin(x,bad,good){ return clamp((x-bad)/(good-bad),0,1); }
+function calc(){
+  const A = S.accounts.filter(a=>a.side==='asset'), D = S.accounts.filter(a=>a.side==='debt');
+  const sum = arr => arr.reduce((t,a)=>t+(+a.balance||0),0);
+  const assets = sum(A), debts = sum(D), net = assets-debts;
+  const liquid = sum(A.filter(a=>LIQUID.includes(a.kind)));
+  const cards = D.filter(a=>a.kind==='kart');
+  const cardBal = sum(cards), cardLim = cards.reduce((t,a)=>t+(+a.limit||0),0);
+  const util = cardLim>0 ? cardBal/cardLim : null;
+  const debtPay = D.reduce((t,a)=>t+(+a.payment||0),0);
+  const inc = +S.income||0, exp = +S.expenses||0;
+  const left = inc-exp-debtPay;
+  const sr = inc>0 ? left/inc : null;
+  const dti = inc>0 ? debtPay/inc : null;
+  const outflow = exp+debtPay;
+  const em = outflow>0 ? liquid/outflow : null;
+  const comps = {
+    sr:   sr==null?null:lin(sr,0,0.2),
+    dti:  dti==null?null:lin(dti,0.5,0.15),
+    util: util==null?null:lin(util,0.9,0.3),
+    em:   em==null?null:lin(em,0,6)
+  };
+  const av = Object.values(comps).filter(v=>v!=null);
+  const score = av.length ? Math.round(av.reduce((t,v)=>t+v,0)/av.length*100) : null;
+  return {assets,debts,net,liquid,cardBal,cardLim,util,debtPay,inc,exp,left,sr,dti,outflow,em,comps,score,cards,D};
+}
+function band(v){ return v==null?'na':v>=.75?'good':v>=.4?'warn':'bad'; }
+const BANDTXT = {good:'İyi',warn:'Orta',bad:'Zayıf',na:'Veri yok'};
+function scoreLabel(s){ return s==null?'Henüz hesaplanmadı':s>=75?'Sağlam':s>=50?'Dengeli':s>=30?'Dikkat istiyor':'Riskli'; }
+
+function nextDue(day){
+  const t = new Date(); t.setHours(0,0,0,0);
+  let y=t.getFullYear(), m=t.getMonth();
+  const dim=(y,m)=>new Date(y,m+1,0).getDate();
+  let d = new Date(y,m,Math.min(day,dim(y,m)));
+  if(d<t){ m++; if(m>11){m=0;y++;} d=new Date(y,m,Math.min(day,dim(y,m))); }
+  return {date:d, days:Math.round((d-t)/864e5)};
+}
+
+function insights(c){
+  const out = [];
+  if(c.inc<=0){ out.push({t:'Aylık gelirini girersen tasarruf ve borç oranların hesaplanır.',k:'na'}); return out; }
+  if(c.left<0) out.push({k:'bad',t:`Giderler ve borç ödemeleri gelirini ayda ${tl(-c.left)} aşıyor. Bu açık birikimden ya da yeni borçtan kapanıyor.`});
+  if(c.util!=null && c.util>0.3){ const need = c.cardBal-0.3*c.cardLim; out.push({k:c.util>0.7?'bad':'warn',t:`Kart limitlerinin ${pct(c.util)} kadarı dolu. %30 seviyesine inmek için yaklaşık ${tl(need)} kart borcu kapatman gerekiyor.`}); }
+  if(c.em!=null && c.em<3){ const need = 3*c.outflow-c.liquid; out.push({k:c.em<1?'bad':'warn',t:`Likit birikimin ${dec1(c.em)} aylık zorunlu harcamayı karşılıyor. 3 aya çıkmak için ${tl(need)} daha gerekiyor.`}); }
+  if(c.dti!=null && c.dti>0.36) out.push({k:c.dti>0.5?'bad':'warn',t:`Gelirinin ${pct(c.dti)} kadarı borç taksitlerine gidiyor. %36 üstü, yeni borç almadan önce durmak için iyi bir eşik.`});
+  if(c.left>=0 && c.sr!=null && c.sr<0.1) out.push({k:'warn',t:`Ay sonunda ${tl(c.left)} kalıyor, gelirinin ${pct(c.sr)} kadarı. %10'a çıkmak için ayda ${tl(c.inc*0.1-c.left)} kısmak yeterli.`});
+  const keys = Object.keys(S.snaps).sort(), cur = mkey(new Date());
+  const prev = keys.filter(k=>k<cur).pop();
+  if(prev){ const p=S.snaps[prev]; const ch = c.net-(p.a-p.d); if(ch!==0) out.push({k:ch>0?'good':'bad',t:`Net varlığın ${mlabel(prev)} kaydına göre ${tl(Math.abs(ch))} ${ch>0?'arttı':'azaldı'}. Borç ${p.d>c.debts?tl(p.d-c.debts)+' azaldı':p.d<c.debts?tl(c.debts-p.d)+' arttı':'değişmedi'}.`}); }
+  if(!out.some(o=>o.k==='bad'||o.k==='warn')) out.unshift({k:'good',t:'Dört göstergenin hepsi makul aralıkta. Fazlayı hedeflerine yönlendirmeye devam et.'});
+  return out.slice(0,4);
+}
+
+/* ---------- çizim ---------- */
+const $ = id => document.getElementById(id);
+const colorOf = b => ({good:'var(--good)',warn:'var(--warn)',bad:'var(--bad)',na:'var(--muted)'}[b]);
+
+function ring(score){
+  const r=40, C=2*Math.PI*r, v=score??0, b=score==null?'na':score>=75?'good':score>=50?'warn':score>=30?'warn':'bad';
+  return `<div class="ring"><svg width="96" height="96" viewBox="0 0 96 96" aria-hidden="true">
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="var(--line)" stroke-width="9"/>
+    <circle cx="48" cy="48" r="${r}" fill="none" stroke="${colorOf(b)}" stroke-width="9" stroke-linecap="round"
+      stroke-dasharray="${C*v/100} ${C}" transform="rotate(-90 48 48)"/></svg>
+    <div class="val"><div>${score??'–'}<small>/ 100</small></div></div></div>`;
+}
+
+function metricRow(name,val,comp,fillTo){
+  const b = band(comp);
+  return `<div class="metric"><span class="m-name">${name}</span><span class="m-val">${val}</span><span class="pill ${b}">${BANDTXT[b]}</span>
+    <span class="m-bar"><i class="fill-${b==='na'?'accent':b}" style="width:${comp==null?0:Math.round(fillTo*100)}%"></i></span></div>`;
+}
+
+function trendSVG(){
+  const keys = Object.keys(S.snaps).sort().slice(-12);
+  const box = $('trend'); if(!box) return;
+  if(keys.length<2){ box.innerHTML = `<p class="muted small" style="margin:0">Bu ayın kaydı alındı. Gelecek ay bakiyeleri güncellediğinde gidişat burada çizilir.</p>`; return; }
+  const W = Math.max(260, box.clientWidth||320), H = 150, pl=6, pr=6, pt=24, pb=24;
+  const vals = keys.map(k=>S.snaps[k].a-S.snaps[k].d);
+  let mn = Math.min(...vals,0), mx = Math.max(...vals,0); if(mx===mn) mx=mn+1;
+  const x = i => pl + i*(W-pl-pr)/(keys.length-1);
+  const y = v => pt + (mx-v)*(H-pt-pb)/(mx-mn);
+  const pts = vals.map((v,i)=>[x(i),y(v)]);
+  const line = pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area = line+` L${x(keys.length-1).toFixed(1)} ${y(0).toFixed(1)} L${x(0).toFixed(1)} ${y(0).toFixed(1)} Z`;
+  const last = pts[pts.length-1], lv = vals[vals.length-1];
+  const lbl = keys.map((k,i)=> (i===0||i===keys.length-1||(keys.length>4&&i===Math.floor((keys.length-1)/2)))
+     ? `<text x="${x(i)}" y="${H-6}" text-anchor="${i===0?'start':i===keys.length-1?'end':'middle'}" font-size="11" fill="var(--muted)">${mlabel(k)}</text>`:'').join('');
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Net varlık gidişatı">
+    <line x1="${pl}" x2="${W-pr}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)" stroke-dasharray="3 4"/>
+    <text x="${pl}" y="${y(0)-5}" font-size="10" fill="var(--muted)">0</text>
+    <path d="${area}" fill="var(--accent)" fill-opacity=".12"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="var(--accent)"/>`).join('')}
+    <circle cx="${last[0]}" cy="${last[1]}" r="5" fill="var(--surface)" stroke="var(--accent)" stroke-width="2.4"/>
+    <text x="${last[0]}" y="${Math.max(12,last[1]-11)}" text-anchor="end" font-size="12" font-weight="600" fill="var(--ink)">${tl(lv)}</text>
+    ${lbl}</svg>`;
+}
+
+function renderOzet(){
+  const c = calc(), el = $('v-ozet');
+  let h = '';
+  if(!storageOK) h += `<div class="banner warn">Bu tarayıcı veri kaydetmeye izin vermiyor; değişiklikler sayfa kapanınca kaybolur. Sayfayı telefonunun tarayıcısında açmayı dene.</div>`;
+  if(S.sample) h += `<div class="banner"><span><b>Örnek verilerle açıldı.</b> Rakamlar sana ait değil.</span><button class="btn primary" data-act="clear-sample">Kendi verimi gireceğim</button></div>`;
+  if(!S.accounts.length && !S.income){
+    h += `<div class="card empty"><h2>Bilançon boş</h2><p class="muted">Banka hesaplarını, kartlarını, kredilerini ve aylık gelirini ekle. Gerisini uygulama hesaplar.</p>
+      <div class="btn-row" style="justify-content:center"><button class="btn primary" data-act="add-acc">Hesap ekle</button><button class="btn" data-act="edit-month">Gelir / gider gir</button></div></div>`;
+    el.innerHTML = h; return;
+  }
+  const keys = Object.keys(S.snaps).sort(), cur = mkey(new Date()), prev = keys.filter(k=>k<cur).pop();
+  let chip = '';
+  if(prev){ const p=S.snaps[prev], ch=c.net-(p.a-p.d); chip = `<span class="chip ${ch>0?'good':ch<0?'bad':'neutral'}">${ch>0?'▲':ch<0?'▼':'•'} ${tl(Math.abs(ch))} <span style="font-weight:500">${mlabel(prev)}’e göre</span></span>`; }
+  h += `<div class="hero"><span class="eyebrow">Net varlık</span><div class="big">${tl(c.net)}</div>
+    <div class="hero-sub">${chip}<span class="num">Varlık ${tl(c.assets)}</span><span class="num">Borç ${tl(c.debts)}</span></div></div>`;
+
+  h += `<div class="card"><div class="score">${ring(c.score)}<div class="score-txt"><span class="eyebrow">Finansal sağlık</span><span class="score-label">${scoreLabel(c.score)}</span>
+      <span class="muted small">Dört oranın ortalaması. Her biri kendi hedef aralığına göre puanlanır.</span></div></div>
+    <div class="metrics">
+      ${metricRow('Tasarruf oranı', c.sr==null?'–':pct(c.sr), c.comps.sr, c.comps.sr??0)}
+      ${metricRow('Taksit / gelir', c.dti==null?'–':pct(c.dti), c.comps.dti, c.comps.dti??0)}
+      ${metricRow('Kart limit kullanımı', c.util==null?'–':pct(c.util), c.comps.util, c.comps.util??0)}
+      ${metricRow('Acil durum fonu', c.em==null?'–':dec1(c.em)+' ay', c.comps.em, c.comps.em??0)}
+    </div></div>`;
+
+  const ins = insights(c);
+  h += `<div class="card"><h2>Ne yapmalı</h2><ul class="insights">${ins.map(i=>`<li style="--dot:${colorOf(i.k)}">${esc(i.t)}</li>`).join('')}</ul></div>`;
+
+  if(c.inc>0){
+    const tot = Math.max(c.inc, c.exp+c.debtPay);
+    const w = v => (Math.max(0,v)/tot*100).toFixed(2)+'%';
+    h += `<div class="card"><div class="card-h"><h2>Aylık akış</h2><button class="btn ghost" data-act="edit-month">Düzenle</button></div>
+      <div class="stack" aria-hidden="true"><i style="width:${w(c.exp)};background:var(--muted)"></i><i style="width:${w(c.debtPay)};background:var(--warn)"></i><i style="width:${w(c.left)};background:var(--good)"></i></div>
+      <div class="legend">
+        <div><b style="background:var(--muted)"></b><span>Yaşam giderleri</span><span>${tl(c.exp)}</span></div>
+        <div><b style="background:var(--warn)"></b><span>Borç ödemeleri</span><span>${tl(c.debtPay)}</span></div>
+        <div><b style="background:${c.left>=0?'var(--good)':'var(--bad)'}"></b><span>${c.left>=0?'Kalan':'Açık'}</span><span style="color:${c.left>=0?'var(--good)':'var(--bad)'}">${tl(c.left)}</span></div>
+        <div class="total"><b></b><span class="muted">Aylık gelir</span><span>${tl(c.inc)}</span></div>
+      </div></div>`;
+  } else {
+    h += `<div class="card"><div class="card-h"><h2>Aylık akış</h2><button class="btn ghost" data-act="edit-month">Gelir gir</button></div><p class="muted small" style="margin:0">Gelir ve yaşam giderini girince nakit akışın burada görünür.</p></div>`;
+  }
+
+  const due = c.D.filter(d=>d.dueDay>0).map(d=>Object.assign({},d,nextDue(+d.dueDay))).sort((a,b)=>a.days-b.days);
+  if(due.length){
+    h += `<div class="card"><h2>Yaklaşan ödemeler</h2><div class="rows">${due.map(d=>`
+      <button class="row" data-edit="${d.id}"><span class="r-name">${esc(d.name)}</span><span class="r-amt">${d.payment?tl(d.payment):'–'}</span>
+      <span class="r-sub">${d.date.getDate()} ${MONTHS_L[d.date.getMonth()]}</span>
+      <span class="r-sub2 due-days ${d.days<=3?'soon':''}">${d.days===0?'Bugün':d.days===1?'Yarın':d.days+' gün kaldı'}</span></button>`).join('')}</div></div>`;
+  }
+
+  h += `<div class="card"><div class="card-h"><h2>Net varlık gidişatı</h2><span class="muted small">Aylık kayıt</span></div><div class="chart" id="trend"></div></div>`;
+  el.innerHTML = h;
+  trendSVG();
+}
+
+function accRow(a){
+  let sub = kindLabel(a.side,a.kind), sub2 = '', bar = '';
+  if(a.side==='debt'){
+    if(a.dueDay) sub += ` · Ayın ${a.dueDay}’i`;
+    if(a.payment) sub2 = `Aylık ${tl(a.payment)}`;
+    if(a.kind==='kart' && a.limit>0){ const u = a.balance/a.limit, b = u>.7?'bad':u>.3?'warn':'good';
+      sub2 = `${pct(u)} / ${tl(a.limit)}`; bar = `<span class="r-bar"><i class="fill-${b}" style="width:${clamp(u,0,1)*100}%"></i></span>`; }
+  }
+  return `<button class="row" data-edit="${a.id}"><span class="r-name">${esc(a.name)}</span><span class="r-amt">${tl(a.balance)}</span>
+    <span class="r-sub">${esc(sub)}</span><span class="r-sub2">${sub2}</span>${bar}</button>`;
+}
+function renderHesaplar(){
+  const c = calc(), A = S.accounts.filter(a=>a.side==='asset'), D = S.accounts.filter(a=>a.side==='debt');
+  $('v-hesaplar').innerHTML = `
+    <div class="card"><div class="card-h"><h2>Aylık gelir ve gider</h2><button class="btn ghost" data-act="edit-month">Düzenle</button></div>
+      <div class="legend"><div><b style="background:var(--good)"></b><span>Net gelir</span><span>${tl(S.income)}</span></div>
+      <div><b style="background:var(--muted)"></b><span>Yaşam giderleri</span><span>${tl(S.expenses)}</span></div></div></div>
+    <div class="card"><div class="card-h"><div><h2>Varlıklar</h2><span class="muted small num">${tl(c.assets)} · likit ${tl(c.liquid)}</span></div><button class="btn" data-act="add-acc" data-side="asset">+ Ekle</button></div>
+      <div class="rows">${A.length?A.map(accRow).join(''):'<p class="muted small" style="margin:0">Henüz varlık yok.</p>'}</div></div>
+    <div class="card"><div class="card-h"><div><h2>Borçlar</h2><span class="muted small num">${tl(c.debts)} · aylık ${tl(c.debtPay)}</span></div><button class="btn" data-act="add-acc" data-side="debt">+ Ekle</button></div>
+      <div class="rows">${D.length?D.map(accRow).join(''):'<p class="muted small" style="margin:0">Borç kaydı yok.</p>'}</div></div>
+    <p class="muted small" style="margin:0 4px">Bakiyeleri ayda bir güncellemen yeterli. Her ayın son durumu gidişat grafiğine otomatik kaydedilir.</p>`;
+}
+
+function renderHedefler(){
+  const now = new Date(), cur = mkey(now);
+  const g = S.goals.map(x=>{
+    const p = x.target>0 ? clamp(x.current/x.target,0,1) : 0, rem = Math.max(0,x.target-x.current);
+    let pace = '';
+    if(x.deadline && rem>0){ const [y,m]=x.deadline.split('-').map(Number); const months = (y-now.getFullYear())*12+(m-1-now.getMonth());
+      pace = months>0 ? `${MONTHS_L[m-1]} ${y} için ayda ${tl(rem/months)}` : 'Süre doldu'; }
+    else if(rem<=0) pace = 'Tamamlandı';
+    return `<button class="goal" data-goal="${x.id}"><span class="g-top"><span>${esc(x.name)}</span><span class="num">${pct(p)}</span></span>
+      <span class="g-bar"><i style="width:${p*100}%"></i></span>
+      <span class="g-sub"><span>${tl(x.current)} / ${tl(x.target)}</span><span>${pace|| (rem>0?tl(rem)+' kaldı':'')}</span></span></button>`;
+  }).join('');
+  $('v-hedefler').innerHTML = `<div class="card"><div class="card-h"><h2>Hedefler</h2><button class="btn" data-act="add-goal">+ Hedef</button></div>
+    ${S.goals.length?`<div class="rows">${g}</div>`:'<p class="muted small" style="margin:0">Acil durum fonu, borç kapatma ya da bir alım için hedef koy. Tarih verirsen aylık ne kadar ayırman gerektiğini hesaplar.</p>'}</div>`;
+}
+
+function renderAyarlar(){
+  $('v-ayarlar').innerHTML = `
+    <div class="card"><h2>Verilerin nerede?</h2>
+      <p class="small" style="margin:0">Tüm rakamlar yalnızca bu telefonda, uygulamanın kendi deposunda saklanır; hiçbir sunucuya gönderilmez. Uygulamayı ana ekrandan silersen ya da tarayıcı verilerini temizlersen veriler de gider. Bu yüzden ayda bir yedek almanı öneririm.</p>
+      ${storageOK?'':'<p class="small" style="margin:0;color:var(--bad)">Şu an bu tarayıcı kaydetmeye izin vermiyor.</p>'}</div>
+    <div class="card"><h2>Yedek al</h2><p class="muted small" style="margin:0">Yedek dosyasını Dosyalar'a, iCloud/Drive'a kaydedebilir ya da kendine gönderebilirsin. Metin seçeneği panoya kopyalar; Notlar'a yapıştırıp saklayabilirsin.</p>
+      <div class="btn-row"><button class="btn primary" data-act="backup-file">Yedek dosyası paylaş</button><button class="btn" data-act="backup">Metin olarak kopyala</button></div>
+      <textarea id="backupOut" readonly hidden aria-label="Yedek metni"></textarea></div>
+    <div class="card"><h2>Yedekten geri yükle</h2>
+      <div class="field"><label for="restoreTxt">Yedek metnini yapıştır</label><textarea id="restoreTxt" placeholder='{"v":1, ...}'></textarea></div>
+      <div class="field"><label for="restoreFile">ya da .json dosyası seç</label><input type="file" id="restoreFile" accept=".json,application/json,text/plain"></div>
+      <div class="btn-row"><button class="btn" data-act="restore">Geri yükle</button></div></div>
+    <div class="card"><h2>Sıfırla</h2><div class="btn-row">
+      <button class="btn" data-act="load-sample">Örnek verileri yükle</button>
+      <button class="btn danger" data-act="wipe">Tüm verileri sil</button></div></div>
+    <p class="muted small" style="margin:0 4px">KİFA ${APP_VERSION} · İnternetsiz çalışır</p>`;
+}
+
+function render(){ renderOzet(); renderHesaplar(); renderHedefler(); renderAyarlar(); }
+
+/* ---------- sekmeler ---------- */
+const TABS = ['ozet','hesaplar','hedefler','ayarlar'];
+function show(tab){
+  if(!TABS.includes(tab)) tab='ozet';
+  TABS.forEach(t=>{ $('v-'+t).hidden = t!==tab; });
+  document.querySelectorAll('.tab').forEach(b=>{ if(b.dataset.tab===tab) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  if(tab==='ozet') trendSVG();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{ if(location.hash!=='#'+b.dataset.tab) location.hash=b.dataset.tab; else show(b.dataset.tab); }));
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+
+/* ---------- alt panel ---------- */
+let sheet = null;
+function openSheet(cfg){
+  sheet = cfg; sheet.data = Object.assign({}, cfg.data);
+  $('sheetTitle').textContent = cfg.title;
+  $('sheetDel').hidden = !cfg.onDelete; disarm($('sheetDel'),'Sil');
+  drawFields();
+  $('scrim').hidden = false; $('sheet').hidden = false;
+  setTimeout(()=>{ const f=$('sheetFields').querySelector('input,select'); if(f && !cfg.noFocus) f.focus(); },60);
+}
+function readFields(){
+  if(!sheet) return;
+  sheet.fields.forEach(f=>{ const el=$('f_'+f.k); if(el) sheet.data[f.k] = el.value; });
+}
+function drawFields(errs={}){
+  $('sheetFields').innerHTML = sheet.fields.filter(f=>!f.show||f.show(sheet.data)).map(f=>{
+    const v = sheet.data[f.k] ?? '', id='f_'+f.k;
+    let input;
+    if(f.type==='select') input = `<select id="${id}">${f.options(sheet.data).map(o=>`<option value="${o[0]}" ${String(v)===o[0]?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`;
+    else if(f.type==='money') input = `<input id="${id}" inputmode="decimal" autocomplete="off" value="${esc(v===''||v==null?'':(typeof v==='number'?String(Math.round(v*100)/100).replace('.',','):v))}" placeholder="0">`;
+    else if(f.type==='day') input = `<input id="${id}" inputmode="numeric" autocomplete="off" value="${esc(v||'')}" placeholder="örn. 12">`;
+    else if(f.type==='month') input = `<input id="${id}" type="month" value="${esc(v||'')}">`;
+    else input = `<input id="${id}" autocomplete="off" value="${esc(v)}" placeholder="${esc(f.ph||'')}">`;
+    return `<div class="field"><label for="${id}">${esc(typeof f.label==='function'?f.label(sheet.data):f.label)}</label>${input}${f.hint?`<span class="hint">${esc(f.hint)}</span>`:''}${errs[f.k]?`<span class="err">${esc(errs[f.k])}</span>`:''}</div>`;
+  }).join('');
+  sheet.fields.filter(f=>f.type==='select').forEach(f=>{ const el=$('f_'+f.k); if(el) el.addEventListener('change',()=>{ readFields(); if(f.onChange) f.onChange(sheet.data); drawFields(); }); });
+}
+function closeSheet(){ $('scrim').hidden = true; $('sheet').hidden = true; sheet = null; }
+$('scrim').addEventListener('click',closeSheet);
+$('sheetCancel').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{ if(e.key==='Escape' && sheet) closeSheet(); });
+$('sheetForm').addEventListener('submit',e=>{
+  e.preventDefault(); readFields();
+  const errs = {}, out = {};
+  sheet.fields.filter(f=>!f.show||f.show(sheet.data)).forEach(f=>{
+    const raw = sheet.data[f.k];
+    if(f.type==='money'){ const n = parseMoney(raw); if(isNaN(n)) errs[f.k]='Geçerli bir tutar yaz, örn. 18500 veya 18.500'; else if(n<0&&!f.allowNeg) errs[f.k]='Tutar eksi olamaz'; else out[f.k]=n; }
+    else if(f.type==='day'){ if(raw===''||raw==null) out[f.k]=0; else { const n=parseInt(raw,10); if(!(n>=1&&n<=31)) errs[f.k]='1 ile 31 arasında bir gün yaz'; else out[f.k]=n; } }
+    else { out[f.k] = String(raw??'').trim(); if(f.required && !out[f.k]) errs[f.k]='Bu alan gerekli'; }
+  });
+  if(Object.keys(errs).length){ drawFields(errs); return; }
+  sheet.onSave(out); persist(); render(); closeSheet(); toast('Kaydedildi');
+});
+$('sheetDel').addEventListener('click',e=>armed(e.currentTarget,'Silmek için tekrar dokun',()=>{ sheet.onDelete(); persist(); render(); closeSheet(); toast('Silindi'); }));
+
+function armed(btn,msg,fn){
+  if(btn.dataset.armed){ disarm(btn); fn(); return; }
+  btn.dataset.orig = btn.dataset.orig || btn.textContent;
+  btn.dataset.armed='1'; btn.classList.add('armed'); btn.textContent = msg;
+  clearTimeout(btn._t); btn._t = setTimeout(()=>disarm(btn),4000);
+}
+function disarm(btn,label){ delete btn.dataset.armed; btn.classList.remove('armed'); if(label) btn.dataset.orig=label; if(btn.dataset.orig) btn.textContent = btn.dataset.orig; clearTimeout(btn._t); }
+
+let toastT;
+function toast(msg){ const t=$('toast'); t.textContent=msg; t.hidden=false; clearTimeout(toastT); toastT=setTimeout(()=>t.hidden=true,2600); }
+
+/* ---------- formlar ---------- */
+function accountSheet(acc, side){
+  const isNew = !acc;
+  const data = acc ? Object.assign({},acc) : {side:side||'asset', kind: side==='debt'?'kart':'banka', name:'', balance:'', limit:'', payment:'', dueDay:''};
+  openSheet({
+    title: isNew ? 'Yeni kayıt' : acc.name,
+    data,
+    fields: [
+      {k:'side',label:'Tür',type:'select',options:()=>[['asset','Varlık'],['debt','Borç']],onChange:d=>{ d.kind = KINDS[d.side][0][0]; }},
+      {k:'kind',label:'Kategori',type:'select',options:d=>KINDS[d.side]},
+      {k:'name',label:'Ad',required:true,ph:'örn. Ziraat vadesiz'},
+      {k:'balance',label:d=>d.side==='debt'?(d.kind==='kart'?'Güncel kart borcu':'Kalan borç'):'Güncel bakiye',type:'money'},
+      {k:'limit',label:'Kart limiti',type:'money',show:d=>d.side==='debt'&&d.kind==='kart'},
+      {k:'payment',label:d=>d.kind==='kart'?'Bu ay ödemeyi planladığın tutar':'Aylık taksit',type:'money',show:d=>d.side==='debt',hint:'Nakit akışı ve taksit/gelir oranı bu tutarla hesaplanır.'},
+      {k:'dueDay',label:'Son ödeme günü',type:'day',show:d=>d.side==='debt'}
+    ],
+    onSave: v => {
+      const rec = {id: acc?acc.id:uid(), side:v.side, kind:v.kind, name:v.name, balance:v.balance||0};
+      if(v.side==='debt'){ rec.payment=v.payment||0; rec.dueDay=v.dueDay||0; if(v.kind==='kart') rec.limit=v.limit||0; }
+      if(acc){ const i=S.accounts.findIndex(a=>a.id===acc.id); S.accounts[i]=rec; } else S.accounts.push(rec);
+    },
+    onDelete: acc ? ()=>{ S.accounts = S.accounts.filter(a=>a.id!==acc.id); } : null
+  });
+}
+function monthSheet(){
+  openSheet({title:'Aylık gelir ve gider', data:{income:S.income||'',expenses:S.expenses||''},
+    fields:[
+      {k:'income',label:'Aylık net gelir',type:'money',hint:'Maaş, kira geliri gibi düzenli girişlerin toplamı.'},
+      {k:'expenses',label:'Aylık yaşam giderleri',type:'money',hint:'Kira, faturalar, market, ulaşım. Kart ve kredi taksitlerini buraya ekleme, onlar borçlardan gelir.'}
+    ],
+    onSave:v=>{ S.income=v.income; S.expenses=v.expenses; }});
+}
+function goalSheet(g){
+  openSheet({title: g? g.name : 'Yeni hedef', data: g?Object.assign({},g):{name:'',target:'',current:'',deadline:''},
+    fields:[
+      {k:'name',label:'Hedef',required:true,ph:'örn. Acil durum fonu'},
+      {k:'target',label:'Hedef tutar',type:'money'},
+      {k:'current',label:'Şu ana kadar biriken',type:'money'},
+      {k:'deadline',label:'Hedef tarih (isteğe bağlı)',type:'month'}
+    ],
+    onSave:v=>{ const rec={id:g?g.id:uid(),name:v.name,target:v.target||0,current:v.current||0,deadline:v.deadline||''};
+      if(g){ S.goals[S.goals.findIndex(x=>x.id===g.id)]=rec; } else S.goals.push(rec); },
+    onDelete: g ? ()=>{ S.goals = S.goals.filter(x=>x.id!==g.id); } : null});
+}
+
+/* ---------- eylemler ---------- */
+document.addEventListener('click',e=>{
+  const ed = e.target.closest('[data-edit]'); if(ed){ const a=S.accounts.find(x=>x.id===ed.dataset.edit); if(a) accountSheet(a); return; }
+  const gl = e.target.closest('[data-goal]'); if(gl){ const g=S.goals.find(x=>x.id===gl.dataset.goal); if(g) goalSheet(g); return; }
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const act = b.dataset.act;
+  if(act==='add-acc') accountSheet(null,b.dataset.side);
+  else if(act==='edit-month') monthSheet();
+  else if(act==='add-goal') goalSheet(null);
+  else if(act==='clear-sample'){ S = empty(); persist(); render(); toast('Örnekler silindi. İlk hesabını ekle.'); location.hash='hesaplar'; }
+  else if(act==='load-sample') armed(b,'Mevcut veriler gider, tekrar dokun',()=>{ S = sample(); persist(); render(); toast('Örnek veriler yüklendi'); location.hash='ozet'; });
+  else if(act==='wipe') armed(b,'Geri alınamaz, tekrar dokun',()=>{ S = empty(); persist(); render(); toast('Tüm veriler silindi'); location.hash='ozet'; });
+  else if(act==='backup'){
+    const txt = JSON.stringify(S), out = $('backupOut');
+    const fallback = ()=>{ out.hidden=false; out.value=txt; out.focus(); out.select(); toast('Metin seçildi, Kopyala ile al'); };
+    try{ if(navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(()=>toast('Yedek panoya kopyalandı'),fallback); else fallback(); }catch(err){ fallback(); }
+  }
+  else if(act==='backup-file'){
+    const name = 'kifa-yedek-'+new Date().toISOString().slice(0,10)+'.json';
+    const blob = new Blob([JSON.stringify(S,null,1)],{type:'application/json'});
+    let file = null; try{ file = new File([blob],name,{type:'application/json'}); }catch(err){}
+    if(file && navigator.canShare && navigator.canShare({files:[file]})){
+      navigator.share({files:[file],title:'KİFA yedeği'}).then(()=>toast('Yedek paylaşıldı')).catch(err=>{ if(err && err.name!=='AbortError') toast('Paylaşılamadı. Metin olarak kopyalamayı dene.'); });
+    } else {
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },1000); toast('Yedek dosyası indirildi');
+    }
+  }
+  else if(act==='restore'){
+    let o; try{ o = JSON.parse($('restoreTxt').value); }catch(err){ toast('Metin okunamadı. Yedeği eksiksiz yapıştırdığından emin ol.'); return; }
+    if(!o || !Array.isArray(o.accounts)){ toast('Bu metin bir KİFA yedeği değil.'); return; }
+    armed(b,'Mevcut veriler değişecek, tekrar dokun',()=>{ S = normalize(o); S.sample=false; persist(); render(); toast('Yedek geri yüklendi'); location.hash='ozet'; });
+  }
+});
+document.addEventListener('change',e=>{
+  if(e.target.id!=='restoreFile') return;
+  const f = e.target.files && e.target.files[0]; if(!f) return;
+  const r = new FileReader(); r.onload = ()=>{ $('restoreTxt').value = r.result; toast('Dosya okundu. Geri yükle’ye dokun.'); }; r.readAsText(f);
+});
+let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(trendSVG,120); });
+
+const d = new Date();
+$('today').textContent = d.getDate()+' '+MONTHS_L[d.getMonth()]+' '+d.getFullYear();
+persist(); render(); show(location.hash.slice(1));
+try{ if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); }catch(e){}
+if('serviceWorker' in navigator && location.protocol==='https:'){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+})();
+</script>
+
+</body>
+</html>

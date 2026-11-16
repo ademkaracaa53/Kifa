@@ -1,0 +1,1130 @@
+# C1 · İleri
+abolish|v|kaldırmak, ilga etmek|They voted to [abolish] the death penalty.
+abound|v|bol olmak|Rumours [abound] about his resignation.
+abrupt|adj|ani; sert|The meeting came to an [abrupt] end.
+absent-minded|adj|dalgın|My professor is very [absent-minded].
+abundance|n|bolluk|There is an [abundance] of fruit this year.
+abundant|adj|bol|Fish are [abundant] in this lake.
+accelerate|v|hızlanmak|The car [accelerated] suddenly.
+acclaim|n|beğeni, övgü|The film won critical [acclaim].
+accommodate|v|barındırmak; uyum sağlamak|The hotel can [accommodate] 500 guests.
+accord|n|anlaşma; uyum|They signed a peace [accord].
+accountable|adj|hesap verebilir|Politicians must be [accountable].
+accumulate|v|biriktirmek, birikmek|Dust [accumulates] quickly.
+acquisition|n|edinim; satın alma|Language [acquisition] starts early.
+activate|v|etkinleştirmek|[Activate] your account.
+acute|adj|şiddetli, akut|She has [acute] pain.
+adaptation|n|uyarlama; uyum|It's a film [adaptation] of the novel.
+addiction|n|bağımlılık|He fought his drug [addiction].
+adhere|v|bağlı kalmak; yapışmak|You must [adhere] to the rules.
+adjacent|adj|bitişik|The house is [adjacent] to the park.
+admiration|n|hayranlık|I have great [admiration] for her.
+admission|n|kabul; giriş ücreti|[Admission] is free on Sundays.
+adoption|n|evlat edinme; benimseme|The [adoption] process takes a year.
+advent|n|ortaya çıkış, geliş|The [advent] of the internet changed everything.
+adversary|n|hasım|He defeated his [adversary].
+adversity|n|zorluk, sıkıntı|She showed courage in the face of [adversity].
+advocacy|n|savunuculuk|She works in human rights [advocacy].
+affiliate|v|bağlamak, ilişkilendirmek|The hospital is [affiliated] with the university.
+affirm|v|teyit etmek|He [affirmed] his support.
+affluent|adj|varlıklı|They live in an [affluent] area.
+aftermath|n|sonrası, ardı|In the [aftermath] of the war, many were homeless.
+aggravate|v|kötüleştirmek|Stress can [aggravate] the condition.
+agile|adj|çevik|Cats are very [agile].
+agitate|v|kışkırtmak; çalkalamak|They [agitated] for reform.
+alienate|v|yabancılaştırmak|His comments [alienated] voters.
+align|v|hizalamak, aynı çizgiye getirmek|We need to [align] our goals.
+allegedly|adv|iddiaya göre|He [allegedly] stole the money.
+alleviate|v|hafifletmek|The drug [alleviates] pain.
+allude|v|ima etmek|She [alluded] to her past.
+allure|n|cazibe|The [allure] of the big city.
+ally|n|müttefik|They are close [allies].
+altitude|n|rakım|We flew at a high [altitude].
+amass|v|yığmak, biriktirmek|He [amassed] a fortune.
+ambiguity|n|belirsizlik|There's some [ambiguity] in the contract.
+ambiguous|adj|belirsiz, iki anlamlı|The question is [ambiguous].
+amenity|n|olanak, kolaylık|The hotel has many [amenities].
+amid|prep|ortasında, arasında|[Amid] the chaos, she stayed calm.
+analogy|n|benzetme, analoji|He used an [analogy] to explain it.
+ancestor|n|ata|My [ancestors] came from the Caucasus.
+anecdote|n|anekdot|He told a funny [anecdote].
+animosity|n|düşmanlık|There's [animosity] between the two families.
+annex|v|ilhak etmek|The country [annexed] the region.
+annihilate|v|yok etmek|The army was [annihilated].
+annotate|v|açıklama notu eklemek|She [annotated] the text.
+anomaly|n|anormallik|It's a statistical [anomaly].
+antagonism|n|düşmanlık, karşıtlık|There's [antagonism] between them.
+anticipation|n|beklenti, heyecanlı bekleyiş|There was great [anticipation] before the match.
+antiquity|n|antik çağ|These statues date from [antiquity].
+apathy|n|ilgisizlik, kayıtsızlık|Voter [apathy] is a problem.
+appalling|adj|korkunç, dehşet verici|The conditions were [appalling].
+apparatus|n|aygıt, cihaz|Breathing [apparatus] was needed.
+appease|v|yatıştırmak|They tried to [appease] the protesters.
+applaud|v|alkışlamak|The audience [applauded].
+appraisal|n|değerlendirme|I have my annual [appraisal] next week.
+apprehension|n|endişe|She felt some [apprehension].
+apprentice|n|çırak|He's an [apprentice] carpenter.
+arbitration|n|tahkim|The dispute went to [arbitration].
+archaeology|n|arkeoloji|She studies [archaeology].
+archive|n|arşiv|The documents are in the [archive].
+ardent|adj|ateşli, hararetli|He's an [ardent] supporter.
+arduous|adj|zahmetli, çetin|It was an [arduous] journey.
+array|n|dizi, çeşit|A wide [array] of products.
+articulate|adj|kendini iyi ifade eden|She's very [articulate].
+ascend|v|yükselmek, çıkmak|They [ascended] the mountain.
+ascertain|v|kesinleştirmek, saptamak|We need to [ascertain] the facts.
+aspiration|n|özlem, hedef|She has [aspirations] to become a lawyer.
+aspire|v|amaçlamak, arzulamak|He [aspires] to be a writer.
+assertion|n|iddia|His [assertion] is false.
+assertive|adj|kendinden emin, iddialı|Be more [assertive].
+astonishing|adj|şaşırtıcı|The results were [astonishing].
+astute|adj|zeki, kurnaz|He's an [astute] businessman.
+asylum|n|sığınma|He applied for political [asylum].
+attain|v|ulaşmak, erişmek|She [attained] her goal.
+attainment|n|başarı, erişim|Educational [attainment] is rising.
+attic|n|çatı katı|The boxes are in the [attic].
+audit|n|denetim|The company had an [audit].
+augment|v|artırmak|He works nights to [augment] his income.
+austerity|n|kemer sıkma|The government introduced [austerity] measures.
+authoritarian|adj|otoriter|It's an [authoritarian] regime.
+authorize|v|yetkilendirmek|Who [authorized] this payment?
+avid|adj|hevesli, tutkulu|He's an [avid] reader.
+avert|v|önlemek|They [averted] a disaster.
+awe|n|huşu, hayranlık|We watched in [awe].
+backdrop|n|arka plan, fon|The mountains provide a beautiful [backdrop].
+backlash|n|sert tepki|The decision caused a [backlash].
+ballot|n|oy pusulası|Cast your [ballot].
+banish|v|sürgün etmek|He was [banished] from the kingdom.
+bankruptcy|n|iflas|The company faces [bankruptcy].
+barren|adj|çorak|It's a [barren] land.
+battlefield|n|savaş alanı|Soldiers died on the [battlefield].
+benchmark|n|ölçüt|It's a [benchmark] for quality.
+benevolent|adj|yardımsever|He's a [benevolent] old man.
+bereavement|n|yas, kayıp|She's off work due to a [bereavement].
+beset|v|kuşatmak, musallat olmak|The project was [beset] by problems.
+bewildered|adj|şaşkın|He looked [bewildered].
+bilateral|adj|ikili, iki taraflı|They signed a [bilateral] agreement.
+blatant|adj|bariz, göze batan|It's a [blatant] lie.
+bleak|adj|kasvetli, umutsuz|The future looks [bleak].
+blunt|adj|kör; dobra|He was very [blunt] with me.
+blur|v|bulanıklaştırmak|Tears [blurred] her vision.
+bolster|v|desteklemek|This will [bolster] the economy.
+bombard|v|bombardımana tutmak|They [bombarded] him with questions.
+bounty|n|ödül; bolluk|There's a [bounty] on his head.
+breadth|n|genişlik|His [breadth] of knowledge is amazing.
+brink|n|eşik, kenar|The company is on the [brink] of collapse.
+brisk|adj|hızlı, canlı|We went for a [brisk] walk.
+brittle|adj|kırılgan, gevrek|Old bones become [brittle].
+brutal|adj|vahşi, acımasız|It was a [brutal] attack.
+buoyant|adj|canlı, neşeli; yüzebilen|The market is [buoyant].
+bureaucrat|n|bürokrat|He's a government [bureaucrat].
+bustling|adj|hareketli, işlek|It's a [bustling] city.
+by-product|n|yan ürün|Waste is a [by-product] of the process.
+bypass|v|atlatmak, devre dışı bırakmak|We [bypassed] the city centre.
+calibre|n|kalite, kalibre|We need people of his [calibre].
+camouflage|n|kamuflaj|The soldiers wore [camouflage].
+candid|adj|açık sözlü|Let me be [candid] with you.
+capitalize|v|fırsata çevirmek|They [capitalized] on our mistakes.
+captivate|v|büyülemek|The story [captivated] the children.
+captive|n|tutsak|They held him [captive].
+caricature|n|karikatür|He drew a [caricature] of the president.
+catastrophe|n|felaket|It was a natural [catastrophe].
+catastrophic|adj|felaket boyutunda|The results were [catastrophic].
+categorize|v|kategorilere ayırmak|[Categorize] the words.
+caveat|n|uyarı, çekince|There's one [caveat].
+cavity|n|oyuk; diş çürüğü|I have a [cavity] in my tooth.
+censorship|n|sansür|There's strict [censorship] here.
+census|n|nüfus sayımı|The [census] is taken every ten years.
+certify|v|onaylamak, belgelemek|He's a [certified] accountant.
+chamber|n|oda, meclis|The [chamber] was full.
+chaotic|adj|kaotik|The traffic was [chaotic].
+characterize|v|nitelendirmek|His work is [characterized] by humour.
+charisma|n|karizma|He has great [charisma].
+charitable|adj|hayırsever|It's a [charitable] organization.
+chronicle|n|tarihçe, vakayiname|It's a [chronicle] of the war.
+chronological|adj|kronolojik|List them in [chronological] order.
+circulation|n|dolaşım; tiraj|Exercise improves [circulation].
+circumvent|v|atlatmak, dolanmak|They tried to [circumvent] the law.
+civic|adj|kentsel, yurttaşlık|It's our [civic] duty to vote.
+clarity|n|açıklık, netlik|The [clarity] of the image is good.
+clergy|n|din adamları|The [clergy] opposed the law.
+cling|v|sarılmak, yapışmak|The child [clung] to her mother.
+clumsy|adj|sakar|I'm so [clumsy].
+coerce|v|zorlamak|He was [coerced] into signing.
+coherent|adj|tutarlı|He gave a [coherent] answer.
+cohesion|n|bütünlük, uyum|Social [cohesion] is important.
+coincide|v|aynı zamana denk gelmek|My birthday [coincides] with the holiday.
+collaborate|v|işbirliği yapmak|We [collaborated] on the project.
+collaboration|n|işbirliği|It was a [collaboration] between two artists.
+collateral|n|teminat|He used his house as [collateral].
+colloquial|adj|gündelik dil|It's a [colloquial] expression.
+collusion|n|gizli anlaşma|There was [collusion] between them.
+commemorate|v|anmak|They [commemorate] the victory every year.
+commence|v|başlamak|The ceremony will [commence] at noon.
+commend|v|övmek|He was [commended] for his bravery.
+commentator|n|yorumcu|He's a sports [commentator].
+commonplace|adj|sıradan, yaygın|Smartphones are now [commonplace].
+communal|adj|ortak, toplu|There's a [communal] kitchen.
+compassion|n|merhamet|She showed great [compassion].
+compassionate|adj|şefkatli|He's a [compassionate] doctor.
+compel|v|zorlamak|I felt [compelled] to help.
+compelling|adj|ikna edici, etkileyici|It's a [compelling] argument.
+compensate|v|telafi etmek|Nothing can [compensate] for the loss.
+competence|n|yeterlilik|She has the [competence] to do it.
+complacent|adj|kendini beğenmiş, rehavete kapılmış|Don't get [complacent].
+complementary|adj|tamamlayıcı|They have [complementary] skills.
+complexity|n|karmaşıklık|The [complexity] of the problem.
+compliance|n|uyum, uyma|[Compliance] with the law is required.
+complication|n|komplikasyon|There were [complications] after surgery.
+comprehend|v|kavramak|I can't [comprehend] it.
+comprehension|n|anlama|Reading [comprehension] is tested.
+compulsive|adj|takıntılı|He's a [compulsive] liar.
+concede|v|kabul etmek, teslim etmek|He [conceded] defeat.
+conceal|v|gizlemek|He [concealed] the truth.
+conceivable|adj|akla gelebilir|It's [conceivable] that he lied.
+concession|n|taviz|They made [concessions].
+concise|adj|kısa ve öz|Be [concise].
+conclusive|adj|kesin, kati|There's no [conclusive] evidence.
+concur|v|aynı fikirde olmak|I [concur] with your view.
+condemnation|n|kınama|There was international [condemnation].
+condolence|n|taziye|Please accept my [condolences].
+conducive|adj|elverişli|The room is not [conducive] to study.
+confer|v|danışmak; vermek|They [conferred] about the plan.
+configuration|n|yapılandırma|Check the [configuration].
+confiscate|v|el koymak|The teacher [confiscated] his phone.
+conform|v|uymak|You must [conform] to the rules.
+congestion|n|tıkanıklık|Traffic [congestion] is bad.
+conglomerate|n|holding, şirketler grubu|It's a media [conglomerate].
+conjunction|n|birlikte olma; bağlaç|It works in [conjunction] with the police.
+connotation|n|çağrışım|The word has negative [connotations].
+conquer|v|fethetmek|The Ottomans [conquered] Istanbul in 1453.
+conquest|n|fetih|The [conquest] of Istanbul.
+conscientious|adj|vicdanlı, titiz|She's a [conscientious] worker.
+consecutive|adj|ardışık|It rained for five [consecutive] days.
+conservationist|n|doğa koruma uzmanı|[Conservationists] protect wildlife.
+consolidate|v|pekiştirmek, birleştirmek|They [consolidated] their position.
+conspicuous|adj|göze çarpan|He felt [conspicuous] in his suit.
+constituency|n|seçim bölgesi|He represents a rural [constituency].
+contaminate|v|kirletmek|The water was [contaminated].
+contemplate|v|üzerinde düşünmek|He [contemplated] leaving.
+contend|v|mücadele etmek; iddia etmek|We had to [contend] with bad weather.
+contention|n|çekişme; iddia|It's a point of [contention].
+contingency|n|olasılık, beklenmedik durum|We have a [contingency] plan.
+continuity|n|süreklilik|There's no [continuity] in the story.
+contractor|n|müteahhit|The [contractor] built the house.
+contradiction|n|çelişki|That's a [contradiction].
+contradictory|adj|çelişkili|There are [contradictory] reports.
+contrive|v|başarmak; tertiplemek|She [contrived] to meet him.
+convene|v|toplanmak|The committee will [convene] tomorrow.
+converge|v|birleşmek, kesişmek|The roads [converge] here.
+conversely|adv|tersine|[Conversely], some prices fell.
+convey|v|iletmek, aktarmak|Words can't [convey] my feelings.
+convict|v|mahkûm etmek|He was [convicted] of murder.
+cordial|adj|samimi, içten|We had a [cordial] meeting.
+cornerstone|n|köşe taşı, temel|Trust is the [cornerstone] of marriage.
+correlation|n|korelasyon, ilişki|There's a [correlation] between diet and health.
+corrosion|n|aşınma, korozyon|[Corrosion] damaged the pipes.
+counsel|n|tavsiye; avukat|He gave me wise [counsel].
+counselling|n|danışmanlık|She went for [counselling].
+counterfeit|adj|sahte|They sold [counterfeit] money.
+covert|adj|gizli|It was a [covert] operation.
+crackdown|n|sert önlem|There's a [crackdown] on drugs.
+craving|n|aşırı istek|I have a [craving] for chocolate.
+credibility|n|inanılırlık|He lost all [credibility].
+creed|n|inanç, mezhep|People of every [creed] are welcome.
+critique|n|eleştiri|She wrote a [critique] of the book.
+crusade|n|haçlı seferi; kampanya|He led a [crusade] against corruption.
+culminate|v|doruğa ulaşmak|The protests [culminated] in a riot.
+culprit|n|suçlu|The police caught the [culprit].
+cumulative|adj|birikimli|The [cumulative] effect was huge.
+curb|v|dizginlemek|We must [curb] spending.
+curator|n|küratör|She's the museum's [curator].
+custodian|n|koruyucu, bekçi|He's the [custodian] of the building.
+customary|adj|alışılmış, geleneksel|It's [customary] to tip.
+daunting|adj|göz korkutucu|It's a [daunting] task.
+dazzling|adj|göz kamaştırıcı|She gave a [dazzling] smile.
+dearth|n|kıtlık|There's a [dearth] of good teachers.
+debatable|adj|tartışmaya açık|That's [debatable].
+debut|n|ilk çıkış|It was her [debut] album.
+deceive|v|aldatmak|He [deceived] his friends.
+deception|n|aldatma|It was all a [deception].
+decimate|v|kırıp geçirmek|The disease [decimated] the population.
+decipher|v|çözmek (şifre)|I can't [decipher] his writing.
+declaration|n|bildiri, beyan|They signed a [declaration].
+decree|n|kararname|The president issued a [decree].
+deduce|v|çıkarım yapmak|What can we [deduce] from this?
+deduction|n|kesinti; çıkarım|There's a tax [deduction].
+default|n|varsayılan; temerrüt|This is the [default] setting.
+defect|n|kusur|There's a [defect] in the product.
+defer|v|ertelemek|They [deferred] the decision.
+defiance|n|meydan okuma|He showed [defiance].
+deficiency|n|eksiklik|She has a vitamin [deficiency].
+definitive|adj|kesin, nihai|It's the [definitive] guide.
+defy|v|karşı gelmek|He [defied] his parents.
+degrade|v|alçaltmak; bozulmak|Plastic takes years to [degrade].
+deity|n|tanrı, ilah|They worshipped many [deities].
+delegation|n|heyet|A Turkish [delegation] arrived.
+deliberate|adj|kasıtlı|It was a [deliberate] act.
+delusion|n|sanrı, yanılgı|He suffers from [delusions].
+demise|n|son, çöküş|The [demise] of the company.
+demolish|v|yıkmak|They [demolished] the old building.
+demolition|n|yıkım|The [demolition] took a week.
+denial|n|inkâr|He's in [denial].
+denounce|v|kınamak, ihbar etmek|They [denounced] the government.
+depart|v|ayrılmak, kalkmak|The train [departs] at nine.
+depletion|n|tükenme|Ozone [depletion] is a concern.
+deplore|v|kınamak, üzülmek|We [deplore] violence.
+deport|v|sınır dışı etmek|He was [deported].
+deprivation|n|yoksunluk|Sleep [deprivation] is dangerous.
+derelict|adj|terk edilmiş, harabe|It's a [derelict] building.
+descendant|n|torun, soy|He's a [descendant] of the sultan.
+desolate|adj|ıssız|It's a [desolate] place.
+destined|adj|kaderinde olan|She was [destined] to be famous.
+detain|v|alıkoymak, gözaltına almak|The police [detained] him.
+deter|v|caydırmak|The cameras [deter] thieves.
+deterioration|n|kötüleşme|There's been a [deterioration] in his health.
+determination|n|kararlılık|She showed great [determination].
+detrimental|adj|zararlı|Smoking is [detrimental] to health.
+devastation|n|yıkım|The [devastation] was terrible.
+deviate|v|sapmak|Don't [deviate] from the plan.
+devise|v|tasarlamak|They [devised] a new system.
+devoid|adj|-den yoksun|He's [devoid] of humour.
+devotion|n|bağlılık|Her [devotion] to her family.
+dictatorship|n|diktatörlük|They lived under a [dictatorship].
+differentiate|v|ayırt etmek|Can you [differentiate] between them?
+diligent|adj|çalışkan, gayretli|She's a [diligent] student.
+dilute|v|seyreltmek|[Dilute] the juice with water.
+diplomacy|n|diplomasi|The crisis was solved by [diplomacy].
+disarm|v|silahsızlandırmak|They [disarmed] the rebels.
+discern|v|seçmek, fark etmek|I could [discern] a shape in the dark.
+discharge|v|taburcu etmek; boşaltmak|He was [discharged] from hospital.
+disciple|n|mürit, öğrenci|He was a [disciple] of Freud.
+disclosure|n|ifşa|The [disclosure] of secrets.
+discontent|n|hoşnutsuzluk|There's growing [discontent].
+discourse|n|söylem|Political [discourse] has changed.
+discreet|adj|ağzı sıkı, ölçülü|Please be [discreet].
+discrepancy|n|tutarsızlık|There's a [discrepancy] in the figures.
+discretion|n|takdir yetkisi; ketumluk|Use your [discretion].
+disdain|n|küçümseme|She looked at him with [disdain].
+disgrace|n|rezalet|It's a [disgrace]!
+disguise|n|kılık, maske|He wore a [disguise].
+disgust|n|tiksinti|She looked at it with [disgust].
+dismantle|v|sökmek|They [dismantled] the machine.
+dismay|n|dehşet, üzüntü|To my [dismay], it was closed.
+dismissal|n|işten çıkarma|He appealed his [dismissal].
+disparity|n|eşitsizlik, fark|There's a [disparity] in wages.
+dispatch|v|göndermek|They [dispatched] an ambulance.
+dispel|v|dağıtmak, gidermek|This should [dispel] your doubts.
+disperse|v|dağılmak|The crowd [dispersed].
+displace|v|yerinden etmek|Thousands were [displaced] by the war.
+disposal|n|elden çıkarma|Waste [disposal] is expensive.
+dispose|v|atmak, elden çıkarmak|[Dispose] of the rubbish properly.
+disposition|n|mizaç|She has a cheerful [disposition].
+disregard|v|göz ardı etmek|He [disregarded] my advice.
+dissent|n|muhalefet, karşı görüş|They don't tolerate [dissent].
+dissertation|n|tez|She's writing her [dissertation].
+dissolution|n|feshetme, dağılma|The [dissolution] of the empire.
+distil|v|damıtmak|They [distil] whisky here.
+distort|v|çarpıtmak|The media [distorted] the facts.
+distortion|n|çarpıtma|It's a [distortion] of the truth.
+diverge|v|ayrışmak|Our opinions [diverge].
+diversion|n|güzergâh değişikliği; oyalama|There's a traffic [diversion].
+divert|v|yönünü değiştirmek|The flight was [diverted].
+dogma|n|dogma|Religious [dogma].
+domain|n|alan, etki alanı|It's in the public [domain].
+dominance|n|hâkimiyet|Their [dominance] in the market.
+dormant|adj|uykuda, faal olmayan|The volcano is [dormant].
+downfall|n|çöküş|Greed led to his [downfall].
+downturn|n|düşüş|There's an economic [downturn].
+drastic|adj|sert, köklü|We need [drastic] measures.
+drawback|n|dezavantaj|The main [drawback] is the cost.
+dread|v|çok korkmak|I [dread] going to the dentist.
+dubious|adj|şüpheli|It's a [dubious] claim.
+duly|adv|gereği gibi|Your request has been [duly] noted.
+durable|adj|dayanıklı|It's made of [durable] plastic.
+dwell|v|ikamet etmek; üzerinde durmak|Don't [dwell] on the past.
+dwindle|v|azalmak|Their numbers [dwindled].
+earnest|adj|ciddi, samimi|He's an [earnest] young man.
+eccentric|adj|eksantrik, tuhaf|He's a bit [eccentric].
+eclipse|n|tutulma|We watched the solar [eclipse].
+edible|adj|yenilebilir|Are these mushrooms [edible]?
+eerie|adj|ürkütücü|There was an [eerie] silence.
+efficacy|n|etkinlik|The [efficacy] of the drug.
+elapse|v|geçmek (zaman)|Two years [elapsed].
+elicit|v|ortaya çıkarmak|The question [elicited] no response.
+eloquent|adj|belagatli|She gave an [eloquent] speech.
+elusive|adj|ele geçmez|Success remained [elusive].
+emancipation|n|kurtuluş, özgürleşme|The [emancipation] of women.
+embargo|n|ambargo|They imposed a trade [embargo].
+embed|v|yerleştirmek, gömmek|The idea is [embedded] in our culture.
+embody|v|somutlaştırmak|She [embodies] courage.
+emigrate|v|göç etmek (dışarı)|They [emigrated] to Canada.
+eminent|adj|seçkin, ünlü|He's an [eminent] scientist.
+emulate|v|örnek almak|He tries to [emulate] his father.
+enactment|n|yasalaşma|The [enactment] of the new law.
+encompass|v|kapsamak|The course [encompasses] many topics.
+encroach|v|tecavüz etmek, sınırını aşmak|Cities [encroach] on farmland.
+endanger|v|tehlikeye atmak|Pollution [endangers] wildlife.
+endeavour|n|çaba, girişim|It's a difficult [endeavour].
+endemic|adj|yerel, endemik|The disease is [endemic] here.
+endorsement|n|onay, destek|The plan received his [endorsement].
+endurance|n|dayanıklılık|It's a test of [endurance].
+engrave|v|kazımak|They [engraved] her name on the ring.
+engulf|v|yutmak, sarmak|Flames [engulfed] the building.
+enigma|n|bilmece, muamma|He's an [enigma].
+enlighten|v|aydınlatmak|Can you [enlighten] me?
+enormity|n|büyüklük; vahamet|The [enormity] of the problem.
+ensue|v|ardından gelmek|Chaos [ensued].
+entail|v|gerektirmek|The job [entails] a lot of travel.
+entice|v|ayartmak, cezbetmek|Low prices [entice] customers.
+entity|n|varlık, kuruluş|It's a separate legal [entity].
+entrenched|adj|kökleşmiş|These are [entrenched] attitudes.
+entrust|v|emanet etmek|I [entrusted] him with my keys.
+envisage|v|öngörmek|I [envisage] no problems.
+envy|n|kıskançlık, gıpta|She was green with [envy].
+epidemic|n|salgın|There's a flu [epidemic].
+epitome|n|simge, en iyi örnek|She's the [epitome] of elegance.
+equilibrium|n|denge|The market reached [equilibrium].
+equitable|adj|hakkaniyetli|An [equitable] distribution of wealth.
+eradicate|v|kökünü kazımak|They [eradicated] the disease.
+erode|v|aşındırmak|The sea [erodes] the cliffs.
+erosion|n|erozyon|Soil [erosion] is a problem.
+erratic|adj|düzensiz, değişken|His behaviour is [erratic].
+escalate|v|tırmanmak|The conflict [escalated].
+espouse|v|benimsemek|He [espouses] liberal values.
+esteem|n|saygı, itibar|She's held in high [esteem].
+ethic|n|etik, ahlak|He has a strong work [ethic].
+ethos|n|ahlak anlayışı, değerler|The company's [ethos] is clear.
+evade|v|kaçmak, kaçınmak|He [evaded] taxes.
+evasion|n|kaçınma|Tax [evasion] is a crime.
+evoke|v|uyandırmak, çağrıştırmak|The song [evokes] memories.
+exacerbate|v|şiddetlendirmek|It will [exacerbate] the problem.
+excavation|n|kazı|The [excavation] revealed a Roman villa.
+exceptional|adj|istisnai, olağanüstü|She's an [exceptional] student.
+exemplify|v|örneklemek|This [exemplifies] the problem.
+exempt|adj|muaf|Food is [exempt] from tax.
+exert|v|uygulamak, sarf etmek|Don't [exert] yourself.
+exhaust|v|tüketmek; yormak|We [exhausted] all options.
+exhaustive|adj|eksiksiz, kapsamlı|An [exhaustive] list.
+exodus|n|toplu göç|There was a mass [exodus].
+expatriate|n|gurbetçi|There are many [expatriates] here.
+expedite|v|hızlandırmak|We'll [expedite] your order.
+expel|v|kovmak, ihraç etmek|He was [expelled] from school.
+expenditure|n|harcama|Public [expenditure] increased.
+explicitly|adv|açıkça|He [explicitly] said no.
+exploitation|n|sömürü|The [exploitation] of workers.
+exponential|adj|üstel|There was [exponential] growth.
+extinct|adj|nesli tükenmiş|Dinosaurs are [extinct].
+extinction|n|yok olma|Many species face [extinction].
+extravagant|adj|savurgan, abartılı|It was an [extravagant] party.
+extremist|n|aşırılıkçı|The [extremists] were arrested.
+fabricate|v|uydurmak; imal etmek|He [fabricated] the evidence.
+facade|n|cephe; görünüş|The building has a stone [facade].
+facet|n|yön, cephe|Every [facet] of life.
+faction|n|hizip|The party split into [factions].
+fallacy|n|yanılgı, safsata|It's a common [fallacy].
+falter|v|tökezlemek, bocalamak|Her voice [faltered].
+fanatic|n|fanatik|He's a football [fanatic].
+feasible|adj|uygulanabilir|Is the plan [feasible]?
+feeble|adj|zayıf, güçsüz|It was a [feeble] excuse.
+felony|n|ağır suç|He committed a [felony].
+fervent|adj|ateşli, coşkulu|He's a [fervent] believer.
+feud|n|kan davası, düşmanlık|There's a family [feud].
+fiasco|n|fiyasko|The party was a [fiasco].
+fidelity|n|sadakat|Marital [fidelity].
+figurative|adj|mecazi|It's used in a [figurative] sense.
+fiscal|adj|mali|The [fiscal] year starts in January.
+flagrant|adj|açık, bariz|It's a [flagrant] violation.
+flamboyant|adj|gösterişli|He has a [flamboyant] style.
+flaunt|v|gösteriş yapmak|She [flaunts] her wealth.
+fledgling|adj|yeni başlayan|It's a [fledgling] company.
+flimsy|adj|dayanıksız, zayıf|It's a [flimsy] excuse.
+fluctuate|v|dalgalanmak|Prices [fluctuate].
+fluctuation|n|dalgalanma|Currency [fluctuations].
+foe|n|düşman|Friend or [foe]?
+forage|v|yiyecek aramak|Animals [forage] for food.
+foresee|v|öngörmek|Nobody could [foresee] the crisis.
+foreseeable|adj|öngörülebilir|In the [foreseeable] future.
+forfeit|v|kaybetmek (hakkını)|He [forfeited] his right to vote.
+forge|v|sahtesini yapmak; dövmek|He [forged] her signature.
+forgery|n|sahtecilik|The painting is a [forgery].
+formidable|adj|zorlu, heybetli|She's a [formidable] opponent.
+forthcoming|adj|yaklaşan; açık sözlü|The [forthcoming] election.
+fortify|v|güçlendirmek|They [fortified] the city.
+fragrance|n|güzel koku|The [fragrance] of roses.
+frail|adj|zayıf, narin|My grandmother is very [frail].
+frantic|adj|çılgınca, telaşlı|There was a [frantic] search.
+fraudulent|adj|hileli|It was a [fraudulent] claim.
+friction|n|sürtünme; anlaşmazlık|There's [friction] between them.
+frivolous|adj|anlamsız, ciddiyetsiz|It's a [frivolous] complaint.
+frugal|adj|tutumlu|He lives a [frugal] life.
+fruitful|adj|verimli|It was a [fruitful] meeting.
+futile|adj|boşuna|It's [futile] to argue.
+gadget|n|alet, cihaz|He loves new [gadgets].
+galvanize|v|harekete geçirmek|The speech [galvanized] the crowd.
+gauge|v|ölçmek, tahmin etmek|It's hard to [gauge] his mood.
+generosity|n|cömertlik|Thank you for your [generosity].
+genocide|n|soykırım|It was an act of [genocide].
+gist|n|ana fikir|I got the [gist] of it.
+glamorous|adj|göz alıcı|She lives a [glamorous] life.
+gloomy|adj|kasvetli|It's a [gloomy] day.
+glorious|adj|görkemli|It was a [glorious] victory.
+gracious|adj|nazik, lütufkâr|She was a [gracious] host.
+grandeur|n|ihtişam|The [grandeur] of the palace.
+gratitude|n|minnettarlık|I want to express my [gratitude].
+grievance|n|şikâyet, dert|Workers aired their [grievances].
+grim|adj|acımasız, kasvetli|The news is [grim].
+grotesque|adj|grotesk, acayip|It was a [grotesque] sight.
+grudge|n|kin|He holds a [grudge] against me.
+gruelling|adj|yorucu|It was a [gruelling] climb.
+guardian|n|vasi, koruyucu|He's her legal [guardian].
+gullible|adj|saf, kolay kandırılan|Don't be so [gullible].
+habitual|adj|alışılmış|He's a [habitual] liar.
+hallmark|n|ayırt edici özellik|Quality is the [hallmark] of our brand.
+halt|v|durdurmak|Production was [halted].
+hamper|v|engellemek|Bad weather [hampered] the rescue.
+haphazard|adj|gelişigüzel|It was done in a [haphazard] way.
+harass|v|taciz etmek|He was [harassed] by reporters.
+harassment|n|taciz|Sexual [harassment] is illegal.
+harmonious|adj|ahenkli|They have a [harmonious] relationship.
+harness|v|yararlanmak, dizginlemek|We must [harness] solar energy.
+haunt|v|musallat olmak, akla takılmak|The memory still [haunts] me.
+havoc|n|tahribat, kargaşa|The storm caused [havoc].
+hazardous|adj|tehlikeli|[Hazardous] waste.
+headway|n|ilerleme|We're making [headway].
+hectic|adj|çok yoğun|It was a [hectic] day.
+hegemony|n|hegemonya|American [hegemony].
+heighten|v|artırmak|It [heightened] tension.
+heinous|adj|iğrenç, menfur|It was a [heinous] crime.
+hereditary|adj|kalıtsal|It's a [hereditary] disease.
+heresy|n|sapkınlık|He was accused of [heresy].
+hesitant|adj|tereddütlü|She was [hesitant] to answer.
+hesitation|n|tereddüt|He agreed without [hesitation].
+hinder|v|engellemek|The rain [hindered] our progress.
+hindrance|n|engel|He's more of a [hindrance] than a help.
+hindsight|n|sonradan anlama|With [hindsight], it was a mistake.
+hitherto|adv|şimdiye kadar|A [hitherto] unknown species.
+homage|n|saygı, hürmet|They paid [homage] to the soldiers.
+homicide|n|cinayet|He's a [homicide] detective.
+hospitable|adj|misafirperver|Turkish people are very [hospitable].
+hostility|n|düşmanlık|There's [hostility] towards foreigners.
+humane|adj|insancıl|It's a [humane] solution.
+humanitarian|adj|insani|They sent [humanitarian] aid.
+humiliate|v|küçük düşürmek|He [humiliated] me in public.
+humiliation|n|aşağılanma|It was a [humiliation].
+hurdle|n|engel|We cleared the first [hurdle].
+hygiene|n|hijyen|Personal [hygiene] is important.
+hype|n|abartılı reklam|Don't believe the [hype].
+hypocrisy|n|ikiyüzlülük|I hate [hypocrisy].
+hypocrite|n|ikiyüzlü|He's such a [hypocrite].
+hypothetical|adj|varsayımsal|It's a [hypothetical] question.
+hysterical|adj|isterik|She became [hysterical].
+identical|adj|aynı, özdeş|They're [identical] twins.
+idle|adj|boş, aylak|Don't sit [idle].
+ignite|v|tutuşturmak|A spark [ignited] the fire.
+ignorance|n|cehalet|[Ignorance] is no excuse.
+ignorant|adj|cahil|He's [ignorant] of the facts.
+illicit|adj|yasa dışı|[Illicit] drugs.
+illiterate|adj|okuma yazma bilmeyen|Many adults are [illiterate].
+illuminate|v|aydınlatmak|Lamps [illuminated] the street.
+imbalance|n|dengesizlik|There's a trade [imbalance].
+immerse|v|daldırmak, kendini kaptırmak|She [immersed] herself in work.
+immigrate|v|göç etmek (içeri)|They [immigrated] to Turkey.
+immunity|n|bağışıklık; dokunulmazlık|Diplomats have [immunity].
+impair|v|zayıflatmak|Alcohol [impairs] judgement.
+impart|v|aktarmak|Teachers [impart] knowledge.
+impartial|adj|tarafsız|A judge must be [impartial].
+impasse|n|çıkmaz|The talks reached an [impasse].
+impeccable|adj|kusursuz|His English is [impeccable].
+impede|v|engellemek|Fallen trees [impeded] traffic.
+imperative|adj|zorunlu|It's [imperative] that we act now.
+imperial|adj|imparatorluğa ait|The [imperial] palace.
+impetus|n|itici güç|The new law gave [impetus] to reform.
+implicit|adj|örtük, üstü kapalı|There was an [implicit] threat.
+impoverished|adj|yoksullaşmış|It's an [impoverished] region.
+improvise|v|doğaçlama yapmak|We had to [improvise].
+impulse|n|dürtü|I bought it on [impulse].
+inadequate|adj|yetersiz|The food was [inadequate].
+inadvertently|adv|istemeden|I [inadvertently] deleted it.
+inaugural|adj|açılış|The president's [inaugural] speech.
+incapable|adj|yapamaz, aciz|He's [incapable] of lying.
+incarceration|n|hapsetme|Mass [incarceration] is a problem.
+incense|n|tütsü|They burned [incense].
+incessant|adj|aralıksız|The [incessant] noise drove me mad.
+incidentally|adv|bu arada|[Incidentally], I saw your brother.
+incite|v|kışkırtmak|He [incited] violence.
+inclination|n|eğilim, istek|I have no [inclination] to go.
+incoherent|adj|tutarsız, anlaşılmaz|He was [incoherent].
+incompatible|adj|uyumsuz|The software is [incompatible].
+incompetent|adj|beceriksiz|He's an [incompetent] manager.
+inconceivable|adj|akıl almaz|It's [inconceivable].
+incur|v|uğramak, maruz kalmak|We [incurred] heavy losses.
+indefinitely|adv|süresiz olarak|The match was postponed [indefinitely].
+indicative|adj|gösteren, işaret eden|It's [indicative] of a problem.
+indictment|n|iddianame; suçlama|It's an [indictment] of our society.
+indifference|n|kayıtsızlık|He showed complete [indifference].
+indifferent|adj|kayıtsız|She's [indifferent] to politics.
+indigenous|adj|yerli|[Indigenous] people.
+indispensable|adj|vazgeçilmez|Water is [indispensable].
+induce|v|neden olmak; ikna etmek|The drug [induces] sleep.
+inept|adj|beceriksiz|He's [inept] at sports.
+inertia|n|atalet, durgunluk|Political [inertia].
+infamous|adj|kötü şöhretli|He's an [infamous] gangster.
+infer|v|sonuç çıkarmak|What can we [infer] from this?
+inference|n|çıkarım|Make an [inference].
+infinite|adj|sonsuz|The universe may be [infinite].
+inflict|v|vermek (zarar), çektirmek|The storm [inflicted] damage.
+influential|adj|etkili, nüfuzlu|She's very [influential].
+influx|n|akın|An [influx] of tourists.
+infringe|v|ihlal etmek|It [infringes] copyright.
+ingenious|adj|dâhiyane|It's an [ingenious] solution.
+inhabit|v|yaşamak, oturmak|Bears [inhabit] these forests.
+inhibit|v|engellemek, frenlemek|Fear [inhibits] learning.
+inhibition|n|çekingenlik|She lost her [inhibitions].
+initiate|v|başlatmak|They [initiated] talks.
+injustice|n|adaletsizlik|We fight [injustice].
+innate|adj|doğuştan|She has an [innate] talent.
+innumerable|adj|sayısız|[Innumerable] stars.
+inquisitive|adj|meraklı|She's very [inquisitive].
+insane|adj|deli|That's [insane]!
+insatiable|adj|doymak bilmez|He has an [insatiable] appetite.
+insecure|adj|güvensiz|She feels [insecure].
+insidious|adj|sinsi|It's an [insidious] disease.
+insignificant|adj|önemsiz|It's an [insignificant] detail.
+insistence|n|ısrar|At his [insistence], we left.
+insolvent|adj|iflas etmiş|The company is [insolvent].
+instigate|v|başlatmak, kışkırtmak|He [instigated] the fight.
+instil|v|aşılamak|Parents [instil] values.
+insufficient|adj|yetersiz|There's [insufficient] evidence.
+insurgent|n|isyancı|The [insurgents] attacked.
+intake|n|alım (besin vb.)|Reduce your sugar [intake].
+integral|adj|ayrılmaz, temel|It's an [integral] part of the plan.
+intellect|n|akıl, zekâ|He's a man of great [intellect].
+intelligible|adj|anlaşılır|His speech was barely [intelligible].
+intensify|v|yoğunlaştırmak|The storm [intensified].
+interim|adj|geçici|He's the [interim] manager.
+intermittent|adj|aralıklı|[Intermittent] rain.
+intricate|adj|karmaşık, ayrıntılı|It has an [intricate] design.
+intrigue|v|ilgisini çekmek|The story [intrigued] me.
+intrinsic|adj|esas, içsel|It has [intrinsic] value.
+intuition|n|sezgi|Trust your [intuition].
+intuitive|adj|sezgisel|The app is [intuitive].
+invaluable|adj|paha biçilmez|Your help was [invaluable].
+invariably|adv|her zaman, değişmeden|He's [invariably] late.
+inventory|n|envanter|We took [inventory].
+inverse|adj|ters|There's an [inverse] relationship.
+invoke|v|başvurmak, anmak|He [invoked] his right to silence.
+irrational|adj|mantıksız|It's an [irrational] fear.
+irreversible|adj|geri döndürülemez|The damage is [irreversible].
+irrigation|n|sulama|The farm needs [irrigation].
+irritable|adj|asabi|He's [irritable] in the morning.
+irritate|v|sinirlendirmek|His voice [irritates] me.
+jeopardize|v|tehlikeye atmak|Don't [jeopardize] your career.
+jeopardy|n|tehlike|Lives are in [jeopardy].
+judicial|adj|adli|The [judicial] system.
+judiciary|n|yargı|The independence of the [judiciary].
+jurisdiction|n|yargı yetkisi|It's outside our [jurisdiction].
+juvenile|adj|çocuksu; çocuk (hukuk)|[Juvenile] crime is rising.
+juxtaposition|n|yan yana koyma|The [juxtaposition] of old and new.
+kidnapping|n|adam kaçırma|The [kidnapping] shocked the nation.
+kin|n|akrabalar|Next of [kin].
+lag|v|geride kalmak|We [lag] behind our rivals.
+lament|v|yakınmak, ağıt yakmak|They [lamented] his death.
+landfill|n|çöp sahası|Most plastic ends up in [landfill].
+landslide|n|heyelan; ezici zafer|She won by a [landslide].
+lapse|n|aksama, kusur|A [lapse] of concentration.
+latent|adj|gizli, saklı|[Latent] talent.
+lavish|adj|savurgan, cömert|A [lavish] party.
+lax|adj|gevşek, özensiz|Security was [lax].
+leaflet|n|broşür|They handed out [leaflets].
+lenient|adj|hoşgörülü|The judge was [lenient].
+lethal|adj|öldürücü|A [lethal] dose.
+lethargic|adj|uyuşuk|I feel [lethargic].
+levy|n|vergi|They imposed a [levy].
+liable|adj|sorumlu; muhtemel|You're [liable] for the damage.
+liaison|n|irtibat|She acts as [liaison] between the teams.
+liberate|v|özgürleştirmek|They [liberated] the city.
+lifespan|n|ömür|The average [lifespan] is 75.
+likelihood|n|olasılık|What's the [likelihood] of rain?
+linguistic|adj|dilbilimsel|[Linguistic] skills.
+literacy|n|okuryazarlık|[Literacy] rates are rising.
+litigation|n|dava süreci|They're in [litigation].
+lofty|adj|yüce, yüksek|[Lofty] ideals.
+loophole|n|açık, boşluk (yasa)|They found a [loophole].
+lucid|adj|açık, berrak|He gave a [lucid] explanation.
+lucrative|adj|kazançlı|It's a [lucrative] business.
+ludicrous|adj|gülünç|That's [ludicrous].
+lure|v|cezbetmek|They [lured] him into a trap.
+magnitude|n|büyüklük|The [magnitude] of the earthquake was 7.
+mainland|n|anakara|We took a ferry to the [mainland].
+malice|n|kötü niyet|He bore no [malice].
+malicious|adj|kötü niyetli|[Malicious] software.
+malignant|adj|kötü huylu|A [malignant] tumour.
+malnutrition|n|yetersiz beslenme|Children suffer from [malnutrition].
+mandate|n|yetki|The government has a [mandate].
+manifest|v|göstermek, ortaya koymak|Symptoms [manifest] after a week.
+manifestation|n|belirti, tezahür|A [manifestation] of anxiety.
+manifesto|n|bildirge|The party's [manifesto].
+manoeuvre|n|manevra|A clever [manoeuvre].
+marginal|adj|marjinal, önemsiz|A [marginal] increase.
+maritime|adj|denizcilik|[Maritime] law.
+materialize|v|gerçekleşmek|The plan never [materialized].
+maternal|adj|anne tarafı, annelik|[Maternal] instinct.
+meagre|adj|yetersiz, kıt|A [meagre] salary.
+mediate|v|arabuluculuk yapmak|He [mediated] between them.
+mediation|n|arabuluculuk|The dispute went to [mediation].
+mediocre|adj|vasat|The food was [mediocre].
+meditate|v|meditasyon yapmak|She [meditates] daily.
+memoir|n|anı (kitap)|She wrote a [memoir].
+menace|n|tehdit|He's a [menace] to society.
+mentor|n|akıl hocası|She's my [mentor].
+merciless|adj|acımasız|A [merciless] attack.
+methodology|n|metodoloji|The research [methodology].
+meticulous|adj|titiz|She's [meticulous] about details.
+metropolitan|adj|büyükşehir|The [metropolitan] area.
+migrate|v|göç etmek|Birds [migrate] south.
+milestone|n|dönüm noktası|It's a [milestone] in history.
+mimic|v|taklit etmek|Parrots [mimic] voices.
+mindful|adj|dikkatli, bilincinde|Be [mindful] of others.
+miniature|adj|minyatür|A [miniature] train.
+ministry|n|bakanlık|The [Ministry] of Education.
+misconception|n|yanlış kanı|It's a common [misconception].
+misconduct|n|görevi kötüye kullanma|He was fired for [misconduct].
+miserable|adj|perişan, mutsuz|I feel [miserable].
+mishap|n|aksilik|A minor [mishap].
+misinterpret|v|yanlış yorumlamak|You [misinterpreted] my words.
+mitigate|v|hafifletmek|To [mitigate] the risks.
+mobilize|v|seferber etmek|They [mobilized] support.
+mock|v|alay etmek|Don't [mock] him.
+moderation|n|ölçülülük|Drink in [moderation].
+momentous|adj|çok önemli|A [momentous] decision.
+monarch|n|hükümdar|The [monarch] ruled for 50 years.
+monarchy|n|monarşi|Britain is a constitutional [monarchy].
+monotonous|adj|monoton|A [monotonous] job.
+morale|n|moral|Team [morale] is high.
+morality|n|ahlak|Questions of [morality].
+morbid|adj|hastalıklı, marazi|A [morbid] fascination with death.
+moreover|adv|üstelik|[Moreover], it's free.
+mortal|adj|ölümlü|All men are [mortal].
+motif|n|motif|A floral [motif].
+mourn|v|yas tutmak|They [mourned] his death.
+mundane|adj|sıradan, dünyevi|[Mundane] tasks.
+mutation|n|mutasyon|A genetic [mutation].
+mute|adj|dilsiz, sessiz|The TV is on [mute].
+mutiny|n|isyan (asker)|There was a [mutiny] on the ship.
+myriad|n|sayısız|A [myriad] of options.
+naive|adj|saf|Don't be so [naive].
+narrowly|adv|kıl payı|He [narrowly] escaped.
+nationalism|n|milliyetçilik|The rise of [nationalism].
+negligence|n|ihmal|He was accused of [negligence].
+negligible|adj|önemsiz, ihmal edilebilir|The cost is [negligible].
+nepotism|n|kayırmacılık|[Nepotism] is common there.
+neutrality|n|tarafsızlık|Political [neutrality].
+niche|n|niş, özel alan|They found a [niche] in the market.
+nominal|adj|sözde; cüzi|A [nominal] fee.
+nostalgia|n|nostalji|I feel [nostalgia] for my childhood.
+nostalgic|adj|nostaljik|I'm feeling [nostalgic].
+notwithstanding|prep|-e rağmen|[Notwithstanding] the risks, we went.
+nourish|v|beslemek|Food [nourishes] the body.
+novelty|n|yenilik|The [novelty] soon wore off.
+nuance|n|nüans, ince fark|The [nuances] of language.
+nurture|v|beslemek, yetiştirmek|Parents [nurture] their children.
+oath|n|yemin|He took an [oath].
+obedience|n|itaat|Blind [obedience].
+obedient|adj|itaatkâr|An [obedient] dog.
+objectivity|n|nesnellik|Journalists need [objectivity].
+obligatory|adj|zorunlu|Attendance is [obligatory].
+oblivious|adj|habersiz, farkında olmayan|He was [oblivious] to the danger.
+obscene|adj|müstehcen|[Obscene] language.
+obsession|n|takıntı|It's an [obsession].
+obsolete|adj|modası geçmiş|The technology is [obsolete].
+obstinate|adj|inatçı|He's [obstinate].
+obstruct|v|engellemek|Don't [obstruct] the exit.
+offset|v|dengelemek|Gains [offset] the losses.
+ominous|adj|uğursuz|[Ominous] clouds.
+omission|n|ihmal, atlama|A serious [omission].
+omit|v|atlamak, dahil etmemek|[Omit] unnecessary words.
+onset|n|başlangıç|The [onset] of winter.
+onslaught|n|saldırı, hücum|An [onslaught] of criticism.
+opaque|adj|opak, anlaşılmaz|The process is [opaque].
+opt|v|seçmek, tercih etmek|I [opted] for the cheaper one.
+optimal|adj|en uygun|The [optimal] solution.
+optimism|n|iyimserlik|There's cause for [optimism].
+optimize|v|en iyi hale getirmek|[Optimize] your website.
+opulent|adj|zengin, şatafatlı|An [opulent] palace.
+orchestrate|v|planlamak, düzenlemek|He [orchestrated] the campaign.
+ordeal|n|çile, zor deneyim|It was a terrible [ordeal].
+orthodox|adj|ortodoks, geleneksel|[Orthodox] methods.
+oust|v|görevden uzaklaştırmak|He was [ousted] from power.
+outburst|n|patlama (duygu)|An angry [outburst].
+outdated|adj|eskimiş|[Outdated] technology.
+outlaw|v|yasaklamak|They [outlawed] slavery.
+outnumber|v|sayıca üstün olmak|Women [outnumber] men.
+outperform|v|daha iyi performans göstermek|They [outperformed] their rivals.
+outrageous|adj|çok çirkin, rezil|The price is [outrageous].
+outreach|n|toplumsal erişim, yardım|Community [outreach].
+outset|n|başlangıç|From the [outset].
+outskirts|n|kenar mahalleler|They live on the [outskirts].
+outspoken|adj|açık sözlü|She's very [outspoken].
+overdue|adj|gecikmiş|The rent is [overdue].
+overhaul|v|elden geçirmek|They [overhauled] the system.
+overly|adv|aşırı derecede|Don't be [overly] worried.
+override|v|geçersiz kılmak|Safety [overrides] everything.
+overrule|v|reddetmek, bozmak|The judge [overruled] the objection.
+overshadow|v|gölgede bırakmak|The scandal [overshadowed] his work.
+oversight|n|gözden kaçırma; denetim|It was an [oversight].
+overt|adj|açık, aleni|[Overt] racism.
+overthrow|v|devirmek|They [overthrew] the government.
+overturn|v|devirmek; bozmak|The court [overturned] the decision.
+pact|n|pakt, anlaşma|They signed a [pact].
+painstaking|adj|özenli|[Painstaking] research.
+palatable|adj|lezzetli; kabul edilebilir|A more [palatable] option.
+pandemic|n|pandemi|The [pandemic] changed our lives.
+panorama|n|panorama|A [panorama] of the city.
+paradigm|n|paradigma|A new [paradigm].
+paradox|n|çelişki, paradoks|It's a [paradox].
+paralyse|v|felç etmek|He was [paralysed] in the accident.
+paramount|adj|en önemli|Safety is [paramount].
+paranoid|adj|paranoyak|Don't be [paranoid].
+partisan|adj|taraflı|[Partisan] politics.
+passionate|adj|tutkulu|She's [passionate] about art.
+pastime|n|eğlence, hobi|Football is a national [pastime].
+patriotic|adj|vatansever|A [patriotic] song.
+patronize|v|tepeden bakmak|Don't [patronize] me.
+paucity|n|azlık|A [paucity] of information.
+pedagogy|n|pedagoji|Modern [pedagogy].
+penchant|n|düşkünlük|He has a [penchant] for fast cars.
+pending|adj|beklemede|The case is [pending].
+penetrate|v|nüfuz etmek|The bullet [penetrated] the wall.
+perceptive|adj|anlayışlı, sezgili|She's very [perceptive].
+peril|n|tehlike|In [peril].
+peripheral|adj|çevresel, ikincil|[Peripheral] issues.
+perish|v|ölmek, yok olmak|Thousands [perished].
+perpetrator|n|fail|The [perpetrators] were caught.
+perpetual|adj|sürekli|[Perpetual] motion.
+perpetuate|v|sürdürmek|It [perpetuates] stereotypes.
+perplexed|adj|şaşkın|She looked [perplexed].
+persecute|v|zulmetmek|They were [persecuted] for their beliefs.
+persecution|n|zulüm|Religious [persecution].
+perseverance|n|azim|Success requires [perseverance].
+persevere|v|azimle devam etmek|[Persevere] and you'll succeed.
+persona|n|kişilik, imaj|His public [persona].
+pertinent|adj|ilgili, yerinde|A [pertinent] question.
+pervasive|adj|her yere yayılmış|A [pervasive] smell.
+pessimistic|adj|kötümser|Don't be so [pessimistic].
+petty|adj|önemsiz; dar görüşlü|[Petty] crime.
+pharmaceutical|adj|ilaç (sektörü)|A [pharmaceutical] company.
+philanthropist|n|hayırsever|He's a famous [philanthropist].
+pinnacle|n|zirve|The [pinnacle] of her career.
+pious|adj|dindar|A [pious] man.
+pivotal|adj|kilit, çok önemli|A [pivotal] moment.
+placate|v|yatıştırmak|They tried to [placate] him.
+plagiarism|n|intihal|He was accused of [plagiarism].
+plausible|adj|akla yatkın|A [plausible] explanation.
+plight|n|kötü durum|The [plight] of refugees.
+plummet|v|aniden düşmek|Prices [plummeted].
+poignant|adj|dokunaklı|A [poignant] moment.
+polarize|v|kutuplaştırmak|The issue [polarized] society.
+ponder|v|düşünüp taşınmak|He [pondered] the question.
+populate|v|yerleşmek, doldurmak|A densely [populated] area.
+posthumous|adj|ölümünden sonraki|A [posthumous] award.
+postulate|v|varsaymak|Scientists [postulate] a theory.
+potent|adj|güçlü, etkili|A [potent] drug.
+pragmatic|adj|pragmatik, faydacı|A [pragmatic] approach.
+preach|v|vaaz vermek|Don't [preach] to me.
+precarious|adj|güvencesiz, tehlikeli|A [precarious] situation.
+precaution|n|önlem|Take [precautions].
+precursor|n|öncü, habercisi|A [precursor] of modern computers.
+predicament|n|çıkmaz, zor durum|I'm in a [predicament].
+predisposition|n|yatkınlık|A [predisposition] to illness.
+preoccupation|n|meşguliyet, kafa yorma|His [preoccupation] with money.
+preoccupied|adj|kafası meşgul|She seemed [preoccupied].
+prerequisite|n|ön koşul|Experience is a [prerequisite].
+prerogative|n|ayrıcalık, hak|It's your [prerogative].
+prestige|n|prestij|The job has [prestige].
+presumption|n|varsayım|The [presumption] of innocence.
+pretext|n|bahane|Under the [pretext] of helping.
+prevalent|adj|yaygın|[Prevalent] in young people.
+pristine|adj|bozulmamış, tertemiz|In [pristine] condition.
+proactive|adj|proaktif, girişken|Be [proactive].
+probation|n|deneme süresi; şartlı tahliye|He's on [probation].
+proclaim|v|ilan etmek|They [proclaimed] independence.
+procurement|n|tedarik|Public [procurement].
+prodigy|n|dâhi çocuk|A musical [prodigy].
+proficiency|n|yeterlilik, ustalık|English [proficiency].
+proficient|adj|yetkin, usta|She's [proficient] in French.
+profitability|n|kârlılık|The [profitability] of the firm.
+proliferate|v|hızla çoğalmak|Fast-food restaurants [proliferated].
+proliferation|n|yayılma|Nuclear [proliferation].
+prolific|adj|üretken|A [prolific] writer.
+prolong|v|uzatmak|Don't [prolong] the meeting.
+prominence|n|önem, ün|She rose to [prominence].
+promptly|adv|derhal|He [promptly] replied.
+propel|v|itmek, yürütmek|The boat is [propelled] by wind.
+propensity|n|eğilim|A [propensity] for violence.
+prophecy|n|kehanet|The [prophecy] came true.
+proponent|n|savunucu|A [proponent] of reform.
+prospective|adj|muhtemel, olası|[Prospective] students.
+prosper|v|başarılı olmak, zenginleşmek|The town [prospered].
+prosperous|adj|müreffeh|A [prosperous] country.
+protagonist|n|başkahraman|The [protagonist] is a young girl.
+protocol|n|protokol|Follow the [protocol].
+prototype|n|prototip|They built a [prototype].
+provenance|n|köken, kaynak|The [provenance] of the painting.
+provisional|adj|geçici|A [provisional] government.
+provocative|adj|kışkırtıcı|A [provocative] statement.
+prowess|n|ustalık|His athletic [prowess].
+proximity|n|yakınlık|In close [proximity].
+proxy|n|vekil|Vote by [proxy].
+prudent|adj|ihtiyatlı, sağduyulu|A [prudent] decision.
+pseudonym|n|takma ad|He writes under a [pseudonym].
+pundit|n|uzman, yorumcu|Political [pundits].
+punitive|adj|cezai|[Punitive] measures.
+purport|v|iddia etmek|He [purports] to be an expert.
+quarantine|n|karantina|They were in [quarantine].
+query|n|soru, sorgu|Do you have any [queries]?
+quintessential|adj|en tipik|The [quintessential] English village.
+radiant|adj|parlak, ışıl ışıl|She looked [radiant].
+rampant|adj|alabildiğine yayılmış|[Rampant] inflation.
+ramification|n|dallanma, sonuç|The [ramifications] of the decision.
+rapport|n|uyum, yakınlık|We have a good [rapport].
+ratify|v|onaylamak|They [ratified] the treaty.
+rationale|n|gerekçe|The [rationale] behind the decision.
+ravage|v|harap etmek|War [ravaged] the country.
+rebuke|v|azarlamak|He [rebuked] her.
+recede|v|geri çekilmek|The water [receded].
+reciprocal|adj|karşılıklı|A [reciprocal] agreement.
+reckless|adj|pervasız|[Reckless] driving.
+reconcile|v|barıştırmak; bağdaştırmak|They [reconciled] after years.
+reconciliation|n|uzlaşma, barışma|A process of [reconciliation].
+rectify|v|düzeltmek|We'll [rectify] the mistake.
+recurrence|n|yinelenme|To prevent a [recurrence].
+recurring|adj|tekrarlayan|A [recurring] dream.
+redeem|v|telafi etmek; kullanmak (kupon)|[Redeem] your voucher.
+redundancy|n|işten çıkarma; gereksizlik|He took voluntary [redundancy].
+redundant|adj|gereksiz; işsiz kalmış|500 workers were made [redundant].
+referral|n|sevk|A [referral] to a specialist.
+refine|v|arıtmak; geliştirmek|They [refine] oil.
+refrain|v|kaçınmak|Please [refrain] from smoking.
+refurbish|v|yenilemek|They [refurbished] the hotel.
+refute|v|çürütmek|He [refuted] the claims.
+regardless|adv|-e bakmaksızın|[Regardless] of age.
+rehearsal|n|prova|A dress [rehearsal].
+reimburse|v|geri ödemek|We'll [reimburse] your costs.
+reiterate|v|yinelemek|Let me [reiterate].
+relentless|adj|amansız|[Relentless] pressure.
+relic|n|kalıntı|A [relic] of the past.
+relinquish|v|bırakmak, vazgeçmek|He [relinquished] control.
+remnant|n|kalıntı|The [remnants] of the empire.
+remorse|n|vicdan azabı|He showed no [remorse].
+remuneration|n|ücret|[Remuneration] is good.
+render|v|kılmak, hale getirmek|It [rendered] him speechless.
+rendition|n|yorum, icra|A beautiful [rendition] of the song.
+renounce|v|vazgeçmek, feragat etmek|He [renounced] his citizenship.
+renovate|v|yenilemek|They [renovated] the house.
+repel|v|püskürtmek|They [repelled] the attack.
+repercussion|n|yankı, sonuç|Serious [repercussions].
+replicate|v|kopyalamak, tekrarlamak|They [replicated] the experiment.
+repression|n|baskı|Political [repression].
+reprimand|v|azarlamak|He was [reprimanded].
+reproach|n|sitem|A look of [reproach].
+repudiate|v|reddetmek|He [repudiated] the claim.
+reservoir|n|baraj gölü, rezervuar|The [reservoir] is full.
+residue|n|kalıntı, tortu|A sticky [residue].
+resilience|n|dayanıklılık|She showed great [resilience].
+resilient|adj|dirençli|Children are [resilient].
+resonate|v|yankı uyandırmak|His words [resonated] with me.
+respite|n|nefes alma, ara|A brief [respite].
+restraint|n|kısıtlama; ölçülülük|He showed [restraint].
+resurgence|n|yeniden canlanma|A [resurgence] of interest.
+retaliate|v|misilleme yapmak|They [retaliated].
+retaliation|n|misilleme|In [retaliation].
+reticent|adj|ketum|He's [reticent] about his past.
+retort|v|sert cevap vermek|"No," she [retorted].
+retrospect|n|geçmişe bakış|In [retrospect], it was a mistake.
+revelation|n|ifşa, açığa çıkma|It was a [revelation].
+revere|v|saygı duymak|He's [revered] as a hero.
+revoke|v|iptal etmek|They [revoked] his licence.
+rhetorical|adj|retorik|A [rhetorical] question.
+rigorous|adj|titiz, sıkı|[Rigorous] testing.
+riveting|adj|sürükleyici|A [riveting] story.
+robust|adj|sağlam, güçlü|A [robust] economy.
+rudimentary|adj|temel, ilkel|[Rudimentary] knowledge.
+rupture|n|yırtılma, kopma|A [rupture] in the pipe.
+ruthless|adj|acımasız|A [ruthless] dictator.
+sabotage|v|sabote etmek|They [sabotaged] the plan.
+salient|adj|göze çarpan|The [salient] points.
+salvage|v|kurtarmak|They [salvaged] what they could.
+sanctuary|n|sığınak; koruma alanı|A bird [sanctuary].
+sanity|n|akıl sağlığı|He questioned my [sanity].
+saturate|v|doyurmak|The market is [saturated].
+savage|adj|vahşi|A [savage] attack.
+scant|adj|yetersiz|[Scant] attention.
+scarce|adj|kıt|Water is [scarce].
+scarcely|adv|neredeyse hiç|I could [scarcely] believe it.
+scarcity|n|kıtlık|[Scarcity] of resources.
+scenic|adj|manzaralı|A [scenic] route.
+scepticism|n|şüphecilik|There's [scepticism] about the plan.
+scorn|n|küçümseme|She treated him with [scorn].
+scramble|v|tırmanmak; çabalamak|They [scrambled] for the exit.
+scrap|v|iptal etmek, hurdaya çıkarmak|They [scrapped] the plan.
+scrutinize|v|incelemek|They [scrutinized] the documents.
+scrutiny|n|inceleme|Under close [scrutiny].
+secession|n|ayrılma|The region's [secession].
+sedentary|adj|hareketsiz|A [sedentary] lifestyle.
+segregation|n|ayrımcılık, ayrıştırma|Racial [segregation].
+semblance|n|görünüş, izlenim|A [semblance] of order.
+sensational|adj|sansasyonel|A [sensational] story.
+sentimental|adj|duygusal|It has [sentimental] value.
+sequel|n|devam filmi/kitabı|The [sequel] was better.
+serene|adj|huzurlu, dingin|A [serene] lake.
+setback|n|aksilik, gerileme|A temporary [setback].
+severity|n|şiddet, ciddiyet|The [severity] of the injury.
+shatter|v|paramparça etmek|The glass [shattered].
+shrewd|adj|kurnaz, akıllı|A [shrewd] businessman.
+siege|n|kuşatma|The city was under [siege].
+simplistic|adj|basite indirgeyen|A [simplistic] view.
+simulate|v|benzetimini yapmak|They [simulated] an earthquake.
+sinister|adj|uğursuz, kötü|A [sinister] plot.
+skeptic|n|şüpheci|He's a [skeptic].
+slander|n|iftira|That's [slander].
+slaughter|n|katliam; kesim|The [slaughter] of innocent people.
+sluggish|adj|durgun, yavaş|The economy is [sluggish].
+smuggle|v|kaçakçılık yapmak|They [smuggled] drugs.
+smuggling|n|kaçakçılık|Drug [smuggling].
+solace|n|teselli|She found [solace] in music.
+solemn|adj|ciddi, ağırbaşlı|A [solemn] promise.
+solicitor|n|avukat|Consult a [solicitor].
+solitary|adj|yalnız, tek|A [solitary] life.
+sovereign|adj|egemen|A [sovereign] state.
+sparse|adj|seyrek|[Sparse] vegetation.
+spearhead|v|öncülük etmek|She [spearheaded] the campaign.
+speculate|v|tahminde bulunmak|We can only [speculate].
+sporadic|adj|ara sıra, düzensiz|[Sporadic] fighting.
+spouse|n|eş|You and your [spouse].
+squander|v|çarçur etmek|He [squandered] his money.
+stagger|v|sendelemek; şaşkına çevirmek|He [staggered] home.
+stagnant|adj|durgun|A [stagnant] economy.
+stalemate|n|çıkmaz|The talks ended in [stalemate].
+stamina|n|dayanıklılık|You need [stamina].
+staple|n|temel gıda|Rice is a [staple].
+startling|adj|şaşırtıcı|A [startling] discovery.
+stature|n|boy; itibar|A man of great [stature].
+statutory|adj|yasal|[Statutory] rights.
+steadfast|adj|sarsılmaz|[Steadfast] loyalty.
+stigma|n|damga, leke|The [stigma] of mental illness.
+stipulate|v|şart koşmak|The contract [stipulates] the price.
+stray|adj|sokak (hayvanı), başıboş|A [stray] dog.
+streamline|v|basitleştirmek, verimli hale getirmek|We [streamlined] the process.
+strenuous|adj|yorucu|[Strenuous] exercise.
+stringent|adj|sıkı, katı|[Stringent] rules.
+stumble|v|tökezlemek|I [stumbled] on the stairs.
+stun|v|sersemletmek, şaşkına çevirmek|The news [stunned] us.
+subjective|adj|öznel|It's [subjective].
+subordinate|n|ast|He's my [subordinate].
+subside|v|azalmak, yatışmak|The pain [subsided].
+subsidiary|n|yan kuruluş|A [subsidiary] of a big company.
+substantiate|v|kanıtlamak|Can you [substantiate] that?
+subtlety|n|incelik|The [subtlety] of her humour.
+subversive|adj|yıkıcı|[Subversive] ideas.
+succinct|adj|kısa ve öz|A [succinct] summary.
+succumb|v|yenik düşmek|He [succumbed] to his injuries.
+suffrage|n|oy hakkı|Women's [suffrage].
+superficial|adj|yüzeysel|A [superficial] wound.
+superfluous|adj|gereksiz|[Superfluous] details.
+supersede|v|yerini almak|The new law [supersedes] the old one.
+superstition|n|batıl inanç|It's just a [superstition].
+supplementary|adj|ek, tamamlayıcı|[Supplementary] material.
+surpass|v|geçmek, aşmak|Sales [surpassed] expectations.
+susceptible|adj|duyarlı, yatkın|[Susceptible] to infection.
+sway|v|sallanmak; etkilemek|The trees [swayed].
+symmetry|n|simetri|The [symmetry] of the building.
+synonymous|adj|eş anlamlı|Paris is [synonymous] with romance.
+synthetic|adj|sentetik|[Synthetic] fibres.
+taboo|n|tabu|It's a [taboo] subject.
+tacit|adj|zımni, örtülü|[Tacit] agreement.
+tangible|adj|somut|[Tangible] results.
+tantamount|adj|eşdeğer|It's [tantamount] to theft.
+tedious|adj|bıktırıcı|A [tedious] task.
+teem|v|kaynamak, dolup taşmak|The river [teems] with fish.
+temperament|n|mizaç|A calm [temperament].
+tempting|adj|cezbedici|A [tempting] offer.
+tenacious|adj|azimli|A [tenacious] fighter.
+tenure|n|görev süresi|During his [tenure].
+terminate|v|sonlandırmak|The contract was [terminated].
+testament|n|kanıt; vasiyet|It's a [testament] to her skill.
+thereafter|adv|ondan sonra|Shortly [thereafter].
+tirade|n|uzun ve öfkeli konuşma|A [tirade] against the government.
+tolerance|n|hoşgörü; dayanıklılık|Zero [tolerance].
+tolerate|v|tahammül etmek|I won't [tolerate] it.
+topple|v|devirmek|The government was [toppled].
+torment|n|eziyet|Years of [torment].
+tranquil|adj|sakin, huzurlu|A [tranquil] garden.
+transcend|v|aşmak|Music [transcends] borders.
+transient|adj|geçici|[Transient] workers.
+traumatic|adj|travmatik|A [traumatic] experience.
+treacherous|adj|hain; tehlikeli|[Treacherous] roads.
+trepidation|n|endişe, korku|With some [trepidation].
+tribunal|n|mahkeme, divan|A war crimes [tribunal].
+trivial|adj|önemsiz|A [trivial] matter.
+truce|n|ateşkes|They called a [truce].
+tumultuous|adj|çalkantılı|A [tumultuous] year.
+turbulent|adj|çalkantılı|A [turbulent] flight.
+turmoil|n|kargaşa|The country is in [turmoil].
+tyranny|n|zorbalık, tiranlık|They fought [tyranny].
+ubiquitous|adj|her yerde bulunan|Smartphones are [ubiquitous].
+unanimous|adj|oybirliğiyle|A [unanimous] decision.
+uncanny|adj|tekinsiz, esrarengiz|An [uncanny] resemblance.
+undeniable|adj|inkâr edilemez|An [undeniable] fact.
+underestimate|v|hafife almak|Don't [underestimate] him.
+underpin|v|desteklemek, temelini oluşturmak|Evidence [underpins] the theory.
+underscore|v|vurgulamak|It [underscores] the problem.
+understate|v|olduğundan az göstermek|They [understated] the risk.
+unduly|adv|aşırı, gereksiz yere|Don't be [unduly] worried.
+unearth|v|ortaya çıkarmak|They [unearthed] a tomb.
+unequivocal|adj|kesin, açık|An [unequivocal] answer.
+unravel|v|çözmek; çözülmek|The mystery [unravelled].
+unrest|n|huzursuzluk|Social [unrest].
+unruly|adj|ele avuca sığmaz|[Unruly] children.
+unscrupulous|adj|vicdansız|[Unscrupulous] dealers.
+unwavering|adj|sarsılmaz|[Unwavering] support.
+upheaval|n|altüst oluş|Political [upheaval].
+uprising|n|ayaklanma|A popular [uprising].
+upsurge|n|artış|An [upsurge] in crime.
+urge|v|ısrarla istemek|I [urge] you to reconsider.
+usher|v|yer göstermek; başlatmak|He [ushered] us in.
+usurp|v|gasp etmek|He [usurped] the throne.
+utmost|adj|azami|Of the [utmost] importance.
+utter|v|söylemek, ağzından çıkarmak|He didn't [utter] a word.
+vacant|adj|boş|A [vacant] seat.
+vehement|adj|şiddetli, ateşli|[Vehement] opposition.
+vengeance|n|intikam|With a [vengeance].
+venerable|adj|saygıdeğer|A [venerable] institution.
+verge|n|eşik, kenar|On the [verge] of tears.
+versatile|adj|çok yönlü|A [versatile] actor.
+vested|adj|kazanılmış (çıkar)|[Vested] interests.
+viable|adj|uygulanabilir|A [viable] option.
+vicinity|n|civar|In the [vicinity].
+vigilant|adj|uyanık, tetikte|Stay [vigilant].
+vigorous|adj|güçlü, enerjik|[Vigorous] exercise.
+vindicate|v|haklı çıkarmak|He was [vindicated].
+virtuous|adj|erdemli|A [virtuous] life.
+volatile|adj|değişken, uçucu|A [volatile] market.
+vow|n|yemin, ant|Wedding [vows].
+vulnerability|n|savunmasızlık|Emotional [vulnerability].
+waive|v|feragat etmek|They [waived] the fee.
+wane|v|azalmak|Interest [waned].
+wary|adj|ihtiyatlı|Be [wary] of strangers.
+whereabouts|n|bulunduğu yer|His [whereabouts] are unknown.
+whim|n|kapris, heves|On a [whim].
+wholesale|adj|toptan|[Wholesale] prices.
+wield|v|kullanmak (güç)|She [wields] great power.
+willpower|n|irade|It takes [willpower].
+wistful|adj|hüzünlü, özlem dolu|A [wistful] smile.
+withhold|v|vermemek, saklamak|He [withheld] information.
+woe|n|dert, keder|Tales of [woe].
+wrath|n|gazap|The [wrath] of God.
+xenophobia|n|yabancı düşmanlığı|[Xenophobia] is rising.
+yearn|v|özlemek|She [yearned] for home.
+zeal|n|şevk|Religious [zeal].
+zealous|adj|gayretli, bağnaz|A [zealous] supporter.

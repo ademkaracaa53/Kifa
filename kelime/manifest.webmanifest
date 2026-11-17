@@ -1,7 +1,7 @@
 {
-  "name": "Kelime 5000 — İngilizce",
-  "short_name": "Kelime",
-  "description": "Aralıklı tekrar ile 5000+ temel İngilizce kelime. İlerleme yalnızca cihazda saklanır.",
+  "name": "eFAM English",
+  "short_name": "eFAM English",
+  "description": "eFAM English: aralıklı tekrar ile 5000+ temel İngilizce kelime. İlerleme yalnızca cihazda saklanır.",
   "lang": "tr",
   "id": "./",
   "start_url": "./",

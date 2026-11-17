@@ -1,5 +1,5 @@
-// Kelime 5000 — çevrimdışı önbellek. Uygulamayı ya da kelime listesini güncellediğinde VERSION'ı artır.
-const VERSION = 'kelime-v1.0';
+// eFAM English — çevrimdışı önbellek. Uygulamayı ya da kelime listesini güncellediğinde VERSION'ı artır.
+const VERSION = 'kelime-v1.1';
 const FILES = [
   './', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-32.png',

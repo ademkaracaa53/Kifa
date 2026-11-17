@@ -1,4 +1,4 @@
-# Kelime 5000
+# eFAM English
 
 Kişisel kullanım için İngilizce kelime öğrenme uygulaması (PWA). Telefona “Ana ekrana ekle” ile kurulur, internetsiz çalışır, ilerleme yalnızca cihazda saklanır.
 

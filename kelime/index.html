@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Kelime 5000</title>
-<meta name="description" content="Aralıklı tekrar ile 5000 temel İngilizce kelime. İlerleme yalnızca cihazda saklanır.">
-<meta name="theme-color" content="#EEF1EF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E1210" media="(prefers-color-scheme: dark)">
+<title>eFAM English</title>
+<meta name="description" content="eFAM English: aralıklı tekrar ile 5000 temel İngilizce kelime. İlerleme yalnızca cihazda saklanır.">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#171C19" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Kelime">
+<meta name="apple-mobile-web-app-title" content="eFAM English">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -52,8 +52,37 @@ button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;padding:0}
 h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01em}
 .num{font-variant-numeric:tabular-nums}
-.wrap{max-width:560px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 92px)}
-.top{display:flex;align-items:center;justify-content:space-between;margin:4px 0 16px}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px calc(env(safe-area-inset-bottom) + 92px)}
+/* üst çubuk: logo + menü */
+.appbar{position:sticky;top:0;z-index:6;background:var(--surface);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.appbar-in{max-width:560px;margin:0 auto;height:64px;padding:0 12px 0 16px;display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:11px;flex:1;min-width:0;text-align:left}
+.mark{flex:none;width:44px;height:44px;border-radius:13px;background:var(--accent);color:var(--on-accent);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.04em;box-shadow:inset 0 -4px 0 rgba(0,0,0,.14)}
+.word{display:flex;flex-direction:column;line-height:1.05;min-width:0}
+.word b{font-family:var(--display);font-weight:700;font-size:22px;letter-spacing:-.01em}
+.word span{font-family:var(--display);font-weight:500;font-size:14px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.menubtn{flex:none;width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line);background:var(--bg)}
+.menubtn svg{width:24px;height:24px}
+.menubtn[aria-expanded="true"]{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-soft)}
+.menu-bg{position:fixed;inset:0;z-index:15;background:var(--scrim)}
+.menu{position:fixed;z-index:16;top:calc(env(safe-area-inset-top) + 70px);right:max(10px, calc((100vw - 560px)/2 + 10px));width:min(300px, calc(100vw - 20px));background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:8px;box-shadow:0 18px 48px rgba(0,0,0,.18)}
+.menu .mhead{display:flex;align-items:center;gap:10px;padding:10px 10px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+.menu .mhead .mark{width:36px;height:36px;font-size:17px;border-radius:11px}
+.menu button{display:flex;align-items:center;gap:12px;width:100%;padding:12px 10px;border-radius:12px;font-weight:600;font-size:15.5px;text-align:left}
+.menu button svg{width:22px;height:22px;flex:none;color:var(--muted)}
+.menu button[aria-current="page"]{background:var(--accent-soft);color:var(--accent)}
+.menu button[aria-current="page"] svg{color:var(--accent)}
+.menu button .r{margin-left:auto;font-weight:500;font-size:13px;color:var(--muted)}
+.install{display:flex;align-items:center;gap:12px;background:var(--accent-soft);border:1px solid var(--accent-soft);border-radius:18px;padding:12px 12px 12px 14px;margin-bottom:12px}
+.install .mark{width:40px;height:40px;font-size:18px;border-radius:12px}
+.install .t{flex:1;min-width:0;font-size:14px;line-height:1.3}
+.install .t b{display:block;font-size:15px}
+.install .go{flex:none;background:var(--accent);color:var(--on-accent);font-weight:600;font-size:14px;padding:9px 14px;border-radius:11px}
+.install .x{flex:none;width:30px;height:30px;color:var(--muted);font-size:20px;line-height:1}
+.steps{margin:0 0 16px;padding-left:22px}
+.steps li{margin-bottom:10px}
+.menu hr{border:0;border-top:1px solid var(--line);margin:6px 4px}
+.top{display:flex;align-items:center;justify-content:space-between;margin:2px 0 16px}
 .top h1{font-size:26px}
 .pill{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-size:13px;font-weight:600}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:12px}
@@ -160,6 +189,10 @@ h1,h2,h3{font-family:var(--display);font-weight:700;margin:0;letter-spacing:-.01
 </style>
 </head>
 <body>
+<header class="appbar"><div class="appbar-in">
+  <button class="logo" id="logo" aria-label="eFAM English ana sayfa"><span class="mark" aria-hidden="true">eF</span><span class="word"><b>eFAM</b><span lang="en">English</span></span></button>
+  <button class="menubtn" id="menubtn" aria-label="Menü" aria-expanded="false" aria-haspopup="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+</div></header>
 <div class="wrap" id="main">
   <div class="top"><h1 id="title">Bugün</h1><span class="pill" id="streak" title="Seri"></span></div>
   <div id="view"><p class="muted">Kelimeler yükleniyor…</p></div>
@@ -385,6 +418,56 @@ function setTab(t){
   render(); window.scrollTo(0,0);
 }
 document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setTab(b.dataset.tab));
+/* ------- ana ekrana ekleme ------- */
+let installEvt=null;
+const isStandalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); installEvt=e; if(tab==='home' && WORDS.length) render(); });
+window.addEventListener('appinstalled', () => { installEvt=null; S.set.installHide=true; save(); toast('eFAM English ana ekrana eklendi'); if(WORDS.length) render(); });
+function canOfferInstall(){ return !isStandalone(); }
+async function installApp(){
+  if(installEvt){ installEvt.prompt(); const r=await installEvt.userChoice.catch(()=>null); installEvt=null; if(r&&r.outcome==='accepted'){ S.set.installHide=true; save(); } render(); return; }
+  const ios=isIOS();
+  sheet(`<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px"><span class="mark" aria-hidden="true">eF</span><h2 style="font-size:21px">Ana ekrana ekle</h2></div>
+    <ol class="steps">${ios
+      ? '<li><b>Safari</b> ile aç (başka tarayıcıda bu seçenek olmayabilir).</li><li>Alttaki <b>Paylaş</b> düğmesine dokun (kareden çıkan ok).</li><li>Listeden <b>Ana Ekrana Ekle</b>’yi seç.</li><li>Sağ üstte <b>Ekle</b>’ye dokun.</li>'
+      : '<li><b>Chrome</b> ile aç.</li><li>Sağ üstteki <b>⋮</b> menüsüne dokun.</li><li><b>Uygulamayı yükle</b> ya da <b>Ana ekrana ekle</b>’yi seç.</li><li>Onaylamak için <b>Yükle</b>’ye dokun.</li>'}</ol>
+    <p class="small muted" style="margin:0 0 14px">Eklendikten sonra eFAM English ikonundan tam ekran ve internetsiz açılır.${ios?'':' İkona basılı tutunca hızlı kısayollar çıkar.'}</p>
+    <button class="btn" data-act="close">Tamam</button>`, ()=>closeSheet());
+}
+
+/* ------- logo menüsü ------- */
+const TAB_ICONS = {}; document.querySelectorAll('.tabs button').forEach(b=>TAB_ICONS[b.dataset.tab]=b.querySelector('svg').outerHTML);
+const MI = {
+  how:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .9-1 1.7M12 17h0"/></svg>',
+  theme:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>',
+  install:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M12 8v6M9 11h6"/></svg>',
+  save:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>'
+};
+const THEME_NAME = {auto:'Sistem',light:'Açık',dark:'Koyu'};
+function closeMenu(){ const m=$('#menu'), bg=$('#menubg'); if(m) m.remove(); if(bg) bg.remove(); $('#menubtn').setAttribute('aria-expanded','false'); }
+function openMenu(){
+  if($('#menu')) return closeMenu();
+  const item=(act,icon,label,extra='')=>`<button data-m="${act}" ${act==='tab:'+tab?'aria-current="page"':''}>${icon}<span>${label}</span>${extra}</button>`;
+  const bg=document.createElement('div'); bg.className='menu-bg'; bg.id='menubg'; bg.onclick=closeMenu;
+  const m=document.createElement('nav'); m.className='menu'; m.id='menu'; m.setAttribute('aria-label','Menü');
+  m.innerHTML = `<div class="mhead"><span class="mark" aria-hidden="true">eF</span><span class="word"><b style="font-size:18px">eFAM</b><span lang="en" style="font-size:12px">English</span></span></div>`+
+    item('tab:home',TAB_ICONS.home,'Çalış')+item('tab:stats',TAB_ICONS.stats,'İlerleme')+item('tab:words',TAB_ICONS.words,'Kelimeler')+item('tab:settings',TAB_ICONS.settings,'Ayarlar')+
+    '<hr>'+item('how',MI.how,'Nasıl çalışır?')+item('theme',MI.theme,'Tema','<span class="r">'+THEME_NAME[S.set.theme]+'</span>')+item('save',MI.save,'Yedeği indir')+(canOfferInstall()?item('install',MI.install,'Ana ekrana ekle'):'');
+  m.onclick=e=>{ const b=e.target.closest('[data-m]'); if(!b) return; const a=b.dataset.m;
+    if(a==='theme'){ const order=['auto','light','dark']; S.set.theme=order[(order.indexOf(S.set.theme)+1)%3]; save(); applyTheme(); b.querySelector('.r').textContent=THEME_NAME[S.set.theme]; if(tab==='settings') render(); return; }
+    closeMenu();
+    if(a.startsWith('tab:')) setTab(a.slice(4));
+    else if(a==='how') sheet('<h2 style="font-size:22px;margin-bottom:12px">Nasıl çalışır?</h2><div class="prose">'+HOW_HTML+'</div><button class="btn" data-act="close">Anladım</button>', ()=>closeSheet());
+    else if(a==='save') exportBackup();
+    else if(a==='install') installApp();
+  };
+  document.body.append(bg,m); $('#menubtn').setAttribute('aria-expanded','true');
+  m.querySelector('button').focus({preventScroll:true});
+}
+$('#menubtn').onclick=openMenu;
+$('#logo').onclick=()=>{ closeMenu(); setTab('home'); };
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeMenu(); });
 function render(){
   const s=streak(); $('#streak').textContent = s ? '🔥 '+s+' gün' : 'Seri yok';
   $('#title').textContent = {home:'Bugün',stats:'İlerleme',words:'Kelimeler',settings:'Ayarlar'}[tab];
@@ -402,7 +485,8 @@ function renderHome(){
     let soon=Infinity; for(const o of WORDS){ const p=S.p[o.w]; if(p&&p.s<LEARNED&&p.d<soon) soon=p.d; }
     next = soon<Infinity ? 'Sıradaki tekrar: '+new Date(soon).toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long'}) : '';
   }
-  $('#view').innerHTML = `
+  const banner = canOfferInstall() && !S.set.installHide ? `<div class="install"><span class="mark" aria-hidden="true">eF</span><div class="t"><b>Ana ekrana ekle</b>Uygulama gibi tek dokunuşla aç.</div><button class="go" id="inst">Ekle</button><button class="x" id="instx" aria-label="Gizle">×</button></div>` : '';
+  $('#view').innerHTML = banner + `
   <section class="card hero">
     <div class="muted small">Öğrenilen kelime</div>
     <div><span class="big num">${nf(c.learned)}</span> <span class="of num">/ ${nf(WORDS.length)}</span></div>
@@ -429,6 +513,8 @@ function renderHome(){
     </div>
   </section>`;
   const go=$('#go'); if(go) go.onclick=()=>startRound(0);
+  const ib=$('#inst'); if(ib) ib.onclick=installApp;
+  const ix=$('#instx'); if(ix) ix.onclick=()=>{ S.set.installHide=true; save(); render(); toast('Menüden (☰) her zaman ekleyebilirsin'); };
   const ex=$('#extra'); if(ex) ex.onclick=()=>startRound(5, true);
 }
 function renderStats(){
@@ -513,6 +599,12 @@ function wordSheet(o){
       closeSheet(); render();
     });
 }
+const HOW_HTML = `    <p>Uygulama <b>aralıklı tekrar</b> (Leitner kutuları) kullanır: unutma eğrisine göre, bir kelimeyi tam unutmak üzereyken tekrar sorar. Her doğru cevap kelimeyi bir sonraki kutuya taşır ve sonraki soru daha geç gelir:</p>
+    <ol><li>Yeni kelime: tanıtım + aynı turda test</li><li>1. kutu → 1 gün sonra</li><li>2. kutu → 3 gün sonra</li><li>3. kutu → 7 gün sonra</li><li>4. kutu → 16 gün sonra</li><li>5. kutu → 35 gün sonra (son sınav)</li></ol>
+    <p>5. kutudaki sınavı da geçen kelime <b>öğrenildi</b> sayılır ve bir daha sorulmaz. Yanlış cevap kelimeyi 2 kutu geri gönderir ve aynı turda yeniden sorulur.</p>
+    <p>Sorular kutuya göre zorlaşır: önce <b>çoktan seçmeli</b>, sonra <b>eksik harf tamamlama</b>, <b>cümlede boşluk doldurma</b> ve en sonda <b>elle yazma</b>. Kelimeyi tanımaktan hatırlamaya geçersin.</p>
+    <p>Süre gerçek zamana göre işler: birkaç gün girmezsen tekrarlar birikir ve en gecikmiş olanlar önce gelir. Uzun aradan sonra hâlâ hatırladığın kelime bir kutu fazla atlar.</p>`;
+function exportBackup(){ const b=new Blob([JSON.stringify(S)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='efam-english-yedek-'+dayKey()+'.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); toast('Yedek indirildi'); }
 function renderSettings(){
   const s=S.set;
   const opt=(arr,v)=>arr.map(([k,l])=>`<option value="${k}" ${String(k)===String(v)?'selected':''}>${l}</option>`).join('');
@@ -526,11 +618,7 @@ function renderSettings(){
   </section>
   <section class="card prose">
     <h2>Nasıl çalışır?</h2>
-    <p>Uygulama <b>aralıklı tekrar</b> (Leitner kutuları) kullanır: unutma eğrisine göre, bir kelimeyi tam unutmak üzereyken tekrar sorar. Her doğru cevap kelimeyi bir sonraki kutuya taşır ve sonraki soru daha geç gelir:</p>
-    <ol><li>Yeni kelime: tanıtım + aynı turda test</li><li>1. kutu → 1 gün sonra</li><li>2. kutu → 3 gün sonra</li><li>3. kutu → 7 gün sonra</li><li>4. kutu → 16 gün sonra</li><li>5. kutu → 35 gün sonra (son sınav)</li></ol>
-    <p>5. kutudaki sınavı da geçen kelime <b>öğrenildi</b> sayılır ve bir daha sorulmaz. Yanlış cevap kelimeyi 2 kutu geri gönderir ve aynı turda yeniden sorulur.</p>
-    <p>Sorular kutuya göre zorlaşır: önce <b>çoktan seçmeli</b>, sonra <b>eksik harf tamamlama</b>, <b>cümlede boşluk doldurma</b> ve en sonda <b>elle yazma</b>. Kelimeyi tanımaktan hatırlamaya geçersin.</p>
-    <p>Süre gerçek zamana göre işler: birkaç gün girmezsen tekrarlar birikir ve en gecikmiş olanlar önce gelir. Uzun aradan sonra hâlâ hatırladığın kelime bir kutu fazla atlar.</p>
+${HOW_HTML}
   </section>
   <section class="card">
     <h2>Yedek</h2>
@@ -540,11 +628,11 @@ function renderSettings(){
     <input type="file" id="impf" accept="application/json,.json" hidden>
     <button class="btn danger" id="wipe">Tüm ilerlemeyi sil</button>
   </section>
-  <p class="small muted center">${nf(WORDS.length)} kelime · ${LEVELS.map(l=>l+' '+BYLEVEL[l].length).join(' · ')}</p>`;
+  <p class="small muted center"><b>eFAM English</b> · ${nf(WORDS.length)} kelime · ${LEVELS.map(l=>l+' '+BYLEVEL[l].length).join(' · ')}</p>`;
   const bind=(id,fn)=>{$(id).onchange=e=>{fn(e.target); save(); applyTheme();};};
   bind('#s-daily',t=>s.daily=+t.value); bind('#s-round',t=>s.round=+t.value); bind('#s-start',t=>s.start=t.value);
   bind('#s-speak',t=>s.speak=t.checked); bind('#s-theme',t=>s.theme=t.value);
-  $('#exp').onclick=()=>{ const b=new Blob([JSON.stringify(S)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='kelime-yedek-'+dayKey()+'.json'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),2000); };
+  $('#exp').onclick=exportBackup;
   $('#imp').onclick=()=>$('#impf').click();
   $('#impf').onchange=e=>{ const f=e.target.files[0]; if(!f) return; f.text().then(t=>{ const o=JSON.parse(t); if(!o||typeof o.p!=='object') throw 0; S=o; load2(); save(); toast('Yedek yüklendi'); render(); }).catch(()=>toast('Bu dosya geçerli bir yedek değil')); };
   $('#wipe').onclick=()=>{ if(confirm('Tüm ilerleme silinsin mi? Bu geri alınamaz.')){ const set=S.set; S=defaults(); S.set=set; save(); toast('İlerleme silindi'); render(); } };
@@ -709,7 +797,12 @@ window.__kelime = { answer: () => R && R.qq ? R.qq.answer : null, type: () => R 
 
 /* ================= başlat ================= */
 load(); applyTheme();
-loadWords().then(()=>{ render(); }).catch(err=>{ $('#view').innerHTML='<div class="card"><b>Kelime listesi yüklenemedi.</b><p class="muted small">Uygulamayı bir web sunucusu üzerinden aç (dosyayı doğrudan açınca tarayıcı veri dosyalarını okuyamaz). '+esc(err.message)+'</p></div>'; });
+loadWords().then(()=>{
+  const q=new URLSearchParams(location.search), t=q.get('tab');
+  if(t && ['home','stats','words','settings'].includes(t)) setTab(t); else render();
+  if(q.get('start')==='1'){ const due=dueList().length; if(due+Math.min(newAllowed(due),counts().fresh)>0) startRound(0); }
+  if(q.toString()) history.replaceState(null,'',location.pathname);
+}).catch(err=>{ $('#view').innerHTML='<div class="card"><b>Kelime listesi yüklenemedi.</b><p class="muted small">Uygulamayı bir web sunucusu üzerinden aç (dosyayı doğrudan açınca tarayıcı veri dosyalarını okuyamaz). '+esc(err.message)+'</p></div>'; });
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden && !R && WORDS.length) render(); });
 if('serviceWorker' in navigator && location.protocol!=='file:') navigator.serviceWorker.register('sw.js').catch(()=>{});
 })();

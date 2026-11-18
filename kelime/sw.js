@@ -1,5 +1,6 @@
-// eFAM English — çevrimdışı önbellek. Uygulamayı ya da kelime listesini güncellediğinde VERSION'ı artır.
-const VERSION = 'kelime-v1.4';
+// eFAM English — çevrimdışı önbellek. Sürüm, index.html içindeki APP_VERSION ile aynı olmalı;
+// uygulamayı ya da kelime listesini her güncellediğinde ikisini birlikte artır.
+const VERSION = 'kelime-v1.4.1';
 const FILES = [
   './', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon-32.png',

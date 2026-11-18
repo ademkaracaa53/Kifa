@@ -14,4 +14,11 @@ Kişisel kullanım için İngilizce kelime öğrenme uygulaması (PWA). Telefona
 kelime|tür|Türkçe anlam|Örnek cümle, [boşlukta sorulacak biçim] köşeli parantez içinde.
 ```
 
-Listeyi değiştirdiysen `sw.js` içindeki `VERSION` değerini artır ki telefonlar yeni sürümü alsın.
+## Sürüm numarası
+Biçim `BÜYÜK.ORTA.KÜÇÜK` (ör. 1.4.1). Numara logonun yanında görünür, sürüm notları ☰ menüsündedir.
+
+- **Büyük:** köklü değişiklik (yapı ya da veri biçimi değişir)
+- **Orta:** yeni özellik
+- **Küçük:** düzeltme ve ufak ayar
+
+Her güncellemede üç yeri birlikte değiştir: `index.html` içindeki `APP_VERSION` ve `CHANGELOG`, `sw.js` içindeki `VERSION` (`kelime-v` + aynı numara). Böylece telefonlar yeni sürümü alır.

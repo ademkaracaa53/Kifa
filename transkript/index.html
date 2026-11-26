@@ -128,6 +128,13 @@ details.set[open] summary{margin-bottom:12px}
             <option value="5">5</option><option value="6">6</option>
           </select>
         </label>
+        <label class="f">Konuşmacı ayrımı
+          <select id="spkSens">
+            <option value="tol">Toleranslı (aynı kişiyi bölmez)</option>
+            <option value="norm">Normal</option>
+            <option value="sens">Hassas (benzer sesleri ayırır)</option>
+          </select>
+        </label>
         <label class="f">Doğruluk / hız
           <select id="model">
             <option value="onnx-community/whisper-tiny">Hızlı (zayıf cihazlar)</option>
@@ -193,6 +200,7 @@ details.set[open] summary{margin-bottom:12px}
       <button class="btn primary" id="exTxt">TXT indir</button>
       <button class="btn primary" id="exPdf">PDF indir</button>
       <button class="btn" id="copy">Kopyala</button>
+      <button class="btn" id="regroup" title="Konuşmacıları tüm konuşmaya bakarak yeniden grupla">Konuşmacıları düzenle</button>
       <span class="sp"></span>
       <button class="btn" id="clear">Temizle</button>
     </div>
@@ -204,7 +212,7 @@ details.set[open] summary{margin-bottom:12px}
 <script>
 'use strict';
 const $ = (id) => document.getElementById(id);
-const { SR, Segmenter, Resampler, Speakers, cleanText } = TK;
+const { SR, Segmenter, Resampler, Speakers, recluster, cleanText } = TK;
 const KEY = 'transkript.v2';
 
 // ---------- Durum ----------
@@ -214,7 +222,7 @@ const hasGPU = 'gpu' in navigator;
 const DEFAULT_MODEL = hasGPU && !isMobile ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
 let state = {
   title: '', paras: [], names: {}, spk: null,
-  set: { lang: 'tr', maxSpk: '0', model: DEFAULT_MODEL },
+  set: { lang: 'tr', maxSpk: '0', spkSens: 'norm', model: DEFAULT_MODEL },
 };
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
 if (!state.set.chosen) state.set.model = DEFAULT_MODEL;
@@ -242,21 +250,25 @@ function toast(msg, ms = 2800) {
 const mmss = (s) => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60; return (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); };
 
 // ---------- Ayarlar ----------
-['lang', 'maxSpk', 'model'].forEach((k) => {
+['lang', 'maxSpk', 'spkSens', 'model'].forEach((k) => {
   $(k).value = state.set[k];
   $(k).addEventListener('change', () => {
     state.set[k] = $(k).value; if (k === 'model') state.set.chosen = true;
     applySpkSettings(); save(); checkModels();
+    // konuşmacı ayarı değişince mevcut metni de yeni ayara göre düzenle
+    if ((k === 'maxSpk' || k === 'spkSens') && !live && !fileJob && !state.manual && diarOn() && regroup()) toast('Konuşmacılar yeni ayara göre düzenlendi.');
   });
 });
+const spkThr = () => ({ tol: 0.6, norm: 0.68, sens: 0.76 }[state.set.spkSens] || 0.68);
 const diarOn = () => state.set.maxSpk !== '1';
 function applySpkSettings() {
   const n = +state.set.maxSpk;
   speakers.max = n > 1 ? n : 8;
-  speakers.threshold = 0.8;
+  speakers.threshold = spkThr();
   $('paras').classList.toggle('no-diar', !diarOn());
+  if (typeof parasEl !== 'undefined') updateMeta();
 }
-function lockSettings(on) { ['lang', 'maxSpk', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
+function lockSettings(on) { $('regroup').disabled = on; ['lang', 'maxSpk', 'spkSens', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
 
 // ---------- Transkript görünümü ----------
 const parasEl = $('paras');
@@ -271,6 +283,7 @@ function whoSelect(p) {
   sel.style.setProperty('--sc', `var(--s${((p.spk - 1) % 8) + 1})`);
   sel.onchange = () => {
     const v = sel.value;
+    state.manual = true;   // elle düzenlendi: otomatik yeniden düzenleme bunu bozmasın
     if (v === 'rename') {
       const n = prompt('Bu konuşmacının adı:', spkName(p.spk));
       if (n && n.trim()) state.names[p.spk] = n.trim();
@@ -298,7 +311,10 @@ function joinNeighbours() {
   const out = [];
   for (const p of state.paras) {
     const last = out[out.length - 1];
-    if (last && last.spk === p.spk && p.spk > 0) last.text = (last.text + ' ' + p.text).trim();
+    if (last && last.spk === p.spk && p.spk > 0) {
+      last.text = (last.text + ' ' + p.text).trim();
+      last.pieces = (last.pieces || []).concat(p.pieces || []); last.edited = last.edited || p.edited;
+    }
     else out.push(p);
   }
   state.paras = out;
@@ -309,7 +325,7 @@ function paraEl(p) {
   if (p.spk > 0) d.appendChild(whoSelect(p));
   const tx = document.createElement('div');
   tx.className = 'tx'; tx.contentEditable = 'true'; tx.spellcheck = false; tx.textContent = p.text;
-  tx.addEventListener('input', () => { p.text = tx.textContent; updateMeta(); save(); });
+  tx.addEventListener('input', () => { p.text = tx.textContent; p.edited = true; updateMeta(); save(); });
   tx.addEventListener('blur', () => { if (!p.text.trim()) { state.paras = state.paras.filter((x) => x !== p); render(); save(); } });
   d.appendChild(tx);
   return d;
@@ -327,12 +343,14 @@ function updateMeta() {
   $('meta').textContent = state.paras.length ? `${words} kelime` + (spks ? ` · ${spks} konuşmacı` : '') : '';
   const has = state.paras.length > 0;
   ['exTxt', 'exPdf', 'copy', 'clear'].forEach((id) => ($(id).disabled = !has));
+  $('regroup').hidden = !diarOn() || !has;
 }
 $('title').addEventListener('input', (e) => { state.title = e.target.value; save(); });
 
 // Yeni çevrilen cümleyi ekle: aynı konuşmacı sürüyorsa paragrafa devam et
 let lastEnd = -1, lastSession = null;
-function addText(text, spk, u) {
+function addText(text, spk, u, emb) {
+  const piece = { t: text, d: +(u.end - u.start).toFixed(1), e: emb ? packEmb(emb) : null };
   const last = state.paras[state.paras.length - 1];
   const lastNode = parasEl.lastElementChild;
   const editing = lastNode && lastNode.contains(document.activeElement);
@@ -342,10 +360,11 @@ function addText(text, spk, u) {
   const nearBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 160;
   if (cont) {
     last.text = (last.text.trimEnd() + ' ' + text).trim();
+    (last.pieces ||= []).push(piece);
     lastNode.querySelector('.tx').textContent = last.text;
   } else {
     if (spk > 0 && !state.names[spk]) state.names[spk] = spkName(spk);
-    const p = { id: uid(), spk, text };
+    const p = { id: uid(), spk, text, pieces: [piece] };
     if (!state.paras.length) parasEl.innerHTML = '';
     state.paras.push(p);
     // yeni konuşmacı çıktıysa açılır listeler güncellensin
@@ -355,6 +374,74 @@ function addText(text, spk, u) {
   updateMeta(); save();
   if (nearBottom) window.scrollTo({ top: document.body.scrollHeight });
 }
+
+// ---------- Konuşmacıları tüm konuşmaya bakarak yeniden düzenleme ----------
+// Ses izleri 8 bitlik sıkıştırılmış olarak saklanır (512 sayı → ~700 karakter), tarayıcı belleği dolmasın
+function packEmb(e) {
+  const v = Speakers.norm(e); let m = 1e-9;
+  for (const x of v) m = Math.max(m, Math.abs(x));
+  const q = new Int8Array(v.length);
+  for (let i = 0; i < v.length; i++) q[i] = Math.round((v[i] / m) * 127);
+  let str = ''; for (const b of new Uint8Array(q.buffer)) str += String.fromCharCode(b);
+  return { s: m, q: btoa(str) };
+}
+function unpackEmb(p) {
+  const b = atob(p.q), out = new Array(b.length);
+  for (let i = 0; i < b.length; i++) out[i] = (((b.charCodeAt(i) << 24) >> 24) * p.s) / 127;
+  return out;
+}
+let sinceRegroup = 0;
+function regroup() {
+  if (!diarOn()) return false;
+  // birimler: düzenlenmemiş paragrafta her cümle ayrı; elle düzenlenmiş paragraf tek birim
+  const units = [];
+  for (const p of state.paras) {
+    const ps = p.pieces || [];
+    if (!p.edited && ps.length && ps.map((x) => x.t).join(' ').trim() === p.text.trim()) {
+      for (const x of ps) units.push({ text: x.t, pieces: [x], v: x.e ? unpackEmb(x.e) : null, w: x.d || 1 });
+    } else {
+      let v = null, w = 0;
+      for (const x of ps) if (x.e) { const a = unpackEmb(x.e); v = v ? v.map((y, i) => y + a[i] * x.d) : a.map((y) => y * x.d); w += x.d; }
+      units.push({ text: p.text, pieces: ps, v, w: w || 1, edited: true });
+    }
+  }
+  const withV = units.filter((u) => u.v);
+  if (withV.length < 3) return false;
+  const k = +state.set.maxSpk > 1 ? +state.set.maxSpk : 0;
+  const { labels, centroids } = recluster(withV.map((u) => ({ v: u.v, w: u.w })), { threshold: spkThr(), k });
+  withV.forEach((u, i) => (u.spk = labels[i]));
+  // ses izi olmayan kısa cümleler: önceki cümlenin konuşmacısı
+  let prev = 0; for (const u of units) { if (u.spk) prev = u.spk; else u.spk = prev; }
+  let next = 1; for (let i = units.length - 1; i >= 0; i--) { if (units[i].spk) next = units[i].spk; else units[i].spk = next; }
+  const paras = [];
+  for (const u of units) {
+    const last = paras[paras.length - 1];
+    if (last && last.spk === u.spk && last.text.length < 1800) {
+      last.text = (last.text + ' ' + u.text).trim(); last.pieces = last.pieces.concat(u.pieces); if (u.edited) last.edited = true;
+    } else paras.push({ id: uid(), spk: u.spk, text: u.text, pieces: u.pieces.slice(), edited: !!u.edited });
+  }
+  const sig = (ps) => JSON.stringify(ps.map((p) => [p.spk, p.text]));
+  const changed = sig(paras) !== sig(state.paras);
+  state.paras = paras; state.names = {};
+  speakers = new Speakers({ cents: centroids.map((v, i) => ({ id: i + 1, v, n: 10 })), last: paras.length ? paras[paras.length - 1].spk : 0 });
+  applySpkSettings();
+  if (changed) render();
+  save();
+  return changed;
+}
+// canlı kayıtta: kullanıcı yazı düzenlemiyorsa ve çok uzun değilse arada bir yeniden düzenle
+function liveRegroup() {
+  if (state.manual || parasEl.contains(document.activeElement)) return;
+  const n = state.paras.reduce((c, p) => c + (p.pieces ? p.pieces.length : 1), 0);
+  if (n > 400) return;   // çok uzun toplantıda yalnızca durdurunca
+  regroup();
+}
+let needRegroup = false;
+$('regroup').onclick = () => {
+  if (state.manual && !confirm('Elle yaptığınız konuşmacı değişiklikleri ve verdiğiniz adlar sıfırlanacak. Devam edilsin mi?')) return;
+  state.manual = false;
+  toast(regroup() ? 'Konuşmacılar yeniden düzenlendi.' : 'Değişiklik gerekmedi.');
+};
 
 // ---------- Model çalışanı ve iş kuyruğu ----------
 let worker = null, ready = null, busy = false, readyKey = '';
@@ -431,7 +518,8 @@ function onWorker({ data: m }) {
       const text = cleanText(m.text);
       if (text) {
         const spk = diarOn() ? speakers.assign(m.emb, u.end - u.start) : 0;
-        addText(text, spk, u);
+        addText(text, spk, u, m.emb);
+        if (live && diarOn() && ++sinceRegroup >= 8) { sinceRegroup = 0; liveRegroup(); }
       }
     }
     if (u && u.file) { jobDone++; fileProgress(); }
@@ -451,7 +539,14 @@ function maybeInterim() {
 }
 async function pump() {
   updateWorking();
-  if (busy || !queue.length) { if (!busy && fileJob && segDone && !queue.length) endFile('Tamamlandı.'); return; }
+  if (busy || !queue.length) {
+    if (!busy && fileJob && segDone && !queue.length) { endFile('Tamamlandı.'); needRegroup = true; }
+    if (!busy && !queue.length && needRegroup && !live && !fileJob) {
+      needRegroup = false;
+      if (!state.manual && regroup()) toast('Konuşmacılar tüm konuşmaya göre yeniden düzenlendi.');
+    }
+    return;
+  }
   try { await ensureWorker(); } catch { return; }
   if (busy || !queue.length) return;
   const u = queue.shift();
@@ -585,6 +680,7 @@ function stopLive() {
   setLiveUI();
   const n = queue.length + (busy ? 1 : 0);
   setStatus(n ? 'Kalan konuşmalar metne çevriliyor…' : '');
+  needRegroup = true;
   pump();
 }
 $('liveBtn').onclick = () => (live ? stopLive() : startLive());
@@ -681,7 +777,7 @@ function plainText() {
 $('exTxt').onclick = () => download(new Blob(['﻿' + plainText()], { type: 'text/plain;charset=utf-8' }), fileBase() + '.txt');
 $('copy').onclick = async () => { try { await navigator.clipboard.writeText(plainText()); toast('Panoya kopyalandı.'); } catch { toast('Kopyalanamadı.'); } };
 function clearAll() {
-  state.paras = []; state.names = {}; state.title = '';
+  state.paras = []; state.names = {}; state.title = ''; state.manual = false; sinceRegroup = 0;
   speakers = new Speakers(); applySpkSettings();
   lastEnd = -1; lastSession = null;
   render(); save();

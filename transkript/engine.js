@@ -125,19 +125,31 @@
     }
     static cos(a, b) { let s = 0; for (let i = 0; i < a.length; i++) s += a[i] * b[i]; return s; }
     nextId() { return this.cents.reduce((m, c) => Math.max(m, c.id), 0) + 1; }
+    // Bir bölümü konuşmacıya ata. Kurallar (yanlışlıkla yeni konuşmacı açmamak için):
+    //  • benzerlik ≥ eşik → o konuşmacı
+    //  • bir önceki konuşmacı en iyiye çok yakınsa onu tercih et (insanlar art arda konuşur)
+    //  • eşiğin biraz altı (belirsiz bölge) → en yakın konuşmacı, ama ortalamasını bozma
+    //  • yeni konuşmacıyı yalnızca yeterince uzun (≥ 2 sn) ve açıkça farklı bir bölüm açabilir
     assign(emb, dur) {
       if (!emb || !emb.length) return this.last || this._new(null);
       const v = Speakers.norm(emb);
-      let best = null, bestS = -2;
-      for (const c of this.cents) { const s = Speakers.cos(v, c.v); if (s > bestS) { bestS = s; best = c; } }
-      const short = dur < 1.6;
-      // kısa bölümlerin ses izi güvenilmez: eşiği gevşet, ortalamayı bozma
-      const thr = short ? this.threshold - 0.12 : this.threshold;
-      if (best && (bestS >= thr || this.cents.length >= this.max)) {
-        if (!short) this._update(best, v);
-        return (this.last = best.id);
+      let best = null, bestS = -2, lastS = -2;
+      for (const c of this.cents) {
+        const sc = Speakers.cos(v, c.v);
+        if (sc > bestS) { bestS = sc; best = c; }
+        if (c.id === this.last) lastS = sc;
       }
-      if (short && this.last) return this.last;
+      if (!best) return this._new(v);
+      const T = this.threshold, soft = T - 0.1;
+      let pick = best, pickS = bestS;
+      if (this.last && best.id !== this.last && lastS >= soft && lastS >= bestS - 0.04) {
+        pick = this.cents.find((c) => c.id === this.last); pickS = lastS;
+      }
+      const canCreate = dur >= 2 && this.cents.length < this.max;
+      if (pickS >= T || (pickS >= soft) || !canCreate) {
+        if (pickS >= T && dur >= 1.5) this._update(pick, v);
+        return (this.last = pick.id);
+      }
       return this._new(v);
     }
     _new(v) {
@@ -160,6 +172,69 @@
     toJSON() { return { cents: this.cents, last: this.last }; }
   }
 
+  // Tüm konuşma bittikten sonra toplu yeniden gruplama (ortalama bağlantılı hiyerarşik kümeleme).
+  // items: [{ v:number[] (ses izi), w:number (süre) }]; k verilirse tam k gruba, yoksa eşiğe kadar birleştirir.
+  // Dönen etiketler 1'den başlar ve ilk görünme sırasına göre numaralanır.
+  function recluster(items, opts = {}) {
+    const T = opts.threshold ?? 0.7, k = opts.k || 0, n = items.length;
+    const cl = items.map((it, i) => ({ idx: [i], v: Speakers.norm(it.v), w: it.w || 1, on: true }));
+    // benzerlik matrisi; birleşmede yalnızca yeni grubun satırı yeniden hesaplanır (n² · boyut yerine n · boyut)
+    const S = new Float32Array(n * n);
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) S[i * n + j] = S[j * n + i] = Speakers.cos(cl[i].v, cl[j].v);
+    // Sonuna kadar birleştir; son 8 adımın durumunu ve birleşme benzerliğini kaydet
+    let alive = n;
+    const snaps = {}, mergeSim = {};   // mergeSim[m]: m gruptan m-1'e inerken birleşen ikilinin benzerliği
+    const snap = () => cl.filter((c) => c.on).map((c) => ({ idx: c.idx.slice(), v: c.v.slice(), w: c.w }));
+    if (alive <= 9) snaps[alive] = snap();
+    while (alive > 1) {
+      let bi = -1, bj = -1, bs = -2;
+      for (let i = 0; i < n; i++) if (cl[i].on) for (let j = i + 1; j < n; j++) if (cl[j].on && S[i * n + j] > bs) { bs = S[i * n + j]; bi = i; bj = j; }
+      mergeSim[alive] = bs;
+      const a = cl[bi], c = cl[bj], w = a.w + c.w;
+      a.v = Speakers.norm(a.v.map((x, d) => x * a.w + c.v[d] * c.w)); a.w = w; a.idx = a.idx.concat(c.idx);
+      c.on = false; alive--;
+      for (let j = 0; j < n; j++) if (cl[j].on && j !== bi) S[bi * n + j] = S[j * n + bi] = Speakers.cos(a.v, cl[j].v);
+      if (alive <= 9) snaps[alive] = snap();
+    }
+    // Kaç konuşmacı? Verilmişse o; yoksa birleşme benzerliğinin en sert düştüğü yer.
+    // Bir sonraki birleşme hâlâ eşiğin üstündeyse (aynı kişi) daha az gruba in.
+    let K = k ? Math.min(k, n) : 1;
+    if (!k) {
+      let bestGap = 0;
+      for (let m = 2; m <= Math.min(8, n); m++) {
+        const refuse = mergeSim[m];                 // m → m-1 birleşmesi (yapmadığımız)
+        const did = mergeSim[m + 1] ?? 1;           // m+1 → m birleşmesi (yaptığımız)
+        if (refuse >= T) continue;                  // bu iki grup yeterince benzer: ayrı kişi sayma
+        const gap = did - refuse;
+        if (gap > bestGap) { bestGap = gap; K = m; }
+      }
+    }
+    let groups = snaps[K] || snap();
+    // çok küçük grupları (tek cümle ya da toplam sürenin %1,5'inden az) en yakın büyük gruba kat:
+    // gürültülü tek tük cümleler ayrı "konuşmacı" olmasın
+    if (!k) {
+      const total = groups.reduce((t, g) => t + g.w, 0);
+      const big = groups.filter((g) => g.idx.length >= 2 && g.w >= Math.max(3, total * 0.015));
+      if (!big.length && groups.length > 1) {
+        // hiçbir grup yeterince büyük değil (az ve gürültülü cümle): şimdilik tek kişi say
+        const all = groups[0]; for (const g of groups.slice(1)) all.idx = all.idx.concat(g.idx);
+        groups = [all];
+      } else if (big.length) {
+        for (const g of groups.filter((g) => !big.includes(g))) {
+          let best = big[0], bs = -2;
+          for (const h of big) { const sc = Speakers.cos(g.v, h.v); if (sc > bs) { bs = sc; best = h; } }
+          best.idx = best.idx.concat(g.idx);
+        }
+        groups = big;
+      }
+    }
+    const lab = new Array(n).fill(0);
+    groups.forEach((g, gi) => g.idx.forEach((i) => (lab[i] = gi)));
+    const order = new Map();
+    const labels = lab.map((l) => { if (!order.has(l)) order.set(l, order.size + 1); return order.get(l); });
+    return { labels, centroids: [...order.keys()].map((l) => groups[l].v) };
+  }
+
   // Whisper'ın sessizlik/gürültüde uydurduğu bilinen kalıplar
   const HALLU = [
     /^[^a-zçğıöşü]*alt ?yaz[ıi]/, /izledi[ğg]iniz i[çc]in te[şs]ekk[üu]r/, /abone ol/, /kanal[ıi]ma abone/,
@@ -176,7 +251,7 @@
     return t;
   }
 
-  const api = { SR, Segmenter, Resampler, Speakers, cleanText };
+  const api = { SR, Segmenter, Resampler, Speakers, recluster, cleanText };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.TK = api;
 })(typeof self !== 'undefined' ? self : this);

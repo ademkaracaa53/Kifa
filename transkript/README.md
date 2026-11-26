@@ -6,7 +6,10 @@ Toplantı, konferans ve sunumlarda konuşmayı **noktalamalı, akan metne** çev
 1. **Ses alma:** canlı modda mikrofon (AudioWorklet), dosya modunda ses/video dosyası 16 kHz monoya çevrilir.
 2. **Bölütleme (`engine.js` → `Segmenter`):** enerji tabanlı konuşma algılayıcı, sesi kısa duraklamalardan cümle/bölüm parçalarına ayırır (en fazla ~14 sn; daha uzunsa en sessiz yerden keser).
 3. **Metne çevirme (`worker.js`):** her parça [Whisper](https://github.com/openai/whisper) ile [transformers.js](https://github.com/huggingface/transformers.js) üzerinden yazıya dökülür. Whisper noktalama ve büyük harfleri kendisi koyar. “Otomatik” dil seçeneğinde her parça için yalnızca Türkçe ve İngilizce puanları karşılaştırılır.
-4. **Konuşmacı ayrımı:** her parçadan [WavLM-SV](https://huggingface.co/Xenova/wavlm-base-plus-sv) ile bir ses izi çıkarılır; `Speakers` bunları benzerliğe göre “Konuşmacı 1, 2…” olarak gruplar. Konuşmacı sayısı biliniyorsa ayarlardan seçmek doğruluğu artırır.
+4. **Konuşmacı ayrımı:** her parçadan [WavLM-SV](https://huggingface.co/Xenova/wavlm-base-plus-sv) ile bir ses izi çıkarılır.
+   - *Canlı karar* (`Speakers.assign`): benzerlik eşiği + belirsiz bölgede en yakın kişi, önceki konuşmacıya öncelik; 2 sn'den kısa cümle yeni konuşmacı açamaz.
+   - *Toplu yeniden düzenleme* (`recluster`): tüm ses izleri hiyerarşik kümelenir; konuşmacı sayısı verilmemişse benzerliğin en sert düştüğü yerden seçilir, tek cümlelik/çok küçük gruplar en yakın kişiye katılır. Canlı kayıtta her 8 cümlede bir ve durdurunca, dosyada bitince kendiliğinden çalışır (elle konuşmacı değiştirildiyse çalışmaz; “Konuşmacıları düzenle” düğmesiyle istenebilir).
+   - Ayar: Toleranslı / Normal / Hassas (eşik 0,60 / 0,68 / 0,76). Ses izleri 8 bit sıkıştırılarak saklanır.
 5. **Metin:** aynı konuşmacının cümleleri tek paragrafta birleşir. Whisper'ın sessizlikte uydurduğu bilinen kalıplar (“Altyazı M.K.” vb.) süzülür.
 
 Konuşmacı adına tıklayınca: başka konuşmacıya atama, yeni konuşmacı, yeniden adlandırma (ör. “Ahmet”) ya da bir konuşmacının tümünü başkasına aktarma.

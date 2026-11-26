@@ -38,19 +38,25 @@ function asrDtype(model, dev) {
   return model.includes('large') ? { encoder_model: 'fp16', decoder_model_merged: 'q4' } : { encoder_model: 'fp32', decoder_model_merged: 'q4' };
 }
 
+// Not: transformers.js'te bir oturum oluşturma hatası, aynı çalışandaki sonraki tüm model yüklemelerini
+// de bozuyor. Bu yüzden WebGPU'yu yüklemeden önce yokluyoruz; yine de hata olursa sayfaya "gpufail"
+// bildirip çalışanın baştan (WASM ile) kurulmasını istiyoruz.
+class GpuFail extends Error {}
+async function gpuUsable() {
+  try { return !!(navigator.gpu && await navigator.gpu.requestAdapter()); } catch { return false; }
+}
 async function loadAsr(model, want) {
+  if (want === 'webgpu' && !(await gpuUsable())) want = 'wasm';
   const key = model + '|' + want;
   if (asr && asrKey === key) return;
   if (asr) { try { await asr.dispose(); } catch {} asr = null; }
   try {
     asr = await pipeline('automatic-speech-recognition', model, { device: want, dtype: asrDtype(model, want), progress_callback: progress });
-    device = want;
   } catch (e) {
-    if (want !== 'webgpu') throw e;
-    self.postMessage({ type: 'status', text: 'WebGPU kullanılamadı, WASM ile devam ediliyor…' });
-    asr = await pipeline('automatic-speech-recognition', model, { device: 'wasm', dtype: 'q8', progress_callback: progress });
-    device = 'wasm';
+    if (want === 'webgpu') throw new GpuFail(String((e && e.message) || e));
+    throw e;
   }
+  device = want;
   asrKey = key;
 }
 
@@ -125,17 +131,13 @@ self.onmessage = async ({ data: m }) => {
       try {
         r = await transcribe(m);
       } catch (e) {
-        // WebGPU çalışırken hata verirse WASM'a geçip bir kez daha dene
-        if (device !== 'webgpu') throw e;
-        self.postMessage({ type: 'status', text: 'Ekran kartı hızlandırması hata verdi, işlemciye geçiliyor…' });
-        const model = asrKey.split('|')[0];
-        await loadAsr(model, 'wasm');
-        self.postMessage({ type: 'ready', device, threads });
-        r = await transcribe(m);
+        if (device === 'webgpu') throw new GpuFail(String((e && e.message) || e));
+        throw e;
       }
       self.postMessage({ type: 'result', id: m.id, interim: !!m.interim, ...r });
     }
   } catch (e) {
+    if (e instanceof GpuFail) { self.postMessage({ type: 'gpufail', message: e.message }); return; }
     self.postMessage({ type: 'error', id: m.id, interim: !!m.interim, message: String((e && e.message) || e) });
   }
 };

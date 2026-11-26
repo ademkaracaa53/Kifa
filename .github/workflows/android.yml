@@ -1,0 +1,86 @@
+name: Android APK
+
+on:
+  push:
+    paths:
+      - "android/**"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  SHERPA_VERSION: "2.0.1"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.7"
+
+      - name: sherpa-onnx (yerel kütüphaneler + Kotlin API) ve yerleşik modelleri indir
+        run: |
+          set -e
+          base=https://github.com/k2-fsa/sherpa-onnx/releases/download
+          # 1) yerel (.so) kütüphaneler
+          curl -fsSL -o /tmp/sherpa-android.tar.bz2 "$base/v${SHERPA_VERSION}/sherpa-onnx-v${SHERPA_VERSION}-android.tar.bz2"
+          mkdir -p /tmp/sherpa && tar xjf /tmp/sherpa-android.tar.bz2 -C /tmp/sherpa
+          mkdir -p android/app/src/main/jniLibs
+          for abi in arm64-v8a armeabi-v7a; do cp -rv /tmp/sherpa/jniLibs/$abi android/app/src/main/jniLibs/; done
+          # 2) aynı sürümün Kotlin API kaynakları (AAR'ın içindekiyle aynı dosyalar)
+          git clone -q --depth 1 --branch "v${SHERPA_VERSION}" --filter=blob:none --sparse https://github.com/k2-fsa/sherpa-onnx /tmp/sherpa-src
+          git -C /tmp/sherpa-src sparse-checkout set sherpa-onnx/kotlin-api android/SherpaOnnxAar/sherpa_onnx/src/main/java
+          dst=android/app/src/main/java/com/k2fsa/sherpa/onnx
+          mkdir -p $dst
+          cp -L /tmp/sherpa-src/android/SherpaOnnxAar/sherpa_onnx/src/main/java/com/k2fsa/sherpa/onnx/*.kt $dst/
+          ls $dst
+          # 3) APK içine gömülen küçük modeller
+          mkdir -p android/app/src/main/assets
+          curl -fsSL -o android/app/src/main/assets/silero_vad.onnx "$base/asr-models/silero_vad.onnx"
+          curl -fsSL -o android/app/src/main/assets/speaker.onnx "$base/speaker-recongition-models/wespeaker_en_voxceleb_resnet34_LM.onnx"
+          ls -l android/app/src/main/assets android/app/src/main/jniLibs/*
+
+      - name: Telefona indirilecek Whisper model adreslerini kontrol et
+        run: |
+          for m in tiny base small turbo; do
+            for f in encoder.int8.onnx decoder.int8.onnx tokens.txt; do
+              url="https://huggingface.co/csukuangfj/sherpa-onnx-whisper-$m/resolve/main/$m-$f"
+              size=$(curl -sIL "$url" | grep -i '^content-length' | tail -1 | tr -d '\r' | awk '{print $2}')
+              code=$(curl -s -o /dev/null -w '%{http_code}' -IL "$url")
+              echo "$code  $((${size:-0} / 1048576)) MB  $m-$f"
+            done
+          done
+
+      - name: APK derle
+        run: gradle -p android assembleRelease --no-daemon --stacktrace
+
+      - name: APK'yı adlandır
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk Transkript.apk
+          ls -lh Transkript.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Transkript-apk
+          path: Transkript.apk
+
+      - name: Ana daldaysa "android-latest" sürümüne koy (telefondan doğrudan indirme)
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete android-latest --yes --cleanup-tag || true
+          gh release create android-latest Transkript.apk \
+            --target "$GITHUB_SHA" \
+            --title "Transkript Android (son sürüm)" \
+            --notes "Derleme #${GITHUB_RUN_NUMBER}. Telefonda bu sayfadan Transkript.apk dosyasını indirip kurun. İlk kurulumda 'bilinmeyen kaynaklardan yükleme' izni istenir."

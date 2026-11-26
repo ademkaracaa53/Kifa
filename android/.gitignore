@@ -1,0 +1,7 @@
+.gradle/
+build/
+local.properties
+app/libs/*.aar
+app/src/main/jniLibs/
+app/src/main/java/com/k2fsa/
+app/src/main/assets/*.onnx

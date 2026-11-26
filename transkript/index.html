@@ -219,7 +219,9 @@ let state = {
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
 if (!state.set.chosen) state.set.model = DEFAULT_MODEL;
 // Ekran kartı (WebGPU) çok daha hızlı; telefonda yalnızca küçük modellerde, daha önce hata vermediyse
-const deviceFor = (m) => hasGPU && !state.set.noGPU && !(isMobile && /small|large/.test(m)) ? 'webgpu' : 'wasm';   // kullanıcı kendisi seçmediyse cihaza uygun olanı kullan
+let gpuOK = false;   // navigator.gpu olsa da bazı telefonlarda ekran kartı bağlantısı alınamıyor
+async function probeGPU() { try { gpuOK = !!(hasGPU && await navigator.gpu.requestAdapter()); } catch { gpuOK = false; } }
+const deviceFor = (m) => gpuOK && !state.set.noGPU && !(isMobile && /small|large/.test(m)) ? 'webgpu' : 'wasm';   // kullanıcı kendisi seçmediyse cihaza uygun olanı kullan
 if (isMobile) {
   const big = document.querySelector('#model option[value*="large"]'); if (big) big.remove();
   if (state.set.model.includes('large')) state.set.model = DEFAULT_MODEL;
@@ -388,6 +390,18 @@ function failLoad(msg) {
   updateWorking();
 }
 function onWorker({ data: m }) {
+  if (m.type === 'gpufail') {
+    // ekran kartı hatası: çalışanı kapat, işlemciyle yeniden kur; işlenen parça kaybolmasın
+    console.warn('WebGPU:', m.message);
+    state.set.noGPU = true; save();
+    const u = inflight; inflight = null; busy = false;
+    if (u && !u.interim) queue.unshift(u);
+    if (ensureWorker.rej) ensureWorker.rej(new Error('gpu'));
+    worker.terminate(); worker = null; ready = null; modelReady = false;
+    showModel('Ekran kartı kullanılamadı, işlemciyle devam ediliyor…');
+    ensureWorker().catch(() => {}); pump();
+    return;
+  }
   if (m.type === 'download') {
     if (m.total) { dl = m; showModel(); }
   } else if (m.type === 'status') { dl = null; showModel(m.text); }
@@ -408,6 +422,7 @@ function onWorker({ data: m }) {
       pump();
       return;
     }
+    if (u) u.audio = null;
     if (u) { lastFinalStart = Math.max(lastFinalStart, u.session === session ? u.start : lastFinalStart); $('interim').hidden = true; }
     if (m.type === 'error') {
       if (!u) return failLoad('Hata: ' + m.message);
@@ -441,8 +456,7 @@ async function pump() {
   if (busy || !queue.length) return;
   const u = queue.shift();
   busy = true; inflight = u;
-  const audio = u.audio; u.audio = null;
-  worker.postMessage({ type: 'utt', id: u.id, audio, lang: state.set.lang, diar: diarOn() }, [audio.buffer]);
+  worker.postMessage({ type: 'utt', id: u.id, audio: u.audio, lang: state.set.lang, diar: diarOn() });
   updateWorking();
 }
 function updateWorking() {
@@ -707,7 +721,7 @@ window.addEventListener('beforeunload', (e) => { if (live || fileJob || queue.le
 applySpkSettings();
 render();
 setLiveUI();
-checkModels();
+probeGPU().then(checkModels);
 </script>
 </body>
 </html>

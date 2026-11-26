@@ -1,90 +1,108 @@
-// Whisper (transformers.js) ile tarayıcı içinde konuşma → metin. Ses cihazdan çıkmaz.
-// Model ilk kullanımda Hugging Face'ten indirilir ve tarayıcı önbelleğinde tutulur.
-import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
+// Transkript — modeller bu Web Worker'da, doğrudan tarayıcıda çalışır; ses hiçbir sunucuya gitmez.
+//  • Whisper (konuşma → noktalamalı metin)
+//  • WavLM-SV (konuşmacı ses izi; "Konuşmacı 1 / 2" ayrımı için)
+// Modeller ilk kullanımda Hugging Face'ten indirilir, sonra tarayıcı önbelleğinden açılır.
+import {
+  pipeline, env, AutoProcessor, AutoModelForXVector, LogitsProcessor,
+} from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.2';
 
 env.allowLocalModels = false;
 
-const SR = 16000;
-const BATCH_S = 240; // sesi ~4 dakikalık parçalarla işle: ilerleme göstermek ve sonuçları parça parça vermek için
+const SPK_MODEL = 'Xenova/wavlm-base-plus-sv';
+let asr = null, asrKey = '', device = 'wasm';
+let spkProc = null, spkModel = null;
+let downloads = {};
 
-let asr = null;
-let loadedKey = '';
-
-function dtypeFor(model, device) {
-  if (device === 'webgpu') {
-    return model.includes('large')
-      ? { encoder_model: 'fp16', decoder_model_merged: 'q4' }
-      : { encoder_model: 'fp32', decoder_model_merged: 'q4' };
+function progress(p) {
+  if (!p.file) return;
+  if (p.status === 'initiate' || p.status === 'progress' || p.status === 'done') {
+    const f = (downloads[p.file] ||= { loaded: 0, total: 0 });
+    if (p.total) f.total = p.total;
+    f.loaded = p.status === 'done' ? f.total : (p.loaded || f.loaded);
+    let l = 0, t = 0;
+    for (const k in downloads) { l += downloads[k].loaded; t += downloads[k].total; }
+    self.postMessage({ type: 'download', loaded: l, total: t });
   }
-  return 'q8';
 }
 
-async function load(model, device) {
-  const key = model + '|' + device;
-  if (asr && loadedKey === key) return;
+function asrDtype(model, dev) {
+  if (dev !== 'webgpu') return 'q8';
+  return model.includes('large') ? { encoder_model: 'fp16', decoder_model_merged: 'q4' } : { encoder_model: 'fp32', decoder_model_merged: 'q4' };
+}
+
+async function loadAsr(model, want) {
+  const key = model + '|' + want;
+  if (asr && asrKey === key) return;
   if (asr) { try { await asr.dispose(); } catch {} asr = null; }
-  asr = await pipeline('automatic-speech-recognition', model, {
-    device,
-    dtype: dtypeFor(model, device),
-    progress_callback: (p) => {
-      if (p.status === 'progress' || p.status === 'initiate' || p.status === 'done') {
-        self.postMessage({ type: 'download', file: p.file, loaded: p.loaded || 0, total: p.total || 0, status: p.status });
-      }
-    },
-  });
-  loadedKey = key;
-}
-
-// Parça sınırını en sessiz ana kaydır ki kelimeler ortadan bölünmesin
-function quietestPoint(audio, around) {
-  const win = SR * 3, step = SR / 20, frame = SR / 20;
-  let best = around, bestE = Infinity;
-  for (let c = Math.max(frame, around - win); c < Math.min(audio.length - frame, around + win); c += step) {
-    let e = 0;
-    for (let i = c - frame / 2; i < c + frame / 2; i++) e += audio[i] * audio[i];
-    if (e < bestE) { bestE = e; best = c; }
-  }
-  return Math.round(best);
-}
-
-self.onmessage = async ({ data }) => {
-  if (data.type !== 'run') return;
-  const { audio, model, language, task } = data;
-  let device = data.device;
   try {
-    self.postMessage({ type: 'status', text: 'Model yükleniyor…' });
-    try {
-      await load(model, device);
-    } catch (e) {
-      if (device !== 'webgpu') throw e;
-      device = 'wasm';
-      self.postMessage({ type: 'status', text: 'WebGPU kullanılamadı, WASM ile devam ediliyor…' });
-      await load(model, device);
-    }
-    self.postMessage({ type: 'ready', device });
-
-    const total = audio.length;
-    let start = 0;
-    while (start < total) {
-      let end = Math.min(total, start + BATCH_S * SR);
-      if (end < total) end = quietestPoint(audio, end);
-      const slice = audio.subarray(start, end);
-      const out = await asr(slice, {
-        language: language === 'auto' ? null : language,
-        task,
-        chunk_length_s: 30,
-        stride_length_s: 5,
-        return_timestamps: true,
-      });
-      const offset = start / SR;
-      const chunks = (out.chunks && out.chunks.length ? out.chunks : [{ text: out.text, timestamp: [0, slice.length / SR] }])
-        .map((c) => ({ t: offset + (c.timestamp?.[0] ?? 0), text: (c.text || '').trim() }))
-        .filter((c) => c.text);
-      start = end;
-      self.postMessage({ type: 'partial', chunks, progress: start / total });
-    }
-    self.postMessage({ type: 'done' });
+    asr = await pipeline('automatic-speech-recognition', model, { device: want, dtype: asrDtype(model, want), progress_callback: progress });
+    device = want;
   } catch (e) {
-    self.postMessage({ type: 'error', message: String(e && e.message || e) });
+    if (want !== 'webgpu') throw e;
+    self.postMessage({ type: 'status', text: 'WebGPU kullanılamadı, WASM ile devam ediliyor…' });
+    asr = await pipeline('automatic-speech-recognition', model, { device: 'wasm', dtype: 'q8', progress_callback: progress });
+    device = 'wasm';
+  }
+  asrKey = key;
+}
+
+async function loadSpk() {
+  if (spkModel) return;
+  spkProc = await AutoProcessor.from_pretrained(SPK_MODEL, { progress_callback: progress });
+  try {
+    spkModel = await AutoModelForXVector.from_pretrained(SPK_MODEL, { dtype: 'q8', progress_callback: progress });
+  } catch {
+    spkModel = await AutoModelForXVector.from_pretrained(SPK_MODEL, { dtype: 'fp32', progress_callback: progress });
+  }
+}
+
+// İlk çözümleme adımında yalnızca <|tr|> ve <|en|> puanlarını okur
+class LangScores extends LogitsProcessor {
+  constructor(ids) { super(); this.ids = ids; this.scores = null; }
+  _call(input_ids, logits) {
+    if (!this.scores) { const d = logits[0].data; this.scores = this.ids.map((i) => d[i]); }
+    return logits;
+  }
+}
+async function detectTrEn(audio) {
+  const gc = asr.model.generation_config;
+  const tr = gc.lang_to_id['<|tr|>'], en = gc.lang_to_id['<|en|>'];
+  const { input_features } = await asr.processor(audio);
+  const lp = new LangScores([tr, en]);
+  await asr.model.generate({ inputs: input_features, decoder_input_ids: [gc.decoder_start_token_id], max_new_tokens: 1, logits_processor: [lp] });
+  return lp.scores && lp.scores[1] > lp.scores[0] ? 'en' : 'tr';
+}
+
+async function embed(audio) {
+  // en fazla 8 sn yeterli; uzun bölümde ortadaki kısmı al
+  const max = 16000 * 8;
+  let a = audio;
+  if (a.length > max) { const s = Math.floor((a.length - max) / 2); a = a.subarray(s, s + max); }
+  const inputs = await spkProc(a);
+  const out = await spkModel(inputs);
+  return Array.from(out.embeddings.data);
+}
+
+self.onmessage = async ({ data: m }) => {
+  try {
+    if (m.type === 'load') {
+      downloads = {};
+      self.postMessage({ type: 'status', text: 'Modeller yükleniyor…' });
+      await loadAsr(m.model, m.device);
+      if (m.diar) await loadSpk();
+      self.postMessage({ type: 'ready', device });
+    } else if (m.type === 'utt') {
+      const { id, audio, lang, diar } = m;
+      const language = lang === 'auto' ? await detectTrEn(audio) : lang;
+      const out = await asr(audio, { language, task: 'transcribe', return_timestamps: false, no_repeat_ngram_size: 6 });
+      let emb = null;
+      if (diar && audio.length >= 16000 * 0.8) {
+        if (!spkModel) await loadSpk();
+        emb = await embed(audio);
+      }
+      self.postMessage({ type: 'result', id, text: out.text || '', language, emb });
+    }
+  } catch (e) {
+    self.postMessage({ type: 'error', id: m.id, message: String((e && e.message) || e) });
   }
 };

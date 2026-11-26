@@ -1,5 +1,5 @@
 // KİFA — çevrimdışı önbellek. Uygulamayı güncellediğinde VERSION'ı artır.
-const VERSION = 'kifa-v1.0';
+const VERSION = 'kifa-v1.1';
 const FILES = [
   './',
   './index.html',
@@ -29,6 +29,9 @@ self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   if (req.mode === 'navigate') {
+    // Yalnızca KİFA'nın kendi sayfası; alt klasördeki uygulamalara (ör. transkript/) karışma
+    const path = new URL(req.url).pathname, root = new URL('./', self.registration.scope).pathname;
+    if (path !== root && path !== root + 'index.html') return;
     // Sayfa: önce ağ (güncel sürüm), yoksa önbellek
     e.respondWith(fetch(req).then(r => { const copy = r.clone(); caches.open(VERSION).then(c => c.put('./index.html', copy)); return r; })
       .catch(() => caches.match('./index.html')));

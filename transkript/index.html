@@ -36,7 +36,8 @@ body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);-webkit-tex
 main{max-width:780px;margin:0 auto;padding:16px 16px 48px}
 header{display:flex;align-items:center;gap:10px;padding:4px 0 14px}
 header h1{font:700 1.45rem/1.1 var(--display);margin:0;letter-spacing:-.01em}
-header .tag{margin-left:auto;font-size:.78rem;color:var(--muted)}
+header .tag{margin-left:auto;font-size:.82rem;color:var(--muted)}
+header .back{font-weight:600;text-decoration:none;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
 .card h2{font:600 .8rem/1 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px}
 .tabs{display:flex;gap:6px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:14px}
@@ -100,7 +101,7 @@ select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);
   <header>
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color:var(--accent)"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
     <h1>Transkript</h1>
-    <span class="tag">Konuşmadan metne · ücretsiz</span>
+    <a class="tag back" href="../" title="KİFA ana sayfası">← KİFA</a>
   </header>
 
   <div class="tabs" role="tablist">

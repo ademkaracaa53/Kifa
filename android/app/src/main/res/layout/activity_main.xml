@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Transkript"
+                android:textColor="@color/ink"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="12dp" />
+
+            <!-- Ayarlar -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/settingsToggle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="AYARLAR ▾"
+                        android:textColor="@color/muted"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:paddingBottom="4dp" />
+
+                    <LinearLayout
+                        android:id="@+id/settingsBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşma dili" />
+                        <Spinner android:id="@+id/spLang" android:layout_width="match_parent" android:layout_height="48dp" />
+
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Doğruluk / hız (model)" />
+                        <Spinner android:id="@+id/spModel" android:layout_width="match_parent" android:layout_height="48dp" />
+
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşmacı sayısı" />
+                        <Spinner android:id="@+id/spSpk" android:layout_width="match_parent" android:layout_height="48dp" />
+
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşmacı ayrımı" />
+                        <Spinner android:id="@+id/spSens" android:layout_width="match_parent" android:layout_height="48dp" />
+
+                        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" />
+
+                        <TextView
+                            android:id="@+id/modelInfo"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/muted"
+                            android:textSize="14sp" />
+
+                        <ProgressBar
+                            android:id="@+id/modelProgress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:max="1000"
+                            android:visibility="gone"
+                            android:layout_marginTop="6dp" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnDownload"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:text="Modeli indir" />
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Kayıt -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnRecord"
+                            android:layout_width="wrap_content"
+                            android:layout_height="64dp"
+                            android:minWidth="150dp"
+                            android:text="Başlat"
+                            android:textSize="18sp"
+                            app:cornerRadius="16dp" />
+
+                        <TextView
+                            android:id="@+id/timer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="00:00"
+                            android:textColor="@color/ink"
+                            android:textSize="26sp"
+                            android:textStyle="bold"
+                            android:fontFeatureSettings="tnum" />
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/level"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:max="100" />
+
+                    <TextView
+                        android:id="@+id/status"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/muted"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Metin -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:id="@+id/title"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Başlık (ör. Proje toplantısı)"
+                        android:inputType="textCapSentences"
+                        android:textColor="@color/ink"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/meta"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/muted"
+                        android:textSize="13sp"
+                        android:layout_marginBottom="8dp" />
+
+                    <LinearLayout
+                        android:id="@+id/paras"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical" />
+
+                    <TextView
+                        android:id="@+id/interim"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textColor="@color/muted"
+                        android:textSize="16sp"
+                        android:textStyle="italic"
+                        android:visibility="gone" />
+
+                    <TextView
+                        android:id="@+id/empty"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="24dp"
+                        android:text="Henüz metin yok. Başlat'a basın."
+                        android:textColor="@color/muted" />
+
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/line" android:layout_marginTop="12dp" android:layout_marginBottom="8dp" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnTxt" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="TXT kaydet" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnPdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="PDF kaydet" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnShare" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Paylaş" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnCopy" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kopyala" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnRegroup" style="@style/Widget.Material3.Button.OutlinedButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşmacıları düzenle" />
+                        <com.google.android.material.button.MaterialButton android:id="@+id/btnClear" style="@style/Widget.Material3.Button.TextButton" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Temizle" />
+                    </com.google.android.material.chip.ChipGroup>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

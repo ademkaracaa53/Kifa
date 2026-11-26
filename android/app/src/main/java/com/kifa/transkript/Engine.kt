@@ -64,7 +64,7 @@ object Engine {
     private val cur = ArrayList<FloatArray>()   // süren konuşmanın sesi (ara metin için)
     private var curLen = 0
 
-    private fun post(f: () -> Unit) = main.post(f)
+    private fun post(f: () -> Unit) { main.post { f() } }
     private fun status(s: String, err: Boolean = false) = post { listener?.onStatus(s, err) }
 
     val pending get() = finals.size

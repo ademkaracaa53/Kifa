@@ -81,6 +81,14 @@
       for (let k = 0; k < nFrames; k++) audio.set(c.frames[k], k * this.frame);
       this.onUtt({ start: c.start / SR, end: (c.start + audio.length) / SR, audio });
     }
+    // Henüz bitmemiş (konuşma sürerken) bölümün sesi — ara metin göstermek için
+    current() {
+      const c = this.cur;
+      if (!c) return null;
+      const audio = new Float32Array(c.frames.length * this.frame);
+      for (let k = 0; k < c.frames.length; k++) audio.set(c.frames[k], k * this.frame);
+      return { start: c.start / SR, audio };
+    }
     flush() {
       if (this.pending.length) { const p = new Float32Array(this.frame); p.set(this.pending); this.pending = new Float32Array(0); this._frame(p); }
       if (this.cur) this._emit(this.cur.frames.length - Math.floor(this.cur.silence / (this.frame / SR)));

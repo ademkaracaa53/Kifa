@@ -29,6 +29,9 @@ function progress(p) {
     self.postMessage({ type: 'download', loaded: l, total: t });
   }
 }
+// Ortam bilgisi: çok çekirdek (crossOriginIsolated) açık mı?
+const threads = self.crossOriginIsolated ? Math.min(4, Math.max(1, Math.ceil((navigator.hardwareConcurrency || 2) / 2))) : 1;
+if (env.backends.onnx && env.backends.onnx.wasm) env.backends.onnx.wasm.numThreads = threads;
 
 function asrDtype(model, dev) {
   if (dev !== 'webgpu') return 'q8';
@@ -79,13 +82,34 @@ async function detectTrEn(audio) {
 }
 
 async function embed(audio) {
-  // en fazla 8 sn yeterli; uzun bölümde ortadaki kısmı al
-  const max = 16000 * 8;
+  // ses izi için 4 sn yeterli (süre arttıkça model yavaşlar); uzun bölümde ortadaki kısmı al
+  const max = 16000 * 4;
   let a = audio;
   if (a.length > max) { const s = Math.floor((a.length - max) / 2); a = a.subarray(s, s + max); }
   const inputs = await spkProc(a);
   const out = await spkModel(inputs);
   return Array.from(out.embeddings.data);
+}
+
+// Otomatik dil: her cümlede ayrı algılama kodlayıcıyı iki kez çalıştırır (yavaş).
+// İlk cümlede ve sonra her 4 cümlede bir algıla, arada son dili kullan.
+let lastLang = 'tr', sinceDetect = 99;
+async function pickLang(lang, audio, interim) {
+  if (lang !== 'auto') return lang;
+  if (interim) return lastLang;
+  if (sinceDetect >= 4) { lastLang = await detectTrEn(audio); sinceDetect = 0; }
+  sinceDetect++;
+  return lastLang;
+}
+async function transcribe(m) {
+  const language = await pickLang(m.lang, m.audio, m.interim);
+  const out = await asr(m.audio, { language, task: 'transcribe', return_timestamps: false, no_repeat_ngram_size: 6 });
+  let emb = null;
+  if (m.diar && !m.interim && m.audio.length >= 16000 * 0.8) {
+    if (!spkModel) await loadSpk();
+    emb = await embed(m.audio);
+  }
+  return { text: out.text || '', language, emb };
 }
 
 self.onmessage = async ({ data: m }) => {
@@ -95,19 +119,23 @@ self.onmessage = async ({ data: m }) => {
       self.postMessage({ type: 'status', text: 'Modeller yükleniyor…' });
       await loadAsr(m.model, m.device);
       if (m.diar) await loadSpk();
-      self.postMessage({ type: 'ready', device });
+      self.postMessage({ type: 'ready', device, threads });
     } else if (m.type === 'utt') {
-      const { id, audio, lang, diar } = m;
-      const language = lang === 'auto' ? await detectTrEn(audio) : lang;
-      const out = await asr(audio, { language, task: 'transcribe', return_timestamps: false, no_repeat_ngram_size: 6 });
-      let emb = null;
-      if (diar && audio.length >= 16000 * 0.8) {
-        if (!spkModel) await loadSpk();
-        emb = await embed(audio);
+      let r;
+      try {
+        r = await transcribe(m);
+      } catch (e) {
+        // WebGPU çalışırken hata verirse WASM'a geçip bir kez daha dene
+        if (device !== 'webgpu') throw e;
+        self.postMessage({ type: 'status', text: 'Ekran kartı hızlandırması hata verdi, işlemciye geçiliyor…' });
+        const model = asrKey.split('|')[0];
+        await loadAsr(model, 'wasm');
+        self.postMessage({ type: 'ready', device, threads });
+        r = await transcribe(m);
       }
-      self.postMessage({ type: 'result', id, text: out.text || '', language, emb });
+      self.postMessage({ type: 'result', id: m.id, interim: !!m.interim, ...r });
     }
   } catch (e) {
-    self.postMessage({ type: 'error', id: m.id, message: String((e && e.message) || e) });
+    self.postMessage({ type: 'error', id: m.id, interim: !!m.interim, message: String((e && e.message) || e) });
   }
 };

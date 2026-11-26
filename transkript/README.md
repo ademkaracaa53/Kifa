@@ -11,6 +11,12 @@ Toplantı, konferans ve sunumlarda konuşmayı **noktalamalı, akan metne** çev
 
 Konuşmacı adına tıklayınca: başka konuşmacıya atama, yeni konuşmacı, yeniden adlandırma (ör. “Ahmet”) ya da bir konuşmacının tümünü başkasına aktarma.
 
+## Hız
+- **Ekran kartı (WebGPU):** varsa kullanılır. Telefonda yalnızca Hızlı/Dengeli modellerde açılır; hata verirse kendiliğinden işlemciye (WASM) geçilir ve bu hatırlanır.
+- **Çok çekirdek:** GitHub Pages COOP/COEP başlıklarını göndermediği için [coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker) (MIT) sayfayı “cross-origin isolated” yapar; WASM 4 çekirdeğe kadar paralel çalışır. İlk ziyarette sayfa bir kez kendiliğinden yenilenir.
+- **Ara metin:** cihaz boştayken, süren konuşmanın o ana kadarki kısmı da çevrilip gri olarak gösterilir; cümle bitince kesin metin gelir.
+- Cümle sonu için 0,5 sn sessizlik beklenir, canlı modda parçalar en fazla 10 sn'dir. Konuşmacı ses izi 4 sn'lik kısımdan çıkarılır. “Otomatik” dilde dil her 4 cümlede bir yeniden algılanır.
+
 ## Dışa aktarma
 TXT (UTF-8) ve PDF ([pdfmake](https://github.com/bpampuch/pdfmake), Türkçe karakterler tam). Biçim:
 
@@ -24,6 +30,7 @@ Konuşmacı 2: Teşekkürler. Ben ilk olarak…
 - `index.html` — arayüz, mikrofon, iş kuyruğu, dışa aktarma
 - `engine.js` — modelden bağımsız mantık (bölütleme, yeniden örnekleme, konuşmacı gruplama, metin temizliği)
 - `worker.js` — Whisper ve WavLM-SV modelleri (Web Worker)
+- `coi-serviceworker.js` — çok çekirdek için gerekli başlıkları ekleyen service worker (MIT, değiştirilmedi)
 - Kütüphaneler sabit sürümle jsDelivr'den yüklenir: `@huggingface/transformers@4.3.2`, `pdfmake@0.2.20`.
 
 ## Model seçimi

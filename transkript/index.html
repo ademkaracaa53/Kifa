@@ -8,6 +8,9 @@
 <meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0D1016" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.webmanifest">
+<!-- Çok çekirdekli WASM için sayfayı "cross-origin isolated" yapar (GitHub Pages bu başlıkları göndermiyor) -->
+<script>window.coi = { coepCredentialless: () => !!(window.chrome || window.netscape), quiet: true };</script>
+<script src="coi-serviceworker.js"></script>
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <style>
@@ -82,6 +85,7 @@ select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);
 .para .tx{outline:none;overflow-wrap:anywhere;line-height:1.6}
 .para .tx:focus{background:var(--accent-soft);border-radius:4px}
 .no-diar .para .who{display:none}
+.interim{color:var(--muted);font-style:italic;line-height:1.6;margin-top:12px}
 .working{color:var(--muted);font-style:italic;font-size:.92rem}
 .working::after{content:"";animation:dots 1.4s steps(4) infinite}
 @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
@@ -183,6 +187,7 @@ details.set[open] summary{margin-bottom:12px}
     </div>
     <div class="meta" id="meta"></div>
     <div id="paras"></div>
+    <div class="interim" id="interim" hidden></div>
     <div class="working" id="working" hidden>Metne çevriliyor</div>
     <div class="actions">
       <button class="btn primary" id="exTxt">TXT indir</button>
@@ -205,14 +210,16 @@ const KEY = 'transkript.v2';
 // ---------- Durum ----------
 // Telefonlarda WebGPU olsa bile büyük modeller belleği zorlar: telefonda küçük, sıkıştırılmış (q8) modeller
 const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
-const DEVICE = ('gpu' in navigator) && !isMobile ? 'webgpu' : 'wasm';
-const DEFAULT_MODEL = DEVICE === 'webgpu' ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
+const hasGPU = 'gpu' in navigator;
+const DEFAULT_MODEL = hasGPU && !isMobile ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
 let state = {
   title: '', paras: [], names: {}, spk: null,
   set: { lang: 'tr', maxSpk: '0', model: DEFAULT_MODEL },
 };
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
-if (!state.set.chosen) state.set.model = DEFAULT_MODEL;   // kullanıcı kendisi seçmediyse cihaza uygun olanı kullan
+if (!state.set.chosen) state.set.model = DEFAULT_MODEL;
+// Ekran kartı (WebGPU) çok daha hızlı; telefonda yalnızca küçük modellerde, daha önce hata vermediyse
+const deviceFor = (m) => hasGPU && !state.set.noGPU && !(isMobile && /small|large/.test(m)) ? 'webgpu' : 'wasm';   // kullanıcı kendisi seçmediyse cihaza uygun olanı kullan
 if (isMobile) {
   const big = document.querySelector('#model option[value*="large"]'); if (big) big.remove();
   if (state.set.model.includes('large')) state.set.model = DEFAULT_MODEL;
@@ -349,7 +356,7 @@ function addText(text, spk, u) {
 
 // ---------- Model çalışanı ve iş kuyruğu ----------
 let worker = null, ready = null, busy = false, readyKey = '';
-let modelReady = false, loading = false, dl = null;
+let modelReady = false, loading = false, dl = null, runInfo = null;
 const queue = [];
 let jobDone = 0, jobTotal = 0, fileJob = false;
 
@@ -368,7 +375,7 @@ function ensureWorker() {
   readyKey = key; modelReady = false; loading = true; dl = null; showModel();
   ready = new Promise((res, rej) => { ensureWorker.res = res; ensureWorker.rej = rej; });
   ready.catch(() => {});
-  worker.postMessage({ type: 'load', model: state.set.model, device: DEVICE, diar: diarOn() });
+  worker.postMessage({ type: 'load', model: state.set.model, device: deviceFor(state.set.model), diar: diarOn() });
   return ready;
 }
 function failLoad(msg) {
@@ -385,13 +392,23 @@ function onWorker({ data: m }) {
     if (m.total) { dl = m; showModel(); }
   } else if (m.type === 'status') { dl = null; showModel(m.text); }
   else if (m.type === 'ready') {
-    modelReady = true; loading = false; dl = null; showModel();
+    modelReady = true; loading = false; dl = null; runInfo = m;
+    if (deviceFor(state.set.model) === 'webgpu' && m.device !== 'webgpu') { state.set.noGPU = true; save(); }
+    showModel();
     if (fileJob) setStatus('Metne çevriliyor…');
     ensureWorker.res && ensureWorker.res();
     pump();
   } else if (m.type === 'result' || m.type === 'error') {
     busy = false;
     const u = inflight; inflight = null;
+    if (u && u.interim) {
+      // konuşma sürerken gelen ara metin: cümle bitince kesin metinle değişir
+      const t = m.type === 'result' ? cleanText(m.text) : '';
+      if (t && live && u.start > lastFinalStart) { $('interim').textContent = t; $('interim').hidden = false; }
+      pump();
+      return;
+    }
+    if (u) { lastFinalStart = Math.max(lastFinalStart, u.session === session ? u.start : lastFinalStart); $('interim').hidden = true; }
     if (m.type === 'error') {
       if (!u) return failLoad('Hata: ' + m.message);
       console.warn(m.message);
@@ -406,7 +423,17 @@ function onWorker({ data: m }) {
     pump();
   }
 }
-let inflight = null;
+let inflight = null, lastFinalStart = -1, interimAt = 0;
+// Cihaz boştayken, süren konuşmanın o ana kadarki kısmını çevir (ara metin)
+function maybeInterim() {
+  if (!live || !modelReady || busy || queue.length || !seg) return;
+  const c = seg.current();
+  if (!c || c.audio.length < SR * 1.0 || c.start <= lastFinalStart) return;
+  if (performance.now() - interimAt < 700) return;
+  interimAt = performance.now();
+  busy = true; inflight = { interim: true, start: c.start, session };
+  worker.postMessage({ type: 'utt', id: 'interim', audio: c.audio, lang: state.set.lang, diar: false, interim: true }, [c.audio.buffer]);
+}
 async function pump() {
   updateWorking();
   if (busy || !queue.length) { if (!busy && fileJob && segDone && !queue.length) endFile('Tamamlandı.'); return; }
@@ -437,7 +464,7 @@ function liveText() {
 function showModel(extra) {
   const info = $('modelInfo'), bar = $('mProg');
   info.classList.toggle('ok', modelReady);
-  if (modelReady) info.textContent = '✓ Modeller hazır';
+  if (modelReady) info.textContent = '✓ Modeller hazır · ' + (runInfo && runInfo.device === 'webgpu' ? 'ekran kartı hızlandırması' : `işlemci, ${runInfo && runInfo.threads > 1 ? runInfo.threads + ' çekirdek' : 'tek çekirdek'}`);
   else if (loading) info.textContent = extra || loadText();
   else info.textContent = extra || (cachedState === false ? 'Modeller henüz indirilmedi. Toplantıdan önce Wi-Fi’da indirmeniz önerilir.' : '');
   const pct = !modelReady && loading && dl && dl.total ? dl.loaded / dl.total : null;
@@ -457,7 +484,10 @@ async function checkModels() {
     const keys = (await (await caches.open('transformers-cache')).keys()).map((r) => r.url);
     const has = (repo, part) => keys.some((u) => u.includes('/' + repo + '/') && u.includes(part));
     const m = state.set.model;
-    cachedState = has(m, 'encoder_model') && has(m, 'decoder_model_merged') && (!diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx'));
+    const gpu = deviceFor(m) === 'webgpu';
+    const enc = gpu ? (m.includes('large') ? 'encoder_model_fp16' : 'onnx/encoder_model.onnx') : 'encoder_model_quantized';
+    const dec = gpu ? 'decoder_model_merged_q4.' : 'decoder_model_merged_quantized';
+    cachedState = has(m, enc) && has(m, dec) && (!diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx'));
   } catch { cachedState = false; }
   if (cachedState) ensureWorker().catch(() => {});
   showModel();
@@ -496,7 +526,8 @@ async function startLive() {
   const sess = session;
   actx = new (window.AudioContext || window.webkitAudioContext)();
   const rs = new Resampler(actx.sampleRate);
-  seg = new Segmenter((u) => enqueue(u, { session: sess }));
+  seg = new Segmenter((u) => enqueue(u, { session: sess }), { endSilence: 0.5, maxLen: 10 });
+  lastFinalStart = -1;
   const onSamples = (x) => {
     const y = rs.push(x); seg.push(y);
     $('timer').textContent = mmss((performance.now() - t0) / 1000);
@@ -520,7 +551,7 @@ async function startLive() {
     mediaRec.onstop = () => { audioBlob = new Blob(audioChunks, { type: mediaRec.mimeType || 'audio/webm' }); $('recActions').hidden = false; };
     mediaRec.start(1000);
   }
-  tick = setInterval(() => ($('timer').textContent = mmss((performance.now() - t0) / 1000)), 500);
+  tick = setInterval(() => { $('timer').textContent = mmss((performance.now() - t0) / 1000); maybeInterim(); }, 300);
   setLiveUI();
   ensureWorker().catch(() => {});
   setStatus(liveText());
@@ -529,6 +560,7 @@ function stopLive() {
   if (!live) return;
   live = false;
   clearInterval(tick);
+  $('interim').hidden = true;
   if (seg) seg.flush();
   try { node && node.disconnect(); } catch {}
   if (mediaRec && mediaRec.state !== 'inactive') mediaRec.stop();
@@ -643,7 +675,7 @@ function clearAll() {
 $('clear').onclick = () => { if (confirm('Tüm metin silinsin mi?')) { clearAll(); $('timer').textContent = '00:00'; } };
 
 function loadScript(src) {
-  return new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error(src)); document.head.appendChild(s); });
+  return new Promise((res, rej) => { const s = document.createElement('script'); s.crossOrigin = 'anonymous'; s.src = src; s.onload = res; s.onerror = () => rej(new Error(src)); document.head.appendChild(s); });
 }
 const PDFMAKE = 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/';
 const PDF_COLORS = ['#3346C8', '#B5481C', '#1D7F52', '#8A3FB0', '#A0711A', '#0F7A8A', '#B8336A', '#566070'];

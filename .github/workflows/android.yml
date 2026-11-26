@@ -28,19 +28,26 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: sherpa-onnx (Android kütüphanesi) ve yerleşik modelleri indir
+      - name: sherpa-onnx (yerel kütüphaneler + Kotlin API) ve yerleşik modelleri indir
         run: |
           set -e
           base=https://github.com/k2-fsa/sherpa-onnx/releases/download
-          curl -fsSL -o android/app/libs/sherpa-onnx.aar "$base/v${SHERPA_VERSION}/sherpa-onnx-${SHERPA_VERSION}.aar" || {
-            echo "AAR bulunamadı; sürümdeki dosyalar:"
-            curl -s "https://api.github.com/repos/k2-fsa/sherpa-onnx/releases/tags/v${SHERPA_VERSION}" | grep '"name"' | head -50
-            exit 1
-          }
+          # 1) yerel (.so) kütüphaneler
+          curl -fsSL -o /tmp/sherpa-android.tar.bz2 "$base/v${SHERPA_VERSION}/sherpa-onnx-v${SHERPA_VERSION}-android.tar.bz2"
+          mkdir -p /tmp/sherpa && tar xjf /tmp/sherpa-android.tar.bz2 -C /tmp/sherpa
+          mkdir -p android/app/src/main/jniLibs
+          for abi in arm64-v8a armeabi-v7a; do cp -rv /tmp/sherpa/jniLibs/$abi android/app/src/main/jniLibs/; done
+          # 2) aynı sürümün Kotlin API kaynakları (AAR'ın içindekiyle aynı dosyalar)
+          git clone -q --depth 1 --branch "v${SHERPA_VERSION}" --filter=blob:none --sparse https://github.com/k2-fsa/sherpa-onnx /tmp/sherpa-src
+          git -C /tmp/sherpa-src sparse-checkout set sherpa-onnx/kotlin-api android/SherpaOnnxAar/sherpa_onnx/src/main/java
+          dst=android/app/src/main/java/com/k2fsa/sherpa/onnx
+          mkdir -p $dst
+          cp -L /tmp/sherpa-src/android/SherpaOnnxAar/sherpa_onnx/src/main/java/com/k2fsa/sherpa/onnx/*.kt $dst/
+          ls $dst
+          # 3) APK içine gömülen küçük modeller
           curl -fsSL -o android/app/src/main/assets/silero_vad.onnx "$base/asr-models/silero_vad.onnx"
           curl -fsSL -o android/app/src/main/assets/speaker.onnx "$base/speaker-recongition-models/wespeaker_en_voxceleb_resnet34_LM.onnx"
-          ls -l android/app/libs android/app/src/main/assets
-          unzip -l android/app/libs/sherpa-onnx.aar | grep -E "\.so|classes" | head -20
+          ls -l android/app/src/main/assets android/app/src/main/jniLibs/*
 
       - name: Telefona indirilecek Whisper model adreslerini kontrol et
         run: |

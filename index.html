@@ -59,6 +59,10 @@ button,input,select,textarea{font:inherit;color:inherit}
 .brand span{color:var(--accent)}
 .brand-sub{font-family:var(--body);font-weight:500;font-size:.72rem;color:var(--muted);margin-left:6px;letter-spacing:0}
 .today{color:var(--muted);font-size:.85rem}
+.top-r{display:flex;align-items:center;gap:10px}
+.app-link{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent);font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap}
+.app-link svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round}
+@media (max-width:400px){.top-r .today{display:none}}
 .view{display:flex;flex-direction:column;gap:14px}
 h2{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:0;letter-spacing:-.01em;text-wrap:balance}
 .eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
@@ -179,7 +183,7 @@ textarea{min-height:110px;font-family:ui-monospace,Menlo,monospace;font-size:13p
 </head>
 <body>
 <div class="wrap">
-  <div class="top"><div class="brand">Kİ<span>FA</span> <small class="brand-sub">Kişisel Finans Analizi</small></div><div class="today" id="today"></div></div>
+  <div class="top"><div class="brand">Kİ<span>FA</span> <small class="brand-sub">Kişisel Finans Analizi</small></div><div class="top-r"><a class="app-link" href="transkript/" title="Konuşmayı metne çeviren Transkript uygulaması"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/></svg>Transkript</a><div class="today" id="today"></div></div></div>
   <section class="view" id="v-ozet"></section>
   <section class="view" id="v-hesaplar" hidden></section>
   <section class="view" id="v-hedefler" hidden></section>

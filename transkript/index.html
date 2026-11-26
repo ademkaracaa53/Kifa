@@ -69,6 +69,7 @@ select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);
 .progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
 .model-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
 .minfo{font-size:.88rem;color:var(--muted)}
+.hint{font-size:.78rem;color:var(--muted);line-height:1.35}
 .minfo.ok{color:var(--good,#1D7F52);font-weight:600}
 .status{font-size:.88rem;color:var(--muted);margin-top:10px;min-height:1.3em}
 .status.err{color:var(--rec)}
@@ -119,6 +120,7 @@ details.set[open] summary{margin-bottom:12px}
             <option value="en">İngilizce</option>
             <option value="auto">Otomatik (Türkçe / İngilizce)</option>
           </select>
+          <span id="langHint" class="hint" hidden>Yalnızca Türkçe konuşulacaksa “Türkçe” seçin; daha doğru ve hızlıdır.</span>
         </label>
         <label class="f">Konuşmacı sayısı
           <select id="maxSpk">
@@ -170,7 +172,10 @@ details.set[open] summary{margin-bottom:12px}
       <span class="meter" aria-hidden="true"><i id="meter"></i></span>
     </div>
     <div class="status" id="liveStatus"></div>
-    <div id="recActions" hidden style="margin-top:10px"><button class="btn" id="dlAudio">Ses kaydını indir</button></div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn" id="playLast" hidden title="Whisper'a giden son konuşma parçasını dinleyin: ses net mi?">▶ Son parçayı dinle</button>
+      <span id="recActions" hidden><button class="btn" id="dlAudio">Ses kaydını indir</button></span>
+    </div>
     <p class="note">Konuşma, kısa duraklamalarda cümle cümle metne çevrilir; metin birkaç saniye geriden gelir. Her şey bu cihazda işlenir, ses hiçbir yere gönderilmez. İlk kullanımda modeller bir kez indirilir. Hoparlöre yakın durmak doğruluğu çok artırır.</p>
   </section>
 
@@ -266,6 +271,7 @@ function applySpkSettings() {
   speakers.max = n > 1 ? n : 8;
   speakers.threshold = spkThr();
   $('paras').classList.toggle('no-diar', !diarOn());
+  $('langHint').hidden = state.set.lang !== 'auto';
   if (typeof parasEl !== 'undefined') updateMeta();
 }
 function lockSettings(on) { $('regroup').disabled = on; ['lang', 'maxSpk', 'spkSens', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
@@ -594,7 +600,7 @@ async function checkModels() {
     const has = (repo, part) => keys.some((u) => u.includes('/' + repo + '/') && u.includes(part));
     const m = state.set.model;
     const gpu = deviceFor(m) === 'webgpu';
-    const enc = gpu ? (m.includes('large') ? 'encoder_model_fp16' : 'onnx/encoder_model.onnx') : 'encoder_model_quantized';
+    const enc = gpu ? (m.includes('large') ? 'encoder_model_fp16' : 'onnx/encoder_model.onnx') : (/small|large/.test(m) ? 'encoder_model_quantized' : 'onnx/encoder_model.onnx');
     const dec = gpu ? 'decoder_model_merged_q4.' : 'decoder_model_merged_quantized';
     cachedState = has(m, enc) && has(m, dec) && (!diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx'));
   } catch { cachedState = false; }
@@ -624,7 +630,9 @@ function setLiveUI() {
 }
 async function startLive() {
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    // Yankı engelleme/gürültü bastırma kapalı: Android bunlar açıkken mikrofonu "telefon görüşmesi" moduna alıp
+    // sesi bozuyor; konuşma tanıma ham seste daha doğru çalışır.
+    stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: true } });
   } catch (e) {
     setStatus(!window.isSecureContext ? 'Mikrofon yalnızca güvenli (https://) adreste çalışır.'
       : e.name === 'NotFoundError' ? 'Mikrofon bulunamadı.'
@@ -633,16 +641,19 @@ async function startLive() {
   }
   live = true; session++; t0 = performance.now();
   const sess = session;
-  actx = new (window.AudioContext || window.webkitAudioContext)();
+  // Mümkünse tarayıcının kendi (yüksek kaliteli) dönüştürücüsüyle doğrudan 16 kHz al
+  const AC = window.AudioContext || window.webkitAudioContext;
+  let src;
+  try { actx = new AC({ sampleRate: SR }); src = actx.createMediaStreamSource(stream); }
+  catch { if (actx) actx.close(); actx = new AC(); src = actx.createMediaStreamSource(stream); }
   const rs = new Resampler(actx.sampleRate);
-  seg = new Segmenter((u) => enqueue(u, { session: sess }), { endSilence: 0.5, maxLen: 10 });
+  seg = new Segmenter((u) => { lastPiece = u.audio.slice(); $('playLast').hidden = false; enqueue(u, { session: sess }); }, { endSilence: 0.6, maxLen: 14 });
   lastFinalStart = -1;
   const onSamples = (x) => {
     const y = rs.push(x); seg.push(y);
     $('timer').textContent = mmss((performance.now() - t0) / 1000);
     $('meter').style.width = Math.min(100, Math.sqrt(seg.level) * 260) + '%';
   };
-  const src = actx.createMediaStreamSource(stream);
   const sink = actx.createGain(); sink.gain.value = 0; sink.connect(actx.destination);
   if (actx.audioWorklet) {
     await actx.audioWorklet.addModule(URL.createObjectURL(new Blob([WORKLET], { type: 'text/javascript' })));
@@ -684,6 +695,13 @@ function stopLive() {
   pump();
 }
 $('liveBtn').onclick = () => (live ? stopLive() : startLive());
+let lastPiece = null;
+$('playLast').onclick = () => {
+  if (!lastPiece) return;
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const buf = ctx.createBuffer(1, lastPiece.length, SR); buf.getChannelData(0).set(lastPiece);
+  const s = ctx.createBufferSource(); s.buffer = buf; s.connect(ctx.destination); s.onended = () => ctx.close(); s.start();
+};
 $('dlAudio').onclick = () => audioBlob && download(audioBlob, fileBase() + (audioBlob.type.includes('mp4') ? '.m4a' : audioBlob.type.includes('ogg') ? '.ogg' : '.webm'));
 
 // ---------- Dosya ----------

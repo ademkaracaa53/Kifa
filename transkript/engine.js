@@ -13,8 +13,10 @@
       this.endSilence = opts.endSilence ?? 0.7;             // bu kadar sessizlik bölümü bitirir (sn)
       this.maxLen = opts.maxLen ?? 14;                      // daha uzun bölüm en sessiz yerden kesilir (sn)
       this.minSpeech = opts.minSpeech ?? 0.35;              // daha kısa sesler gürültü sayılır (sn)
-      this.preRoll = opts.preRoll ?? 0.25;                  // konuşma başından önce tutulan ses (sn)
-      this.absMin = opts.absMin ?? 0.006;                   // mutlak eşik (RMS)
+      this.preRoll = opts.preRoll ?? 0.3;
+      this.shortLen = opts.shortLen ?? 2;                   // bundan kısa bölüm hemen kesilmesin:
+      this.shortSilence = opts.shortSilence ?? 1.0;         // kısa bölümde bu kadar sessizlik bekle (bağlam için)                  // konuşma başından önce tutulan ses (sn)
+      this.absMin = opts.absMin ?? 0.004;                   // mutlak eşik (RMS)
       this.ratio = opts.ratio ?? 3;                         // gürültü tabanının kaç katı konuşma sayılır
       this.noise = opts.noise ?? 0.004;
       this.pos = 0;                                         // işlenen toplam örnek
@@ -59,7 +61,8 @@
       c.frames.push(f); c.energies.push(rms);
       if (speech) { c.speech += fs; c.silence = 0; } else c.silence += fs;
       const len = c.frames.length * fs;
-      if (c.silence >= this.endSilence) this._emit(c.frames.length - Math.floor(c.silence / fs) + 2);
+      const need = (c.frames.length * fs - c.silence) < this.shortLen ? Math.max(this.endSilence, this.shortSilence) : this.endSilence;
+      if (c.silence >= need) this._emit(c.frames.length - Math.floor(c.silence / fs) + 2);
       else if (len >= this.maxLen) this._cutLongest();
     }
     _cutLongest() {

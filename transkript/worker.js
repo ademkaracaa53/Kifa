@@ -34,7 +34,8 @@ const threads = self.crossOriginIsolated ? Math.min(4, Math.max(1, Math.ceil((na
 if (env.backends.onnx && env.backends.onnx.wasm) env.backends.onnx.wasm.numThreads = threads;
 
 function asrDtype(model, dev) {
-  if (dev !== 'webgpu') return 'q8';
+  // İşlemcide: ses kodlayıcıyı (encoder) sıkıştırmak doğruluğu belirgin düşürür; küçük modellerde tam hassasiyet kullan
+  if (dev !== 'webgpu') return /small|large/.test(model) ? 'q8' : { encoder_model: 'fp32', decoder_model_merged: 'q8' };
   return model.includes('large') ? { encoder_model: 'fp16', decoder_model_merged: 'q4' } : { encoder_model: 'fp32', decoder_model_merged: 'q4' };
 }
 
@@ -84,7 +85,8 @@ async function detectTrEn(audio) {
   const { input_features } = await asr.processor(audio);
   const lp = new LangScores([tr, en]);
   await asr.model.generate({ inputs: input_features, decoder_input_ids: [gc.decoder_start_token_id], max_new_tokens: 1, logits_processor: [lp] });
-  return lp.scores && lp.scores[1] > lp.scores[0] ? 'en' : 'tr';
+  // Türkçe lehine pay bırak: İngilizce ancak açıkça daha olasıysa seçilsin
+  return lp.scores && lp.scores[1] - lp.scores[0] > 1.5 ? 'en' : 'tr';
 }
 
 async function embed(audio) {

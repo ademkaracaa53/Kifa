@@ -45,6 +45,7 @@ jobs:
           cp -L /tmp/sherpa-src/android/SherpaOnnxAar/sherpa_onnx/src/main/java/com/k2fsa/sherpa/onnx/*.kt $dst/
           ls $dst
           # 3) APK içine gömülen küçük modeller
+          mkdir -p android/app/src/main/assets
           curl -fsSL -o android/app/src/main/assets/silero_vad.onnx "$base/asr-models/silero_vad.onnx"
           curl -fsSL -o android/app/src/main/assets/speaker.onnx "$base/speaker-recongition-models/wespeaker_en_voxceleb_resnet34_LM.onnx"
           ls -l android/app/src/main/assets android/app/src/main/jniLibs/*

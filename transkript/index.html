@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Transkript</title>
+<title>eFAM Transkript</title>
 <meta name="description" content="Toplantı, konferans ve sunumlarda konuşmayı noktalamalı metne çevirir, konuşmacıları ayırır; TXT ve PDF olarak verir.">
 <meta name="theme-color" content="#EDF0F3" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0D1016" media="(prefers-color-scheme: dark)">
@@ -48,7 +48,7 @@ header .back{margin-left:auto;font-size:.82rem;font-weight:600;text-decoration:n
 .tabs button[aria-selected="true"]{background:var(--accent-soft);color:var(--accent)}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
 label.f{display:flex;flex-direction:column;gap:4px;font-size:.8rem;color:var(--muted);min-width:0}
-select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+select,input[type=text],input[type=password]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
 .chk{display:flex;gap:8px;align-items:center;font-size:.92rem;color:var(--ink);cursor:pointer}
 .opts{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px}
 .btn{font:600 .95rem var(--body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:11px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
@@ -106,7 +106,7 @@ details.set[open] summary{margin-bottom:12px}
 <main>
   <header>
     <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color:var(--accent)"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
-    <h1>Transkript</h1>
+    <h1>eFAM Transkript</h1>
     <a class="back" href="../" title="KİFA ana sayfası">← KİFA</a>
   </header>
 
@@ -114,6 +114,12 @@ details.set[open] summary{margin-bottom:12px}
     <details class="set" id="setBox" open>
       <summary>Ayarlar</summary>
       <div class="grid">
+        <label class="f">Metne çeviren motor
+          <select id="engine">
+            <option value="local">Bu cihazda (internetsiz)</option>
+            <option value="cloud">Bulut · Cloudflare (hızlı, en doğru)</option>
+          </select>
+        </label>
         <label class="f">Konuşma dili
           <select id="lang">
             <option value="tr">Türkçe</option>
@@ -137,7 +143,7 @@ details.set[open] summary{margin-bottom:12px}
             <option value="sens">Hassas (benzer sesleri ayırır)</option>
           </select>
         </label>
-        <label class="f">Doğruluk / hız
+        <label class="f" id="modelBox">Doğruluk / hız
           <select id="model">
             <option value="onnx-community/whisper-tiny">Hızlı (zayıf cihazlar)</option>
             <option value="onnx-community/whisper-base">Dengeli</option>
@@ -148,6 +154,18 @@ details.set[open] summary{margin-bottom:12px}
       </div>
       <div class="opts">
         <label class="chk"><input type="checkbox" id="saveAudio"> Sesi de kaydet</label>
+      </div>
+      <div class="grid" id="cloudBox" hidden style="margin-top:12px">
+        <label class="f">Sunucu adresi (Cloudflare Worker)
+          <input type="text" id="cloudUrl" placeholder="ornek.alanadiniz.workers.dev" autocomplete="off" spellcheck="false">
+        </label>
+        <label class="f">Erişim kodu
+          <input type="password" id="cloudCode" autocomplete="off">
+        </label>
+        <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
+          <button class="btn" id="cloudTest">Bağlantıyı dene</button>
+          <span class="minfo" id="cloudInfo"></span>
+        </div>
       </div>
       <div class="model-row">
         <button class="btn" id="dlModels">Modelleri şimdi indir</button>
@@ -227,7 +245,7 @@ const hasGPU = 'gpu' in navigator;
 const DEFAULT_MODEL = hasGPU && !isMobile ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
 let state = {
   title: '', paras: [], names: {}, spk: null,
-  set: { lang: 'tr', maxSpk: '0', spkSens: 'norm', model: DEFAULT_MODEL },
+  set: { engine: 'local', lang: 'tr', maxSpk: '0', spkSens: 'norm', model: DEFAULT_MODEL },
 };
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
 if (!state.set.chosen) state.set.model = DEFAULT_MODEL;
@@ -255,7 +273,7 @@ function toast(msg, ms = 2800) {
 const mmss = (s) => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60; return (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); };
 
 // ---------- Ayarlar ----------
-['lang', 'maxSpk', 'spkSens', 'model'].forEach((k) => {
+['engine', 'lang', 'maxSpk', 'spkSens', 'model'].forEach((k) => {
   $(k).value = state.set[k];
   $(k).addEventListener('change', () => {
     state.set[k] = $(k).value; if (k === 'model') state.set.chosen = true;
@@ -274,7 +292,7 @@ function applySpkSettings() {
   $('langHint').hidden = state.set.lang !== 'auto';
   if (typeof parasEl !== 'undefined') updateMeta();
 }
-function lockSettings(on) { $('regroup').disabled = on; ['lang', 'maxSpk', 'spkSens', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
+function lockSettings(on) { $('regroup').disabled = on; ['engine', 'cloudUrl', 'cloudCode', 'cloudTest', 'lang', 'maxSpk', 'spkSens', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
 
 // ---------- Transkript görünümü ----------
 const parasEl = $('paras');
@@ -459,9 +477,15 @@ function setStatus(text, err) {
   const el = fileJob ? $('fStatus') : $('liveStatus');
   el.textContent = text || ''; el.classList.toggle('err', !!err);
 }
+const cloudOn = () => state.set.engine === 'cloud';
 function ensureWorker() {
-  const key = state.set.model + '|' + diarOn();
+  const key = (cloudOn() ? 'cloud' : state.set.model) + '|' + diarOn();
   if (ready && readyKey === key) return ready;
+  if (cloudOn() && !diarOn()) {
+    // bulut + konuşmacı ayrımı yok: cihazda hiçbir model gerekmez
+    readyKey = key; modelReady = true; loading = false; runInfo = { device: 'cloud' };
+    ready = Promise.resolve(); showModel(); return ready;
+  }
   if (!worker) {
     worker = new Worker('worker.js', { type: 'module' });
     worker.onmessage = onWorker;
@@ -470,7 +494,7 @@ function ensureWorker() {
   readyKey = key; modelReady = false; loading = true; dl = null; showModel();
   ready = new Promise((res, rej) => { ensureWorker.res = res; ensureWorker.rej = rej; });
   ready.catch(() => {});
-  worker.postMessage({ type: 'load', model: state.set.model, device: deviceFor(state.set.model), diar: diarOn() });
+  worker.postMessage({ type: 'load', model: state.set.model, device: deviceFor(state.set.model), diar: diarOn(), asr: !cloudOn() });
   return ready;
 }
 function failLoad(msg) {
@@ -495,6 +519,7 @@ function onWorker({ data: m }) {
     ensureWorker().catch(() => {}); pump();
     return;
   }
+  if (m.type === 'emb') { const r = embWait.get(m.id); embWait.delete(m.id); if (r) r(m.emb); return; }
   if (m.type === 'download') {
     if (m.total) { dl = m; showModel(); }
   } else if (m.type === 'status') { dl = null; showModel(m.text); }
@@ -535,7 +560,7 @@ function onWorker({ data: m }) {
 let inflight = null, lastFinalStart = -1, interimAt = 0;
 // Cihaz boştayken, süren konuşmanın o ana kadarki kısmını çevir (ara metin)
 function maybeInterim() {
-  if (!live || !modelReady || busy || queue.length || !seg) return;
+  if (!live || !modelReady || busy || queue.length || !seg || cloudOn()) return;
   const c = seg.current();
   if (!c || c.audio.length < SR * 1.0 || c.start <= lastFinalStart) return;
   if (performance.now() - interimAt < 700) return;
@@ -557,9 +582,79 @@ async function pump() {
   if (busy || !queue.length) return;
   const u = queue.shift();
   busy = true; inflight = u;
+  if (cloudOn()) { cloudJob(u); updateWorking(); return; }
   worker.postMessage({ type: 'utt', id: u.id, audio: u.audio, lang: state.set.lang, diar: diarOn() });
   updateWorking();
 }
+
+// ---------- Bulut motoru (kullanıcının Cloudflare Worker'ı: cloudflare/worker.js) ----------
+const embWait = new Map();
+function workerEmbed(u) {
+  if (!diarOn() || !worker) return Promise.resolve(null);
+  return new Promise((res) => { embWait.set(u.id, res); worker.postMessage({ type: 'embed', id: u.id, audio: u.audio }); });
+}
+function wavBytes(f32) {
+  const b = new ArrayBuffer(44 + f32.length * 2), v = new DataView(b);
+  const w = (o, t) => { for (let i = 0; i < t.length; i++) v.setUint8(o + i, t.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + f32.length * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, SR, true); v.setUint32(28, SR * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, f32.length * 2, true);
+  for (let i = 0; i < f32.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, f32[i])) * 32767, true);
+  return b;
+}
+function cloudBase() {
+  let s = (state.set.cloudUrl || '').trim();
+  if (s && !/^https?:\/\//.test(s)) s = 'https://' + s;
+  return s.replace(/\/+$/, '');
+}
+class CloudError extends Error { constructor(msg, fatal) { super(msg); this.fatal = fatal; } }
+async function cloudOnce(body) {
+  let r;
+  try {
+    r = await fetch(cloudBase() + '/?lang=' + encodeURIComponent(state.set.lang), {
+      method: 'POST', headers: { 'content-type': 'audio/wav', 'x-access-code': (state.set.cloudCode || '').trim() }, body,
+    });
+  } catch (e) { throw new CloudError('Bulut sunucusuna ulaşılamadı (internet bağlantısını kontrol edin)', false); }
+  let j = {};
+  try { j = await r.json(); } catch {}
+  if (r.ok) return j.text || '';
+  if (r.status === 401) throw new CloudError('Erişim kodu yanlış (ayarlardan kontrol edin)', true);
+  if (r.status === 429) throw new CloudError('Cloudflare günlük ücretsiz kotası doldu ya da sınıra takıldı', true);
+  if (r.status === 404) throw new CloudError('Sunucu adresi bulunamadı (ayarlardan kontrol edin)', true);
+  throw new CloudError('Sunucu hatası ' + r.status + (j.error ? ': ' + j.error : ''), r.status < 500);
+}
+async function cloudTranscribe(audio) {
+  const body = wavBytes(audio);
+  let last;
+  for (let i = 0; i < 3; i++) {
+    try { return await cloudOnce(body); }
+    catch (e) { last = e; if (e.fatal) throw e; await new Promise((r) => setTimeout(r, 400 * (i + 1))); }
+  }
+  throw last;
+}
+async function cloudJob(u) {
+  try {
+    const t0 = performance.now();
+    const [text, emb] = await Promise.all([cloudTranscribe(u.audio), workerEmbed(u)]);
+    const took = (performance.now() - t0) / 1000, dur = u.end - u.start;
+    onWorker({ data: { type: 'result', id: u.id, text, emb } });
+    if (live) setStatus(`Dinleniyor · son parça: ${dur.toFixed(1)} sn ses → ${took.toFixed(1)} sn`);
+  } catch (e) {
+    if (e.fatal) { queue.length = 0; stopLive(); endFile('Bulut: ' + e.message); }
+    setStatus('Bulut: ' + e.message, true);
+    onWorker({ data: { type: 'error', id: u.id, message: e.message } });
+  }
+}
+$('cloudTest').onclick = async () => {
+  const info = $('cloudInfo');
+  if (!cloudBase() || !(state.set.cloudCode || '').trim()) { info.textContent = 'Sunucu adresini ve erişim kodunu girin.'; return; }
+  info.textContent = 'Deneniyor…';
+  try { await cloudOnce(wavBytes(new Float32Array(SR))); info.textContent = '✓ Bağlantı başarılı'; }
+  catch (e) { info.textContent = '✗ ' + e.message; }
+};
+['cloudUrl', 'cloudCode'].forEach((k) => {
+  $(k).value = state.set[k] || '';
+  $(k).addEventListener('input', () => { state.set[k] = $(k).value.trim(); save(); });
+});
 function updateWorking() {
   const n = queue.length + (busy ? 1 : 0);
   $('working').hidden = n === 0;
@@ -579,7 +674,8 @@ function liveText() {
 function showModel(extra) {
   const info = $('modelInfo'), bar = $('mProg');
   info.classList.toggle('ok', modelReady);
-  if (modelReady) info.textContent = '✓ Modeller hazır · ' + (runInfo && runInfo.device === 'webgpu' ? 'ekran kartı hızlandırması' : `işlemci, ${runInfo && runInfo.threads > 1 ? runInfo.threads + ' çekirdek' : 'tek çekirdek'}`);
+  if (modelReady && cloudOn()) info.textContent = diarOn() ? '✓ Konuşmacı modeli hazır · metin Cloudflare sunucunuzda çevrilir' : '✓ Metin Cloudflare sunucunuzda çevrilir';
+  else if (modelReady) info.textContent = '✓ Modeller hazır · ' + (runInfo && runInfo.device === 'webgpu' ? 'ekran kartı hızlandırması' : `işlemci, ${runInfo && runInfo.threads > 1 ? runInfo.threads + ' çekirdek' : 'tek çekirdek'}`);
   else if (loading) info.textContent = extra || loadText();
   else info.textContent = extra || (cachedState === false ? 'Modeller henüz indirilmedi. Toplantıdan önce Wi-Fi’da indirmeniz önerilir.' : '');
   const pct = !modelReady && loading && dl && dl.total ? dl.loaded / dl.total : null;
@@ -593,7 +689,9 @@ function showModel(extra) {
 // Modeller önbellekte mi? Öyleyse sessizce belleğe yükle, Başlat'a basınca hemen çalışsın
 let cachedState = null;
 async function checkModels() {
-  if (modelReady && readyKey === state.set.model + '|' + diarOn()) return;
+  $('cloudBox').hidden = !cloudOn();
+  $('modelBox').hidden = cloudOn();
+  if (modelReady && readyKey === (cloudOn() ? 'cloud' : state.set.model) + '|' + diarOn()) return;
   modelReady = false; cachedState = null;
   try {
     const keys = (await (await caches.open('transformers-cache')).keys()).map((r) => r.url);
@@ -602,7 +700,8 @@ async function checkModels() {
     const gpu = deviceFor(m) === 'webgpu';
     const enc = gpu ? (m.includes('large') ? 'encoder_model_fp16' : 'onnx/encoder_model.onnx') : (/small|large/.test(m) ? 'encoder_model_quantized' : 'onnx/encoder_model.onnx');
     const dec = gpu ? 'decoder_model_merged_q4.' : 'decoder_model_merged_quantized';
-    cachedState = has(m, enc) && has(m, dec) && (!diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx'));
+    const spkOk = !diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx');
+    cachedState = cloudOn() ? spkOk : has(m, enc) && has(m, dec) && spkOk;
   } catch { cachedState = false; }
   if (cachedState) ensureWorker().catch(() => {});
   showModel();
@@ -628,7 +727,16 @@ function setLiveUI() {
   $('tabFile').disabled = live;
   lockSettings(live || fileJob);
 }
+function cloudMissing() {
+  if (cloudOn() && (!cloudBase() || !(state.set.cloudCode || '').trim())) {
+    $('setBox').open = true;
+    toast('Bulut motoru için Ayarlar’dan sunucu adresini ve erişim kodunu girin.', 4500);
+    return true;
+  }
+  return false;
+}
 async function startLive() {
+  if (cloudMissing()) return;
   try {
     // Yankı engelleme/gürültü bastırma kapalı: Android bunlar açıkken mikrofonu "telefon görüşmesi" moduna alıp
     // sesi bozuyor; konuşma tanıma ham seste daha doğru çalışır.
@@ -755,7 +863,7 @@ $('fStop').onclick = () => {
   segDone = true; endFile('Durduruldu.'); updateWorking();
 };
 $('fRun').onclick = async () => {
-  if (!chosen || fileJob) return;
+  if (!chosen || fileJob || cloudMissing()) return;
   fileJob = true; segDone = false; jobDone = 0; jobTotal = 0;
   $('fRun').disabled = true; $('fStop').hidden = false; setLiveUI();
   setStatus('Ses dosyası okunuyor…');
@@ -815,10 +923,10 @@ $('exPdf').onclick = async () => {
       ? { stack: [{ text: spkName(p.spk), bold: true, fontSize: 9.5, color: PDF_COLORS[(p.spk - 1) % 8], margin: [0, 0, 0, 1] }, { text: p.text.trim() }], margin: [0, 0, 0, 10] }
       : { text: p.text.trim(), margin: [0, 0, 0, 10] });
     pdfMake.createPdf({
-      info: { title: state.title || 'Transkript' },
+      info: { title: state.title || 'eFAM Transkript' },
       pageSize: 'A4', pageMargins: [52, 56, 52, 56],
       content: [
-        { text: state.title || 'Transkript', fontSize: 18, bold: true, margin: [0, 0, 0, 4] },
+        { text: state.title || 'eFAM Transkript', fontSize: 18, bold: true, margin: [0, 0, 0, 4] },
         { text: new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }), fontSize: 9, color: '#666', margin: [0, 0, 0, 18] },
         ...body,
       ],

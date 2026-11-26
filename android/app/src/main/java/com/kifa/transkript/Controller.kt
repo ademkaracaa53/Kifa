@@ -35,6 +35,9 @@ object Controller : Engine.Listener {
     val lang get() = prefs.getString("lang", "tr")!!
     val model get() = prefs.getString("model", Models.DEFAULT)!!
     val maxSpk get() = prefs.getInt("maxSpk", 0)
+    val cloud get() = prefs.getString("engine", "local") == "cloud"
+    val cloudUrl get() = prefs.getString("cloudUrl", "")!!
+    val cloudCode get() = prefs.getString("cloudCode", "")!!
     val sens get() = prefs.getString("sens", "norm")!!
     val diarOn get() = maxSpk != 1
     fun spkThr() = when (sens) { "tol" -> 0.6f; "sens" -> 0.76f; else -> 0.68f }
@@ -56,7 +59,7 @@ object Controller : Engine.Listener {
 
     fun start(ctx: Context): Boolean {
         sinceRegroup = 0
-        return Engine.start(ctx, Settings(model, lang, diarOn))
+        return Engine.start(ctx, Settings(model, lang, diarOn, cloud, Cloud.normalizeUrl(cloudUrl), cloudCode.trim()))
     }
 
     // ---------- Engine.Listener (ana iş parçacığı) ----------

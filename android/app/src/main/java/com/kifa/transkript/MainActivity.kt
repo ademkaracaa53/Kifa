@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     private var downloading = false
 
     private val c = Controller
+    private val engines = listOf("local" to "Bu cihazda (Whisper · internetsiz)", "cloud" to "Bulut · Cloudflare (hızlı, en doğru)")
     private val langs = listOf("tr" to "Türkçe", "en" to "İngilizce", "auto" to "Otomatik (dil algılama)")
     private val spks = listOf(0 to "Otomatik", 1 to "Tek konuşmacı (ayrım yok)", 2 to "2", 3 to "3", 4 to "4", 5 to "5", 6 to "6")
     private val senses = listOf("tol" to "Toleranslı (aynı kişiyi bölmez)", "norm" to "Normal", "sens" to "Hassas (benzer sesleri ayırır)")
@@ -93,11 +94,17 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         modelProgress = findViewById(R.id.modelProgress); btnDownload = findViewById(R.id.btnDownload)
         titleView = findViewById(R.id.title)
 
+        setupSpinner(findViewById(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else "local") }) {
+            c.prefs.edit().putString("engine", engines[it].first).apply(); applyEngineUi()
+        }
+        bindPref(findViewById(R.id.cloudUrl), "cloudUrl")
+        bindPref(findViewById(R.id.cloudCode), "cloudCode")
+        findViewById<View>(R.id.btnCloudTest).setOnClickListener { testCloud() }
         setupSpinner(findViewById(R.id.spLang), langs.map { it.second }, langs.indexOfFirst { it.first == c.lang }) {
             c.prefs.edit().putString("lang", langs[it].first).apply()
         }
         setupSpinner(findViewById(R.id.spModel), Models.list.map { it.label }, Models.list.indexOfFirst { it.key == c.model }) {
-            c.prefs.edit().putString("model", Models.list[it].key).apply(); showModel()
+            c.prefs.edit().putString("model", Models.list[it].key).apply(); applyEngineUi()
         }
         setupSpinner(findViewById(R.id.spSpk), spks.map { it.second }, spks.indexOfFirst { it.first == c.maxSpk }) {
             c.prefs.edit().putInt("maxSpk", spks[it].first).apply(); afterSpeakerSetting()
@@ -118,7 +125,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         findViewById<View>(R.id.btnPdf).setOnClickListener { savePdf.launch(fileBase() + ".pdf") }
         findViewById<View>(R.id.btnShare).setOnClickListener { share() }
         findViewById<View>(R.id.btnCopy).setOnClickListener {
-            (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("Transkript", Transcript.plainText()))
+            (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("eFAM Transkript", Transcript.plainText()))
             toast("Panoya kopyalandı")
         }
         findViewById<View>(R.id.btnRegroup).setOnClickListener {
@@ -139,7 +146,38 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
             }
         })
         rerender()
-        showModel()
+        applyEngineUi()
+    }
+
+    // ---------- bulut motoru ----------
+    private fun bindPref(et: EditText, key: String) {
+        et.setText(c.prefs.getString(key, ""))
+        et.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, a: Int, b: Int, n: Int) {}
+            override fun onTextChanged(s: CharSequence?, a: Int, b: Int, n: Int) {}
+            override fun afterTextChanged(s: Editable?) { c.prefs.edit().putString(key, s.toString().trim()).apply() }
+        })
+    }
+
+    private fun applyEngineUi() {
+        val cloud = c.cloud
+        findViewById<View>(R.id.cloudBox).visibility = if (cloud) View.VISIBLE else View.GONE
+        findViewById<View>(R.id.localBox).visibility = if (cloud) View.GONE else View.VISIBLE
+        if (cloud) {
+            modelInfo.text = "Bulut motorunda ses parçaları sizin Cloudflare sunucunuza gider; Whisper large-v3-turbo ile çevrilir. Konuşma algılama ve konuşmacı ayrımı telefonda yapılır."
+            modelProgress.visibility = View.GONE; btnDownload.visibility = View.GONE
+        } else showModel()
+    }
+
+    private fun testCloud() {
+        val info = findViewById<TextView>(R.id.cloudInfo)
+        val url = c.cloudUrl; val code = c.cloudCode
+        if (url.isBlank() || code.isBlank()) { info.text = "Sunucu adresini ve erişim kodunu girin."; return }
+        info.text = "Deneniyor…"
+        Thread {
+            val msg = try { "✓ " + Cloud.check(url, code) } catch (e: Exception) { "✗ " + (e.message ?: "Bağlantı kurulamadı") }
+            handler.post { info.text = msg }
+        }.start()
     }
 
     override fun onStart() {
@@ -176,14 +214,14 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     }
 
     private fun lockSettings(on: Boolean) {
-        listOf(R.id.spLang, R.id.spModel, R.id.spSpk, R.id.spSens).forEach { findViewById<View>(it).isEnabled = !on }
+        listOf(R.id.spEngine, R.id.cloudUrl, R.id.cloudCode, R.id.btnCloudTest, R.id.spLang, R.id.spModel, R.id.spSpk, R.id.spSens).forEach { findViewById<View>(it).isEnabled = !on }
         findViewById<View>(R.id.btnRegroup).isEnabled = !on
         btnDownload.isEnabled = !on && !downloading
     }
 
     // ---------- model ----------
     private fun showModel() {
-        if (downloading) return
+        if (downloading || c.cloud) return
         val ready = Models.isReady(this, c.model)
         modelProgress.visibility = View.GONE
         btnDownload.visibility = if (ready) View.GONE else View.VISIBLE
@@ -207,7 +245,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
                         modelInfo.text = "Model indiriliyor: %d / %d MB".format(done / 1048576, total / 1048576)
                     }
                 }, { false })
-                handler.post { downloading = false; btnDownload.isEnabled = true; showModel(); if (thenStart) requestAndStart() }
+                handler.post { downloading = false; btnDownload.isEnabled = true; applyEngineUi(); if (thenStart) requestAndStart() }
             } catch (e: Exception) {
                 handler.post {
                     downloading = false; btnDownload.isEnabled = true; modelProgress.visibility = View.GONE
@@ -219,7 +257,11 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
 
     // ---------- kayıt ----------
     private fun requestAndStart() {
-        if (!Models.isReady(this, c.model)) {
+        if (c.cloud && (c.cloudUrl.isBlank() || c.cloudCode.isBlank())) {
+            toast("Bulut motoru için ayarlardan sunucu adresini ve erişim kodunu girin")
+            return
+        }
+        if (!c.cloud && !Models.isReady(this, c.model)) {
             confirm("Seçili model henüz indirilmedi. Şimdi indirilsin mi? (Wi-Fi önerilir)") { downloadModel(true) }
             return
         }

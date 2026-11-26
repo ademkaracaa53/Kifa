@@ -1,6 +1,10 @@
-# Transkript
+# eFAM Transkript
 
 Toplantı, konferans ve sunumlarda konuşmayı **noktalamalı, akan metne** çeviren ve **konuşmacıları ayıran** tarayıcı uygulaması. Sunucu ya da ücretli API gerekmez; her şey kullanıcının cihazında çalışır, ses hiçbir yere gönderilmez. Mikrofon için sayfanın `https` üzerinden açılması gerekir (GitHub Pages uygundur).
+
+## Motorlar
+- **Bu cihazda:** Whisper tarayıcıda çalışır, ses dışarı çıkmaz.
+- **Bulut · Cloudflare:** konuşma parçaları kendi Cloudflare Worker'ınıza gider, Whisper large-v3-turbo ile çevrilir (kurulum: `cloudflare/README.md`). Konuşma algılama ve konuşmacı ayrımı yine cihazda yapılır.
 
 ## Nasıl çalışır
 1. **Ses alma:** canlı modda mikrofon (AudioWorklet), dosya modunda ses/video dosyası 16 kHz monoya çevrilir.

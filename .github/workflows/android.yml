@@ -82,5 +82,5 @@ jobs:
           gh release delete android-latest --yes --cleanup-tag || true
           gh release create android-latest Transkript.apk \
             --target "$GITHUB_SHA" \
-            --title "Transkript Android (son sürüm)" \
+            --title "eFAM Transkript Android (son sürüm)" \
             --notes "Derleme #${GITHUB_RUN_NUMBER}. Telefonda bu sayfadan Transkript.apk dosyasını indirip kurun. İlk kurulumda 'bilinmeyen kaynaklardan yükleme' izni istenir."

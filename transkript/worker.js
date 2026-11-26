@@ -125,9 +125,15 @@ self.onmessage = async ({ data: m }) => {
     if (m.type === 'load') {
       downloads = {};
       self.postMessage({ type: 'status', text: 'Modeller yükleniyor…' });
-      await loadAsr(m.model, m.device);
+      // bulut motorunda Whisper sunucuda çalışır; burada yalnızca konuşmacı ses izi modeli gerekir
+      if (m.asr !== false) await loadAsr(m.model, m.device);
       if (m.diar) await loadSpk();
       self.postMessage({ type: 'ready', device, threads });
+    } else if (m.type === 'embed') {
+      // yalnızca konuşmacı ses izi (bulut motoru)
+      if (!spkModel) await loadSpk();
+      const emb = m.audio.length >= 16000 * 0.8 ? await embed(m.audio) : null;
+      self.postMessage({ type: 'emb', id: m.id, emb });
     } else if (m.type === 'utt') {
       let r;
       try {
@@ -140,6 +146,7 @@ self.onmessage = async ({ data: m }) => {
     }
   } catch (e) {
     if (e instanceof GpuFail) { self.postMessage({ type: 'gpufail', message: e.message }); return; }
+    if (m.type === 'embed') { self.postMessage({ type: 'emb', id: m.id, emb: null }); return; }
     self.postMessage({ type: 'error', id: m.id, interim: !!m.interim, message: String((e && e.message) || e) });
   }
 };

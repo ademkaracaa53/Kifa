@@ -28,7 +28,12 @@ import kotlin.math.sqrt
 private const val TAG = "Transkript"
 private const val SR = 16000
 
-class Settings(val model: String, val lang: String, val diar: Boolean)
+class Settings(
+    val model: String, val lang: String, val diar: Boolean,
+    val cloud: Boolean = false, val url: String = "", val code: String = "",
+) {
+    fun same(o: Settings?) = o != null && o.model == model && o.lang == lang && o.diar == diar && o.cloud == cloud && o.url == url && o.code == code
+}
 
 /**
  * Kayıt → konuşma algılama (Silero VAD) → Whisper (sherpa-onnx) → konuşmacı ses izi.
@@ -80,7 +85,7 @@ object Engine {
         synchronized(life) {
             val prev = lastSettings
             reuse = working   // önceki kaydın model iş parçacığı hâlâ çalışıyorsa onu kullanmaya devam et
-            if (reuse && (prev == null || prev.model != s.model || prev.lang != s.lang || prev.diar != s.diar)) {
+            if (reuse && !s.same(prev)) {
                 status("Önceki kaydın kalan cümleleri çevriliyor; ayar değişikliği için biraz bekleyin.", true)
                 return false
             }
@@ -106,8 +111,9 @@ object Engine {
     // ---------- modeller ----------
     @Synchronized
     private fun ensureModels(ctx: Context, s: Settings) {
+        active = s
         val key = "${s.model}|${s.lang}"
-        if (recognizer == null || loadedKey != key) {
+        if (!s.cloud && (recognizer == null || loadedKey != key)) {
             recognizer?.release(); recognizer = null; modelReady = false
             status("Model yükleniyor…")
             val threads = min(4, max(1, Runtime.getRuntime().availableProcessors() / 2))
@@ -147,7 +153,11 @@ object Engine {
         modelReady = true
     }
 
+    @Volatile private var active: Settings? = null
+
     private fun transcribe(samples: FloatArray): String {
+        val s = active
+        if (s != null && s.cloud) return Cloud.transcribe(s, samples)
         val r = recognizer ?: return ""
         val st = r.createStream()
         st.acceptWaveform(samples, SR)
@@ -184,6 +194,7 @@ object Engine {
             return
         }
         var lastInterim = 0L
+        var errMsg: String? = null
         while (true) {
             synchronized(life) { if (!recording && finals.isEmpty()) { working = false } }
             if (!working) break
@@ -199,12 +210,21 @@ object Engine {
                         listener?.onInterim(null)
                         listener?.onText(text, emb, dur, job.session)
                     }
+                    errMsg = null
                     val left = finals.size
                     status(
                         (if (recording) "Dinleniyor" else "Kalan konuşmalar çevriliyor") +
                             " · son parça: %.1f sn ses → %.1f sn işlem".format(dur, took) +
                             (if (left > 1) " · $left parça sırada" else "")
                     )
+                } catch (e: Cloud.CloudError) {
+                    Log.e(TAG, "cloud", e)
+                    errMsg = "Bulut: ${e.message}"; status(errMsg!!, true)
+                    // kod yanlış / kota doldu: kaydı sürdürmek anlamsız, durdur ki konuşmalar boşa gitmesin
+                    if (e.fatal) { stop(); finals.clear() }
+                } catch (e: java.io.IOException) {
+                    Log.e(TAG, "cloud io", e)
+                    errMsg = "Bulut sunucusuna ulaşılamadı (internet?): ${e.message}"; status(errMsg!!, true)
                 } catch (e: Throwable) {
                     Log.e(TAG, "decode", e)
                 }
@@ -212,7 +232,7 @@ object Engine {
             }
             // boştayken: süren konuşmanın o ana kadarki kısmını çevir (ara metin)
             val now = SystemClock.elapsedRealtime()
-            if (recording && now - lastInterim > 700) {
+            if (recording && !s.cloud && now - lastInterim > 700) {
                 val snap = synchronized(curLock) {
                     if (curLen < SR) null else {
                         val out = FloatArray(curLen); var o = 0
@@ -229,7 +249,7 @@ object Engine {
                 }
             }
         }
-        status("")
+        status(errMsg ?: "", errMsg != null)
         post { listener?.onInterim(null); listener?.onStateChanged() }
     }
 

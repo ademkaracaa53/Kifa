@@ -12,6 +12,7 @@ const SPK_MODEL = 'Xenova/wavlm-base-plus-sv';
 let asr = null, asrKey = '', device = 'wasm';
 let spkProc = null, spkModel = null;
 let downloads = {};
+let lastPost = 0;
 
 function progress(p) {
   if (!p.file) return;
@@ -21,6 +22,10 @@ function progress(p) {
     f.loaded = p.status === 'done' ? f.total : (p.loaded || f.loaded);
     let l = 0, t = 0;
     for (const k in downloads) { l += downloads[k].loaded; t += downloads[k].total; }
+    // ilerleme mesajlarını seyrelt (saniyede ~4), sayfayı meşgul etmesin
+    const now = Date.now();
+    if (now - lastPost < 250 && p.status === 'progress') return;
+    lastPost = now;
     self.postMessage({ type: 'download', loaded: l, total: t });
   }
 }

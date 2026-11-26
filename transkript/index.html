@@ -64,6 +64,9 @@ select,input[type=text]{font:inherit;color:var(--ink);background:var(--surface);
 .progress{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:12px;display:none}
 .progress.on{display:block}
 .progress i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+.model-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.minfo{font-size:.88rem;color:var(--muted)}
+.minfo.ok{color:var(--good,#1D7F52);font-weight:600}
 .status{font-size:.88rem;color:var(--muted);margin-top:10px;min-height:1.3em}
 .status.err{color:var(--rec)}
 .drop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--muted);cursor:pointer}
@@ -133,6 +136,11 @@ details.set[open] summary{margin-bottom:12px}
       <div class="opts">
         <label class="chk"><input type="checkbox" id="saveAudio"> Sesi de kaydet</label>
       </div>
+      <div class="model-row">
+        <button class="btn" id="dlModels">Modelleri şimdi indir</button>
+        <span class="minfo" id="modelInfo"></span>
+      </div>
+      <div class="progress" id="mProg"><i></i></div>
     </details>
   </section>
 
@@ -195,12 +203,22 @@ const { SR, Segmenter, Resampler, Speakers, cleanText } = TK;
 const KEY = 'transkript.v2';
 
 // ---------- Durum ----------
-const hasGPU = 'gpu' in navigator;
+// Telefonlarda WebGPU olsa bile büyük modeller belleği zorlar: telefonda küçük, sıkıştırılmış (q8) modeller
+const isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
+const DEVICE = ('gpu' in navigator) && !isMobile ? 'webgpu' : 'wasm';
+const DEFAULT_MODEL = DEVICE === 'webgpu' ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
 let state = {
   title: '', paras: [], names: {}, spk: null,
-  set: { lang: 'tr', maxSpk: '0', model: hasGPU ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base' },
+  set: { lang: 'tr', maxSpk: '0', model: DEFAULT_MODEL },
 };
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
+if (!state.set.chosen) state.set.model = DEFAULT_MODEL;   // kullanıcı kendisi seçmediyse cihaza uygun olanı kullan
+if (isMobile) {
+  const big = document.querySelector('#model option[value*="large"]'); if (big) big.remove();
+  if (state.set.model.includes('large')) state.set.model = DEFAULT_MODEL;
+  document.querySelector('#model option[value$="whisper-base"]').textContent = 'Dengeli (telefon için önerilen)';
+  document.querySelector('#model option[value$="whisper-small"]').textContent = 'Doğru (yavaş, büyük indirme)';
+}
 let speakers = new Speakers(state.spk || {});
 let saveT;
 function save() {
@@ -217,7 +235,10 @@ const mmss = (s) => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Mat
 // ---------- Ayarlar ----------
 ['lang', 'maxSpk', 'model'].forEach((k) => {
   $(k).value = state.set[k];
-  $(k).addEventListener('change', () => { state.set[k] = $(k).value; applySpkSettings(); save(); });
+  $(k).addEventListener('change', () => {
+    state.set[k] = $(k).value; if (k === 'model') state.set.chosen = true;
+    applySpkSettings(); save(); checkModels();
+  });
 });
 const diarOn = () => state.set.maxSpk !== '1';
 function applySpkSettings() {
@@ -226,7 +247,7 @@ function applySpkSettings() {
   speakers.threshold = 0.8;
   $('paras').classList.toggle('no-diar', !diarOn());
 }
-function lockSettings(on) { ['lang', 'maxSpk', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); }
+function lockSettings(on) { ['lang', 'maxSpk', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
 
 // ---------- Transkript görünümü ----------
 const parasEl = $('paras');
@@ -328,6 +349,7 @@ function addText(text, spk, u) {
 
 // ---------- Model çalışanı ve iş kuyruğu ----------
 let worker = null, ready = null, busy = false, readyKey = '';
+let modelReady = false, loading = false, dl = null;
 const queue = [];
 let jobDone = 0, jobTotal = 0, fileJob = false;
 
@@ -343,13 +365,14 @@ function ensureWorker() {
     worker.onmessage = onWorker;
     worker.onerror = (e) => { failLoad('Model çalıştırılamadı: ' + (e.message || 'internet bağlantısını kontrol edin')); };
   }
-  readyKey = key;
+  readyKey = key; modelReady = false; loading = true; dl = null; showModel();
   ready = new Promise((res, rej) => { ensureWorker.res = res; ensureWorker.rej = rej; });
   ready.catch(() => {});
-  worker.postMessage({ type: 'load', model: state.set.model, device: hasGPU ? 'webgpu' : 'wasm', diar: diarOn() });
+  worker.postMessage({ type: 'load', model: state.set.model, device: DEVICE, diar: diarOn() });
   return ready;
 }
 function failLoad(msg) {
+  modelReady = false; loading = false; showModel(msg);
   setStatus(msg, true);
   if (ensureWorker.rej) ensureWorker.rej(new Error(msg));
   if (worker) worker.terminate();
@@ -359,10 +382,11 @@ function failLoad(msg) {
 }
 function onWorker({ data: m }) {
   if (m.type === 'download') {
-    if (m.total) setStatus(`Modeller indiriliyor… ${(m.loaded / 1048576).toFixed(0)} / ${(m.total / 1048576).toFixed(0)} MB (yalnızca ilk sefer)`);
-  } else if (m.type === 'status') setStatus(m.text);
+    if (m.total) { dl = m; showModel(); }
+  } else if (m.type === 'status') { dl = null; showModel(m.text); }
   else if (m.type === 'ready') {
-    setStatus(fileJob ? 'Metne çevriliyor…' : (live ? 'Dinleniyor…' : 'Hazır.'));
+    modelReady = true; loading = false; dl = null; showModel();
+    if (fileJob) setStatus('Metne çevriliyor…');
     ensureWorker.res && ensureWorker.res();
     pump();
   } else if (m.type === 'result' || m.type === 'error') {
@@ -398,8 +422,47 @@ function updateWorking() {
   const n = queue.length + (busy ? 1 : 0);
   $('working').hidden = n === 0;
   if (n === 0 && !live && $('liveStatus').textContent.startsWith('Kalan')) setStatus('');
-  if (live && ready) setStatus(n > 2 ? `Dinleniyor… (${n} parça sırada; cihaz yetişemiyorsa “Hızlı” ayarını seçin)` : 'Dinleniyor…');
+  if (live) setStatus(liveText());
 }
+const MB = (b) => (b / 1048576).toFixed(0);
+function loadText() {
+  return dl && dl.total ? `Modeller indiriliyor: ${MB(dl.loaded)} / ${MB(dl.total)} MB (%${Math.floor((dl.loaded / dl.total) * 100)})` : 'Modeller yükleniyor…';
+}
+function liveText() {
+  const n = queue.length + (busy ? 1 : 0);
+  if (!modelReady) return `Kayıt sürüyor. ${loadText()}. Metin, modeller hazır olunca gelmeye başlayacak; konuşmalar kaybolmaz.`;
+  return n > 2 ? `Dinleniyor… (${n} parça sırada; cihaz yetişemiyorsa “Hızlı” ayarını seçin)` : 'Dinleniyor…';
+}
+// Ayarlardaki model satırı + canlı/dosya durum satırı
+function showModel(extra) {
+  const info = $('modelInfo'), bar = $('mProg');
+  info.classList.toggle('ok', modelReady);
+  if (modelReady) info.textContent = '✓ Modeller hazır';
+  else if (loading) info.textContent = extra || loadText();
+  else info.textContent = extra || (cachedState === false ? 'Modeller henüz indirilmedi. Toplantıdan önce Wi-Fi’da indirmeniz önerilir.' : '');
+  const pct = !modelReady && loading && dl && dl.total ? dl.loaded / dl.total : null;
+  bar.classList.toggle('on', pct != null);
+  if (pct != null) bar.firstElementChild.style.width = Math.round(pct * 100) + '%';
+  $('dlModels').hidden = modelReady;
+  $('dlModels').disabled = loading || live || fileJob;
+  if (live) setStatus(liveText());
+  else if (fileJob && !modelReady) setStatus(loadText());
+}
+// Modeller önbellekte mi? Öyleyse sessizce belleğe yükle, Başlat'a basınca hemen çalışsın
+let cachedState = null;
+async function checkModels() {
+  if (modelReady && readyKey === state.set.model + '|' + diarOn()) return;
+  modelReady = false; cachedState = null;
+  try {
+    const keys = (await (await caches.open('transformers-cache')).keys()).map((r) => r.url);
+    const has = (repo, part) => keys.some((u) => u.includes('/' + repo + '/') && u.includes(part));
+    const m = state.set.model;
+    cachedState = has(m, 'encoder_model') && has(m, 'decoder_model_merged') && (!diarOn() || has('Xenova/wavlm-base-plus-sv', '.onnx'));
+  } catch { cachedState = false; }
+  if (cachedState) ensureWorker().catch(() => {});
+  showModel();
+}
+$('dlModels').onclick = () => ensureWorker().catch(() => {});
 function enqueue(u, extra) {
   queue.push(Object.assign({ id: uid() }, u, extra));
   pump();
@@ -429,13 +492,14 @@ async function startLive() {
       : 'Mikrofona erişilemedi. Adres çubuğundaki kilit simgesinden mikrofon izni verin.', true);
     return;
   }
-  live = true; session++;
+  live = true; session++; t0 = performance.now();
   const sess = session;
   actx = new (window.AudioContext || window.webkitAudioContext)();
   const rs = new Resampler(actx.sampleRate);
   seg = new Segmenter((u) => enqueue(u, { session: sess }));
   const onSamples = (x) => {
     const y = rs.push(x); seg.push(y);
+    $('timer').textContent = mmss((performance.now() - t0) / 1000);
     $('meter').style.width = Math.min(100, Math.sqrt(seg.level) * 260) + '%';
   };
   const src = actx.createMediaStreamSource(stream);
@@ -456,11 +520,10 @@ async function startLive() {
     mediaRec.onstop = () => { audioBlob = new Blob(audioChunks, { type: mediaRec.mimeType || 'audio/webm' }); $('recActions').hidden = false; };
     mediaRec.start(1000);
   }
-  t0 = performance.now();
   tick = setInterval(() => ($('timer').textContent = mmss((performance.now() - t0) / 1000)), 500);
   setLiveUI();
-  setStatus('Dinleniyor…');
   ensureWorker().catch(() => {});
+  setStatus(liveText());
 }
 function stopLive() {
   if (!live) return;
@@ -612,6 +675,7 @@ window.addEventListener('beforeunload', (e) => { if (live || fileJob || queue.le
 applySpkSettings();
 render();
 setLiveUI();
+checkModels();
 </script>
 </body>
 </html>

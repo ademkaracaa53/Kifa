@@ -22,7 +22,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Transkript"
+                android:text="eFAM Transkript"
                 android:textColor="@color/ink"
                 android:textSize="24sp"
                 android:textStyle="bold"
@@ -55,11 +55,35 @@
                         android:layout_height="wrap_content"
                         android:orientation="vertical">
 
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Metne çeviren motor" />
+                        <Spinner android:id="@+id/spEngine" android:layout_width="match_parent" android:layout_height="48dp" />
+
+                        <LinearLayout
+                            android:id="@+id/cloudBox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Sunucu adresi (Cloudflare Worker)" />
+                            <EditText android:id="@+id/cloudUrl" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="ornek.alanadiniz.workers.dev" android:inputType="textUri" android:textColor="@color/ink" />
+                            <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Erişim kodu" />
+                            <EditText android:id="@+id/cloudCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:textColor="@color/ink" />
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/btnCloudTest"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Bağlantıyı dene" />
+                            <TextView android:id="@+id/cloudInfo" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/muted" android:textSize="13sp" />
+                        </LinearLayout>
+
                         <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşma dili" />
                         <Spinner android:id="@+id/spLang" android:layout_width="match_parent" android:layout_height="48dp" />
 
-                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Doğruluk / hız (model)" />
+                        <LinearLayout android:id="@+id/localBox" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                        <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Doğruluk / hız (cihazdaki model)" />
                         <Spinner android:id="@+id/spModel" android:layout_width="match_parent" android:layout_height="48dp" />
+                        </LinearLayout>
 
                         <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Konuşmacı sayısı" />
                         <Spinner android:id="@+id/spSpk" android:layout_width="match_parent" android:layout_height="48dp" />

@@ -56,7 +56,7 @@ fun writePdf(out: OutputStream) {
     }
 
     newPage()
-    block(Transcript.title.ifBlank { "Transkript" }, titleP, 4f)
+    block(Transcript.title.ifBlank { "eFAM Transkript" }, titleP, 4f)
     block(Transcript.dateText(), metaP, 18f)
     for (para in Transcript.paras) {
         if (para.spk > 0) {

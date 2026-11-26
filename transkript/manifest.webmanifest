@@ -1,6 +1,6 @@
 {
-  "name": "Transkript — Konuşmadan metne",
-  "short_name": "Transkript",
+  "name": "eFAM Transkript",
+  "short_name": "eFAM Transkript",
   "description": "Toplantı, konferans ve sunumlarda konuşmayı metne çevirir; TXT ve PDF olarak verir.",
   "lang": "tr",
   "id": "./",

@@ -1,4 +1,4 @@
-# Transkript (Android)
+# eFAM Transkript (Android)
 
 Toplantı, konferans ve sunumlarda konuşmayı telefonda, internetsiz, noktalamalı metne çeviren ve konuşmacıları ayıran uygulama. Web sürümünün (`/transkript`) yerel (native) hali: aynı modeller tarayıcı yerine doğrudan telefonun işlemcisinde çalıştığı için çok daha hızlıdır.
 
@@ -6,6 +6,10 @@ Toplantı, konferans ve sunumlarda konuşmayı telefonda, internetsiz, noktalama
 1. GitHub'da **Releases → “Transkript Android (son sürüm)”** sayfasını telefonda açın, `Transkript.apk` dosyasını indirin.
 2. Açın; Android “bilinmeyen kaynaklardan yükleme” izni ister, verin.
 3. Uygulamada **Ayarlar → Modeli indir** (Wi-Fi önerilir). Model bir kez indirilir; sonra internet gerekmez.
+
+## Motorlar
+- **Bu cihazda (Whisper):** internetsiz; ses telefondan çıkmaz.
+- **Bulut · Cloudflare:** kendi Cloudflare hesabınızdaki Worker ile Whisper large-v3-turbo — çok daha doğru ve hızlı. Kurulum: `cloudflare/README.md`.
 
 ## Nasıl çalışır
 - **sherpa-onnx** (k2-fsa, Apache-2.0) — Android çalıştırma katmanı, `v2.0.1` AAR'ı derlemede indirilir.

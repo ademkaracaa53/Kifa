@@ -58,7 +58,7 @@ class RecordService : Service() {
         )
         val n: Notification = NotificationCompat.Builder(this, CH)
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
-            .setContentTitle("Transkript kaydediyor")
+            .setContentTitle("eFAM Transkript kaydediyor")
             .setContentText("Konuşmalar metne çevriliyor")
             .setContentIntent(open)
             .addAction(0, "Durdur", stop)

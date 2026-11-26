@@ -88,7 +88,8 @@ object Controller : Engine.Listener {
 
     private fun add(text: String, spk: Int, piece: Piece, session: Int) {
         val last = Transcript.paras.lastOrNull()
-        val cont = last != null && last.spk == spk && session == lastSession && last.text.length < (if (spk > 0) 1800 else 900)
+        val limit = if (spk > 0) 1800 else 900
+        val cont = last != null && last.spk == spk && session == lastSession && last.text.length < limit
         lastSession = session
         if (cont) {
             last!!.text = (last.text.trimEnd() + " " + text).trim()

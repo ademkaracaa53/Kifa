@@ -30,6 +30,10 @@ object Cloud {
         return out.toByteArray()
     }
 
+    /** HTTP başlıkları Türkçe harfleri bozar: kodu URL kodlamasıyla gönder (sunucu çözer). */
+    fun encodeCode(code: String): String =
+        URLEncoder.encode(java.text.Normalizer.normalize(code.trim(), java.text.Normalizer.Form.NFC), "UTF-8").replace("+", "%20")
+
     fun normalizeUrl(u: String): String {
         var s = u.trim()
         if (s.isEmpty()) return s
@@ -63,7 +67,7 @@ object Cloud {
             c.doOutput = true
             c.connectTimeout = 10000; c.readTimeout = 30000
             c.setRequestProperty("Content-Type", "audio/wav")
-            c.setRequestProperty("x-access-code", s.code)
+            c.setRequestProperty("x-access-code", encodeCode(s.code))
             c.setFixedLengthStreamingMode(body.size)
             c.outputStream.use { it.write(body) }
             val code = c.responseCode

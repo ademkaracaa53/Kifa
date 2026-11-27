@@ -161,6 +161,7 @@ details.set[open] summary{margin-bottom:12px}
         </label>
         <label class="f">Erişim kodu
           <input type="password" id="cloudCode" autocomplete="off">
+          <span class="chk" style="font-size:.85rem"><input type="checkbox" id="showCode"> Kodu göster</span>
         </label>
         <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap">
           <button class="btn" id="cloudTest">Bağlantıyı dene</button>
@@ -611,7 +612,8 @@ async function cloudOnce(body) {
   let r;
   try {
     r = await fetch(cloudBase() + '/?lang=' + encodeURIComponent(state.set.lang), {
-      method: 'POST', headers: { 'content-type': 'audio/wav', 'x-access-code': (state.set.cloudCode || '').trim() }, body,
+      // HTTP başlıkları Türkçe harfleri taşıyamaz: kodu URL kodlamasıyla gönder (sunucu çözer)
+      method: 'POST', headers: { 'content-type': 'audio/wav', 'x-access-code': encodeURIComponent((state.set.cloudCode || '').trim().normalize('NFC')) }, body,
     });
   } catch (e) { throw new CloudError('Bulut sunucusuna ulaşılamadı (internet bağlantısını kontrol edin)', false); }
   let j = {};
@@ -651,6 +653,7 @@ $('cloudTest').onclick = async () => {
   try { await cloudOnce(wavBytes(new Float32Array(SR))); info.textContent = '✓ Bağlantı başarılı'; }
   catch (e) { info.textContent = '✗ ' + e.message; }
 };
+$('showCode').onchange = (e) => { $('cloudCode').type = e.target.checked ? 'text' : 'password'; };
 ['cloudUrl', 'cloudCode'].forEach((k) => {
   $(k).value = state.set[k] || '';
   $(k).addEventListener('input', () => { state.set[k] = $(k).value.trim(); save(); });

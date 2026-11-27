@@ -17,13 +17,10 @@ import android.text.InputType
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
-import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -31,7 +28,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.io.File
 import java.text.SimpleDateFormat
@@ -59,6 +58,9 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     private var downloading = false
 
     private val c = Controller
+    private lateinit var sheetView: View
+    private var sheet: BottomSheetDialog? = null
+    private fun <T : View> sv(id: Int): T = sheetView.findViewById(id)
     private val engines = listOf(
         "nemo" to "Anlık · NVIDIA Nemotron (cihazda, internetsiz)",
         "local" to "Bu cihazda · Whisper (internetsiz)",
@@ -88,63 +90,51 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val night = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
-        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = !night
+        // üst bant her temada koyu: durum çubuğu simgeleri açık renk
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightStatusBars = false
+        WindowCompat.getInsetsController(window, window.decorView).isAppearanceLightNavigationBars = !night
         c.init(this)
+        sheetView = layoutInflater.inflate(R.layout.sheet_settings, null)
 
         parasView = findViewById(R.id.paras); scroll = findViewById(R.id.scroll)
         btnRecord = findViewById(R.id.btnRecord); timer = findViewById(R.id.timer); levelBar = findViewById(R.id.level)
         statusView = findViewById(R.id.status); interimView = findViewById(R.id.interim); meta = findViewById(R.id.meta)
-        empty = findViewById(R.id.empty); modelInfo = findViewById(R.id.modelInfo)
-        modelProgress = findViewById(R.id.modelProgress); btnDownload = findViewById(R.id.btnDownload)
+        empty = findViewById(R.id.empty); modelInfo = sv(R.id.modelInfo)
+        modelProgress = sv(R.id.modelProgress); btnDownload = sv(R.id.btnDownload)
         titleView = findViewById(R.id.title)
 
-        setupSpinner(findViewById(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else if (c.nemo) "nemo" else "local") }) {
+        setupDropdown(sv(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else if (c.nemo) "nemo" else "local") }) {
             c.prefs.edit().putString("engine", engines[it].first).apply(); applyEngineUi()
         }
-        bindPref(findViewById(R.id.cloudUrl), "cloudUrl")
-        bindPref(findViewById(R.id.cloudCode), "cloudCode")
-        findViewById<View>(R.id.btnCloudTest).setOnClickListener { testCloud() }
-        findViewById<android.widget.CheckBox>(R.id.showCode).setOnCheckedChangeListener { _, on ->
-            val et = findViewById<EditText>(R.id.cloudCode)
+        bindPref(sv(R.id.cloudUrl), "cloudUrl")
+        bindPref(sv(R.id.cloudCode), "cloudCode")
+        sv<View>(R.id.btnCloudTest).setOnClickListener { testCloud() }
+        sv<android.widget.CheckBox>(R.id.showCode).setOnCheckedChangeListener { _, on ->
+            val et = sv<EditText>(R.id.cloudCode)
             et.inputType = InputType.TYPE_CLASS_TEXT or (if (on) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD else InputType.TYPE_TEXT_VARIATION_PASSWORD)
             et.setSelection(et.text.length)
         }
-        setupSpinner(findViewById(R.id.spLang), langs.map { it.second }, langs.indexOfFirst { it.first == c.lang }) {
+        setupDropdown(sv(R.id.spLang), langs.map { it.second }, langs.indexOfFirst { it.first == c.lang }) {
             c.prefs.edit().putString("lang", langs[it].first).apply()
         }
-        setupSpinner(findViewById(R.id.spModel), Models.list.map { it.label }, Models.list.indexOfFirst { it.key == c.model }) {
+        setupDropdown(sv(R.id.spModel), Models.list.map { it.label }, Models.list.indexOfFirst { it.key == c.model }) {
             c.prefs.edit().putString("model", Models.list[it].key).apply(); applyEngineUi()
         }
-        setupSpinner(findViewById(R.id.spSpk), spks.map { it.second }, spks.indexOfFirst { it.first == c.maxSpk }) {
+        setupDropdown(sv(R.id.spSpk), spks.map { it.second }, spks.indexOfFirst { it.first == c.maxSpk }) {
             c.prefs.edit().putInt("maxSpk", spks[it].first).apply(); afterSpeakerSetting()
         }
-        setupSpinner(findViewById(R.id.spSens), senses.map { it.second }, senses.indexOfFirst { it.first == c.sens }) {
+        setupDropdown(sv(R.id.spSens), senses.map { it.second }, senses.indexOfFirst { it.first == c.sens }) {
             c.prefs.edit().putString("sens", senses[it].first).apply(); afterSpeakerSetting()
         }
-        val body = findViewById<View>(R.id.settingsBody)
-        val toggle = findViewById<TextView>(R.id.settingsToggle)
-        toggle.setOnClickListener {
-            body.visibility = if (body.visibility == View.VISIBLE) View.GONE else View.VISIBLE
-            toggle.text = if (body.visibility == View.VISIBLE) "AYARLAR ▾" else "AYARLAR ▸"
-        }
+        findViewById<View>(R.id.btnSettings).setOnClickListener { openSettings() }
+        findViewById<View>(R.id.engineLabel).setOnClickListener { openSettings() }
 
         btnDownload.setOnClickListener { downloadModel(false) }
         btnRecord.setOnClickListener { if (Engine.recording) Engine.stop() else requestAndStart() }
         findViewById<View>(R.id.btnTxt).setOnClickListener { saveTxt.launch(fileBase() + ".txt") }
         findViewById<View>(R.id.btnPdf).setOnClickListener { savePdf.launch(fileBase() + ".pdf") }
         findViewById<View>(R.id.btnShare).setOnClickListener { share() }
-        findViewById<View>(R.id.btnCopy).setOnClickListener {
-            (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("eFAM Transkript", Transcript.plainText()))
-            toast("Panoya kopyalandı")
-        }
-        findViewById<View>(R.id.btnRegroup).setOnClickListener {
-            val go = {
-                Transcript.manual = false
-                toast(if (c.regroup()) "Konuşmacılar yeniden düzenlendi" else "Değişiklik gerekmedi")
-            }
-            if (Transcript.manual) confirm("Elle yaptığınız konuşmacı değişiklikleri ve verdiğiniz adlar sıfırlanacak. Devam edilsin mi?", go) else go()
-        }
-        findViewById<View>(R.id.btnClear).setOnClickListener { confirm("Tüm metin silinsin mi?") { c.clear(); titleView.setText("") } }
+        findViewById<View>(R.id.btnMore).setOnClickListener { moreMenu(it) }
 
         titleView.setText(Transcript.title)
         titleView.addTextChangedListener(object : TextWatcher {
@@ -156,6 +146,43 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         })
         rerender()
         applyEngineUi()
+    }
+
+    // ---------- ayarlar menüsü (alttan açılır) ----------
+    private fun openSettings() {
+        val d = sheet ?: BottomSheetDialog(this).also { sheet = it }
+        (sheetView.parent as? ViewGroup)?.removeView(sheetView)
+        d.setContentView(sheetView)
+        d.behavior.state = com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED
+        d.behavior.skipCollapsed = true
+        applyEngineUi()
+        d.show()
+    }
+
+    // ---------- "Diğer" menüsü ----------
+    private fun moreMenu(anchor: View) {
+        val m = android.widget.PopupMenu(this, anchor)
+        m.menu.add(0, 1, 0, "Kopyala")
+        if (c.diarOn) m.menu.add(0, 2, 1, "Konuşmacıları düzenle").isEnabled = !(Engine.recording || Engine.working)
+        m.menu.add(0, 3, 2, "Temizle")
+        m.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                1 -> {
+                    (getSystemService(CLIPBOARD_SERVICE) as ClipboardManager).setPrimaryClip(ClipData.newPlainText("eFAM Transkript", Transcript.plainText()))
+                    toast("Panoya kopyalandı")
+                }
+                2 -> {
+                    val go = {
+                        Transcript.manual = false
+                        toast(if (c.regroup()) "Konuşmacılar yeniden düzenlendi" else "Değişiklik gerekmedi")
+                    }
+                    if (Transcript.manual) confirm("Elle yaptığınız konuşmacı değişiklikleri ve verdiğiniz adlar sıfırlanacak. Devam edilsin mi?", go) else go()
+                }
+                3 -> confirm("Tüm metin silinsin mi?") { c.clear(); titleView.setText("") }
+            }
+            true
+        }
+        m.show()
     }
 
     // ---------- bulut motoru ----------
@@ -170,8 +197,9 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
 
     private fun applyEngineUi() {
         val cloud = c.cloud
-        findViewById<View>(R.id.cloudBox).visibility = if (cloud) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.localBox).visibility = if (cloud || c.nemo) View.GONE else View.VISIBLE
+        sv<View>(R.id.cloudBox).visibility = if (cloud) View.VISIBLE else View.GONE
+        sv<View>(R.id.localBox).visibility = if (cloud || c.nemo) View.GONE else View.VISIBLE
+        updateEngineLabel()
         if (cloud) {
             modelInfo.text = "Bulut motorunda ses parçaları sizin Cloudflare sunucunuza gider; Whisper large-v3-turbo ile çevrilir. Konuşma algılama ve konuşmacı ayrımı telefonda yapılır."
             modelProgress.visibility = View.GONE; btnDownload.visibility = View.GONE
@@ -179,7 +207,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     }
 
     private fun testCloud() {
-        val info = findViewById<TextView>(R.id.cloudInfo)
+        val info = sv<TextView>(R.id.cloudInfo)
         val url = c.cloudUrl; val code = c.cloudCode
         if (url.isBlank() || code.isBlank()) { info.text = "Sunucu adresini ve erişim kodunu girin."; return }
         info.text = "Deneniyor…"
@@ -205,20 +233,21 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     }
 
     // ---------- ayarlar ----------
-    private fun setupSpinner(sp: Spinner, items: List<String>, sel: Int, onSel: (Int) -> Unit) {
-        sp.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
-        sp.setSelection(maxOf(0, sel), false)
-        sp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            // Android ilk açılışta mevcut seçim için bir kez haber verir (bazı telefonlarda vermez);
-            // "ilk çağrıyı atla" yerine yalnızca gerçekten değişen seçimde tepki ver
-            var current = maxOf(0, sel)
-            override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
-                if (pos == current) return
-                current = pos
-                onSel(pos)
-            }
-            override fun onNothingSelected(p: AdapterView<*>?) {}
+    /** Modern açılır kutu (Material "exposed dropdown"): yalnızca seçim gerçekten değişince haber verir. */
+    private fun setupDropdown(v: MaterialAutoCompleteTextView, items: List<String>, sel: Int, onSel: (Int) -> Unit) {
+        v.setSimpleItems(items.toTypedArray())
+        var current = maxOf(0, sel)
+        v.setText(items[current], false)
+        v.setOnItemClickListener { _, _, pos, _ ->
+            if (pos != current) { current = pos; onSel(pos) }
         }
+    }
+
+    /** Banttaki küçük etiket: hangi motor seçili, model hazır mı */
+    private fun updateEngineLabel() {
+        val name = when { c.cloud -> "Bulut · Cloudflare"; c.nemo -> "Anlık · NVIDIA Nemotron"; else -> "Cihazda · Whisper" }
+        val ready = c.cloud || Models.isReady(this, c.modelKey)
+        findViewById<TextView>(R.id.engineLabel).text = name + (if (ready) "  ✓" else "  · model indirilmedi") + "  ▾"
     }
 
     private fun afterSpeakerSetting() {
@@ -226,8 +255,8 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     }
 
     private fun lockSettings(on: Boolean) {
-        listOf(R.id.spEngine, R.id.cloudUrl, R.id.cloudCode, R.id.btnCloudTest, R.id.spLang, R.id.spModel, R.id.spSpk, R.id.spSens).forEach { findViewById<View>(it).isEnabled = !on }
-        findViewById<View>(R.id.btnRegroup).isEnabled = !on
+        listOf(R.id.spEngineBox, R.id.cloudUrl, R.id.cloudCode, R.id.btnCloudTest, R.id.spLangBox, R.id.spModelBox, R.id.spSpkBox, R.id.spSensBox)
+            .forEach { sv<View>(it).isEnabled = !on }
         btnDownload.isEnabled = !on && !downloading
     }
 
@@ -258,7 +287,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
                         modelInfo.text = "Model indiriliyor: %d / %d MB".format(done / 1048576, total / 1048576)
                     }
                 }, { false })
-                handler.post { downloading = false; btnDownload.isEnabled = true; applyEngineUi(); if (thenStart) requestAndStart() }
+                handler.post { downloading = false; btnDownload.isEnabled = true; applyEngineUi(); sheet?.dismiss(); if (thenStart) requestAndStart() }
             } catch (e: Exception) {
                 handler.post {
                     downloading = false; btnDownload.isEnabled = true; modelProgress.visibility = View.GONE
@@ -302,6 +331,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     override fun stateChanged() {
         val rec = Engine.recording
         btnRecord.text = if (rec) "Durdur" else "Başlat"
+        btnRecord.setIconResource(if (rec) R.drawable.ic_stop else R.drawable.ic_mic)
         btnRecord.setBackgroundColor(ContextCompat.getColor(this, if (rec) R.color.rec else R.color.accent))
         lockSettings(rec || Engine.working)
         handler.removeCallbacks(tick)
@@ -354,12 +384,17 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         box.orientation = LinearLayout.VERTICAL
         box.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(12) }
         if (p.spk > 0 && c.diarOn) {
+            val col = speakerColor(p.spk)
             val who = TextView(this)
-            who.text = Transcript.name(p.spk) + " ▾"
-            who.setTextColor(speakerColor(p.spk)); who.textSize = 13f; who.setTypeface(who.typeface, Typeface.BOLD)
-            who.setPadding(0, dp(2), dp(16), dp(2))
+            who.text = Transcript.name(p.spk) + "  ▾"
+            who.setTextColor(col); who.textSize = 12.5f; who.setTypeface(who.typeface, Typeface.BOLD)
+            who.setPadding(dp(10), dp(3), dp(10), dp(3))
+            who.background = android.graphics.drawable.GradientDrawable().apply {
+                cornerRadius = dp(999).toFloat()
+                setColor((col and 0x00FFFFFF) or 0x22000000)   // konuşmacı renginin açık tonu
+            }
             who.setOnClickListener { speakerMenu(p) }
-            box.addView(who)
+            box.addView(who, LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { bottomMargin = dp(4) })
         }
         val tx = TextView(this)
         tx.text = p.text; tx.textSize = 16f; tx.setLineSpacing(0f, 1.3f)
@@ -375,8 +410,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         empty.visibility = if (has) View.GONE else View.VISIBLE
         val n = Transcript.speakerCount()
         meta.text = if (has) "${Transcript.words()} kelime" + (if (n > 0 && c.diarOn) " · $n konuşmacı" else "") + " · düzeltmek için metne dokunun" else ""
-        listOf(R.id.btnTxt, R.id.btnPdf, R.id.btnShare, R.id.btnCopy, R.id.btnClear).forEach { findViewById<View>(it).isEnabled = has }
-        findViewById<View>(R.id.btnRegroup).visibility = if (has && c.diarOn) View.VISIBLE else View.GONE
+        listOf(R.id.btnTxt, R.id.btnPdf, R.id.btnShare, R.id.btnMore).forEach { findViewById<View>(it).isEnabled = has }
     }
 
     private fun editPara(p: Para) {

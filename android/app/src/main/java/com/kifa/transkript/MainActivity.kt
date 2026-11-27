@@ -200,9 +200,12 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         sp.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, items)
         sp.setSelection(maxOf(0, sel), false)
         sp.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            var first = true
+            // Android ilk açılışta mevcut seçim için bir kez haber verir (bazı telefonlarda vermez);
+            // "ilk çağrıyı atla" yerine yalnızca gerçekten değişen seçimde tepki ver
+            var current = maxOf(0, sel)
             override fun onItemSelected(p: AdapterView<*>?, v: View?, pos: Int, id: Long) {
-                if (first) { first = false; return }
+                if (pos == current) return
+                current = pos
                 onSel(pos)
             }
             override fun onNothingSelected(p: AdapterView<*>?) {}

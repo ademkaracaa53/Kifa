@@ -18,6 +18,8 @@ object Controller : Engine.Listener {
         fun status(text: String, error: Boolean)
         fun stateChanged()
         fun message(text: String)
+        /** paragrafın çevirisi geldi/değişti */
+        fun translated(p: Para)
     }
 
     var ui: Ui? = null
@@ -33,6 +35,11 @@ object Controller : Engine.Listener {
     var lastStatusError = false; private set
 
     val lang get() = prefs.getString("lang", "tr")!!
+    /** Canlı çeviri açık mı, yönü ("en-tr" / "tr-en") */
+    val trOn get() = prefs.getBoolean("trOn", false)
+    val trDir get() = prefs.getString("trDir", "en-tr")!!
+    /** Tanıma dili: çeviri açıkken kaynak dil (ör. İngilizce → Türkçe'de İngilizce) */
+    val recLang get() = if (trOn) Translate.source(trDir) else lang
     val model get() = prefs.getString("model", Models.DEFAULT)!!
     val maxSpk get() = prefs.getInt("maxSpk", 0)
     val cloud get() = prefs.getString("engine", "local") == "cloud"
@@ -62,7 +69,7 @@ object Controller : Engine.Listener {
 
     fun start(ctx: Context): Boolean {
         sinceRegroup = 0
-        return Engine.start(ctx, Settings(model, lang, diarOn, cloud, Cloud.normalizeUrl(cloudUrl), cloudCode.trim(), nemo))
+        return Engine.start(ctx, Settings(model, recLang, diarOn, cloud, Cloud.normalizeUrl(cloudUrl), cloudCode.trim(), nemo))
     }
 
     // ---------- Engine.Listener (ana iş parçacığı) ----------
@@ -101,17 +108,40 @@ object Controller : Engine.Listener {
             last!!.text = (last.text.trimEnd() + " " + text).trim()
             last.pieces.add(piece)
             ui?.appended(last, false)
+            translatePiece(piece)
         } else {
             if (spk > 0 && !Transcript.names.containsKey(spk)) Transcript.names[spk] = Transcript.name(spk)
             val p = Para(spk, text, mutableListOf(piece))
             Transcript.paras.add(p)
             ui?.appended(p, true)
+            translatePiece(piece)
         }
         persist()
     }
 
+    // ---------- canlı çeviri ----------
+    private fun translatePiece(piece: Piece) {
+        if (!trOn) return
+        Translate.translate(piece.t) { tr ->
+            if (tr.isNullOrBlank()) return@translate
+            piece.tr = tr.trim()
+            // parça bu arada yeniden düzenlemeyle başka paragrafa geçmiş olabilir: bulunduğu yeri ara
+            Transcript.paras.firstOrNull { p -> p.pieces.any { it === piece } }?.let { ui?.translated(it) }
+            persist()
+        }
+    }
+
+    /** Elle düzeltilen paragrafı baştan çevir. */
+    fun retranslate(p: Para) {
+        if (!(trOn || p.translation().isNotEmpty()) || !Translate.ready) return
+        Translate.translate(p.text) { tr ->
+            if (tr.isNullOrBlank()) return@translate
+            p.trFull = tr.trim(); ui?.translated(p); persist()
+        }
+    }
+
     // ---------- konuşmacıları yeniden düzenleme ----------
-    private class Part(val text: String, val pieces: List<Piece>, val v: FloatArray?, val w: Float, val edited: Boolean, var spk: Int = 0)
+    private class Part(val text: String, val pieces: List<Piece>, val v: FloatArray?, val w: Float, val edited: Boolean, var spk: Int = 0, val tr: String? = null)
 
     /** Tüm ses izlerine bakarak konuşmacıları yeniden grupla; değişiklik olduysa true. */
     fun regroup(): Boolean {
@@ -130,7 +160,7 @@ object Controller : Engine.Listener {
                     v = if (acc == null) FloatArray(a.size) { a[it] * x.d } else FloatArray(acc.size) { acc[it] + a[it] * x.d }
                     w += x.d
                 }
-                parts += Part(p.text, p.pieces.toList(), v, if (w > 0) w else 1f, true)
+                parts += Part(p.text, p.pieces.toList(), v, if (w > 0) w else 1f, true, tr = p.trFull)
             }
         }
         val withV = parts.filter { it.v != null }
@@ -145,8 +175,10 @@ object Controller : Engine.Listener {
         for (u in parts) {
             val last = paras.lastOrNull()
             if (last != null && last.spk == u.spk && last.text.length < 1800) {
+                if (last.trFull != null || u.tr != null)
+                    last.trFull = (last.translation() + " " + (u.tr ?: u.pieces.mapNotNull { it.tr }.joinToString(" "))).trim()
                 last.text = (last.text + " " + u.text).trim(); last.pieces.addAll(u.pieces); if (u.edited) last.edited = true
-            } else paras += Para(u.spk, u.text, u.pieces.toMutableList(), u.edited)
+            } else paras += Para(u.spk, u.text, u.pieces.toMutableList(), u.edited, u.tr)
         }
         val sig = { ps: List<Para> -> ps.joinToString("\u0001") { "${it.spk}\u0002${it.text}" } }
         val changed = sig(paras) != sig(Transcript.paras)

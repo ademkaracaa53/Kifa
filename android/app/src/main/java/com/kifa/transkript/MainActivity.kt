@@ -66,6 +66,8 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         "local" to "Bu cihazda · Whisper (internetsiz)",
         "cloud" to "Bulut · Cloudflare (en doğru)",
     )
+    private val trDirs = listOf("en-tr" to "İngilizce → Türkçe", "tr-en" to "Türkçe → İngilizce")
+    private lateinit var swTranslate: com.google.android.material.materialswitch.MaterialSwitch
     private val langs = listOf("tr" to "Türkçe", "en" to "İngilizce", "auto" to "Otomatik (dil algılama)")
     private val spks = listOf(0 to "Otomatik", 1 to "Tek konuşmacı (ayrım yok)", 2 to "2", 3 to "3", 4 to "4", 5 to "5", 6 to "6")
     private val senses = listOf("tol" to "Toleranslı (aynı kişiyi bölmez)", "norm" to "Normal", "sens" to "Hassas (benzer sesleri ayırır)")
@@ -102,6 +104,21 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         empty = findViewById(R.id.empty); modelInfo = sv(R.id.modelInfo)
         modelProgress = sv(R.id.modelProgress); btnDownload = sv(R.id.btnDownload)
         titleView = findViewById(R.id.title)
+        swTranslate = findViewById(R.id.swTranslate)
+        swTranslate.isChecked = c.trOn
+        updateTranslateLabel()
+        swTranslate.setOnCheckedChangeListener { _, on ->
+            if (on == c.trOn) return@setOnCheckedChangeListener
+            c.prefs.edit().putBoolean("trOn", on).apply()
+            updateEngineLabel()
+            if (on) ensureTranslator(null)
+        }
+        if (c.trOn) ensureTranslator(null)
+        setupDropdown(sv(R.id.spTrDir), trDirs.map { it.second }, trDirs.indexOfFirst { it.first == c.trDir }) {
+            c.prefs.edit().putString("trDir", trDirs[it].first).apply()
+            updateTranslateLabel(); updateEngineLabel()
+            if (c.trOn) ensureTranslator(null)
+        }
 
         setupDropdown(sv(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else if (c.nemo) "nemo" else "local") }) {
             c.prefs.edit().putString("engine", engines[it].first).apply(); applyEngineUi()
@@ -243,11 +260,32 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         }
     }
 
+    // ---------- canlı çeviri ----------
+    private fun updateTranslateLabel() { swTranslate.text = "Canlı çeviri · " + Translate.label(c.trDir) }
+
+    /** Çeviri modelini hazırla (ilk seferde indirir); hazır olunca [then]. */
+    private fun ensureTranslator(then: (() -> Unit)?) {
+        if (Translate.isReady(c.trDir) && then == null) return
+        status("Çeviri modeli hazırlanıyor (ilk seferde ~30 MB indirilir)…", false)
+        swTranslate.isEnabled = false
+        Translate.ensure(c.trDir) { err ->
+            swTranslate.isEnabled = !Engine.recording
+            if (err != null) {
+                status("Çeviri hazırlanamadı: $err", true)
+                c.prefs.edit().putBoolean("trOn", false).apply(); swTranslate.isChecked = false; updateEngineLabel()
+            } else {
+                status("Canlı çeviri hazır · " + Translate.label(c.trDir), false)
+                then?.invoke()
+            }
+        }
+    }
+
     /** Banttaki küçük etiket: hangi motor seçili, model hazır mı */
     private fun updateEngineLabel() {
         val name = when { c.cloud -> "Bulut · Cloudflare"; c.nemo -> "Anlık · NVIDIA Nemotron"; else -> "Cihazda · Whisper" }
         val ready = c.cloud || Models.isReady(this, c.modelKey)
-        findViewById<TextView>(R.id.engineLabel).text = name + (if (ready) "  ✓" else "  · model indirilmedi") + "  ▾"
+        val tr = if (c.trOn) "  · " + (if (c.trDir == "tr-en") "TR→EN" else "EN→TR") else ""
+        findViewById<TextView>(R.id.engineLabel).text = name + (if (ready) "  ✓" else "  · model indirilmedi") + tr + "  ▾"
     }
 
     private fun afterSpeakerSetting() {
@@ -255,8 +293,9 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     }
 
     private fun lockSettings(on: Boolean) {
-        listOf(R.id.spEngineBox, R.id.cloudUrl, R.id.cloudCode, R.id.btnCloudTest, R.id.spLangBox, R.id.spModelBox, R.id.spSpkBox, R.id.spSensBox)
+        listOf(R.id.spEngineBox, R.id.cloudUrl, R.id.cloudCode, R.id.btnCloudTest, R.id.spLangBox, R.id.spModelBox, R.id.spSpkBox, R.id.spSensBox, R.id.spTrDirBox)
             .forEach { sv<View>(it).isEnabled = !on }
+        swTranslate.isEnabled = !on
         btnDownload.isEnabled = !on && !downloading
     }
 
@@ -299,6 +338,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
 
     // ---------- kayıt ----------
     private fun requestAndStart() {
+        if (c.trOn && !Translate.isReady(c.trDir)) { ensureTranslator { requestAndStart() }; return }
         if (c.cloud && (c.cloudUrl.isBlank() || c.cloudCode.isBlank())) {
             toast("Bulut motoru için ayarlardan sunucu adresini ve erişim kodunu girin")
             return
@@ -401,8 +441,32 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         tx.setTextColor(ContextCompat.getColor(this, R.color.ink))
         tx.setOnClickListener { editPara(p) }
         box.addView(tx)
+        val trv = TextView(this)
+        trv.textSize = 15f; trv.setLineSpacing(0f, 1.25f)
+        trv.setTextColor(ContextCompat.getColor(this, R.color.accent))
+        trv.setPadding(dp(10), dp(4), 0, dp(2))
+        trv.background = android.graphics.drawable.GradientDrawable().apply {
+            setColor(ContextCompat.getColor(this@MainActivity, R.color.accent_soft)); cornerRadius = dp(8).toFloat()
+        }
+        setTranslation(trv, p)
+        box.addView(trv, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = dp(4) })
+        tx.tag = trv
         box.tag = tx
         return box
+    }
+
+    private fun setTranslation(trv: TextView, p: Para) {
+        val t = p.translation()
+        trv.text = t
+        trv.visibility = if (t.isEmpty()) View.GONE else View.VISIBLE
+    }
+
+    override fun translated(p: Para) {
+        val i = Transcript.paras.indexOf(p)
+        val tx = (if (i >= 0) parasView.getChildAt(i)?.tag else null) as? TextView
+        val trv = tx?.tag as? TextView
+        if (trv != null) setTranslation(trv, p) else rerender()
+        scrollToEndIfNear()
     }
 
     private fun updateMeta() {
@@ -424,7 +488,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         MaterialAlertDialogBuilder(this).setTitle("Metni düzelt").setView(wrap)
             .setPositiveButton("Kaydet") { _, _ ->
                 val v = et.text.toString().trim()
-                if (v.isEmpty()) Transcript.paras.remove(p) else if (v != p.text) { p.text = v; p.edited = true }
+                if (v.isEmpty()) Transcript.paras.remove(p) else if (v != p.text) { p.text = v; p.edited = true; c.retranslate(p) }
                 rerender(); c.persist()
             }
             .setNeutralButton("Sil") { _, _ -> Transcript.paras.remove(p); rerender(); c.persist() }

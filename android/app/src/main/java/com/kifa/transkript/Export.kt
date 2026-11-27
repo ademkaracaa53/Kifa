@@ -23,6 +23,7 @@ fun writePdf(out: OutputStream) {
     val metaP = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply { textSize = 9f; color = Color.GRAY }
     val nameP = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply { textSize = 9.5f; typeface = Typeface.DEFAULT_BOLD }
     val bodyP = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply { textSize = 11f; color = 0xFF141A24.toInt() }
+    val trP = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply { textSize = 10.5f; color = 0xFF1677D9.toInt(); typeface = Typeface.create(Typeface.DEFAULT, Typeface.ITALIC) }
     val footP = TextPaint(TextPaint.ANTI_ALIAS_FLAG).apply { textSize = 8f; color = Color.GRAY; textAlign = android.graphics.Paint.Align.CENTER }
 
     fun layout(text: String, p: TextPaint) =
@@ -64,7 +65,9 @@ fun writePdf(out: OutputStream) {
             if (y > H - 100f) newPage()   // ad ile metni ayırma
             block(Transcript.name(para.spk), nameP, 1f)
         }
-        block(para.text.trim(), bodyP, 10f)
+        val tr = para.translation()
+        if (tr.isEmpty()) block(para.text.trim(), bodyP, 10f)
+        else { block(para.text.trim(), bodyP, 3f); block("→ $tr", trP, 10f) }
     }
     page?.let { doc.finishPage(it) }
     doc.writeTo(out)

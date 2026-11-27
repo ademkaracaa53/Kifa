@@ -88,6 +88,7 @@ select,input[type=text],input[type=password]{font:inherit;color:var(--ink);backg
 .para .who{font:600 .85rem var(--body);border:0;background:transparent;padding:0 18px 0 0;margin:0 0 2px;width:auto;max-width:100%;field-sizing:content;cursor:pointer;color:var(--sc,var(--accent));appearance:none;-webkit-appearance:none;
   background-image:linear-gradient(45deg,transparent 50%,currentColor 50%),linear-gradient(135deg,currentColor 50%,transparent 50%);background-position:calc(100% - 9px) 55%,calc(100% - 5px) 55%;background-size:4px 4px;background-repeat:no-repeat}
 .para .tx{outline:none;overflow-wrap:anywhere;line-height:1.6}
+.para .trx{margin-top:4px;padding:4px 10px;border-radius:8px;background:var(--accent-soft);color:var(--accent);line-height:1.5;overflow-wrap:anywhere}
 .para .tx:focus{background:var(--accent-soft);border-radius:4px}
 .no-diar .para .who{display:none}
 .interim{color:var(--muted);font-style:italic;line-height:1.6;margin-top:12px}
@@ -186,6 +187,23 @@ details.set[open] summary{margin-bottom:12px}
   </div>
 
   <section class="card" id="paneLive">
+    <div class="grid" style="margin-bottom:14px">
+      <label class="f">Ses kaynağı
+        <select id="source">
+          <option value="mic">Mikrofon</option>
+          <option value="tab">Online toplantı sesi (sekme / ekran)</option>
+          <option value="both">Toplantı sesi + mikrofonum</option>
+        </select>
+      </label>
+      <label class="f">Canlı çeviri
+        <select id="trMode">
+          <option value="off">Kapalı</option>
+          <option value="en-tr">İngilizce → Türkçe</option>
+          <option value="tr-en">Türkçe → İngilizce</option>
+        </select>
+      </label>
+    </div>
+    <p class="note" id="srcHint" hidden style="margin:-4px 0 14px">Başlat'a basınca paylaşım penceresi açılır: <b>toplantının açık olduğu sekmeyi</b> (Meet, Teams, Zoom web) seçin ve <b>“Sekme sesini de paylaş”</b> kutusunun işaretli olduğundan emin olun. Masaüstü Zoom/Teams uygulaması için Windows'ta <b>Tüm ekran</b> + <b>“Sistem sesini paylaş”</b> seçin (Mac'te yalnızca sekme sesi alınabilir).</p>
     <div class="live-bar" id="liveBar">
       <button class="btn primary big" id="liveBtn">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5"/></svg>
@@ -250,7 +268,7 @@ const hasGPU = 'gpu' in navigator;
 const DEFAULT_MODEL = hasGPU && !isMobile ? 'onnx-community/whisper-small' : 'onnx-community/whisper-base';
 let state = {
   title: '', paras: [], names: {}, spk: null,
-  set: { engine: 'local', lang: 'tr', maxSpk: '0', spkSens: 'norm', model: DEFAULT_MODEL },
+  set: { engine: 'local', lang: 'tr', maxSpk: '0', spkSens: 'norm', model: DEFAULT_MODEL, source: 'mic', trMode: 'off' },
 };
 try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s) state = { ...state, ...s, set: { ...state.set, ...(s.set || {}) } }; } catch {}
 if (!state.set.chosen) state.set.model = DEFAULT_MODEL;
@@ -278,6 +296,18 @@ function toast(msg, ms = 2800) {
 const mmss = (s) => { s = Math.floor(s); const h = Math.floor(s / 3600), m = Math.floor(s / 60) % 60, x = s % 60; return (h ? h + ':' : '') + String(m).padStart(2, '0') + ':' + String(x).padStart(2, '0'); };
 
 // ---------- Ayarlar ----------
+// ses kaynağı ve canlı çeviri
+const canTab = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+if (!canTab) { document.querySelectorAll('#source option:not([value="mic"])').forEach((o) => o.remove()); state.set.source = 'mic'; }
+['source', 'trMode'].forEach((k) => {
+  $(k).value = state.set[k];
+  $(k).addEventListener('change', () => { state.set[k] = $(k).value; save(); srcUi(); });
+});
+function srcUi() { $('srcHint').hidden = state.set.source === 'mic'; }
+srcUi();
+const trOn = () => state.set.trMode && state.set.trMode !== 'off';
+/** Tanıma dili: çeviri açıkken çeviri yönünün kaynak dili */
+const recLang = () => (trOn() ? state.set.trMode.split('-')[0] : state.set.lang);
 ['engine', 'lang', 'maxSpk', 'spkSens', 'model'].forEach((k) => {
   $(k).value = state.set[k];
   $(k).addEventListener('change', () => {
@@ -297,7 +327,7 @@ function applySpkSettings() {
   $('langHint').hidden = state.set.lang !== 'auto';
   if (typeof parasEl !== 'undefined') updateMeta();
 }
-function lockSettings(on) { $('regroup').disabled = on; ['engine', 'cloudUrl', 'cloudCode', 'cloudTest', 'lang', 'maxSpk', 'spkSens', 'model', 'saveAudio'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
+function lockSettings(on) { $('regroup').disabled = on; ['engine', 'cloudUrl', 'cloudCode', 'cloudTest', 'lang', 'maxSpk', 'spkSens', 'model', 'saveAudio', 'source', 'trMode'].forEach((k) => ($(k).disabled = on)); $('dlModels').disabled = on || modelReady || loading; }
 
 // ---------- Transkript görünümü ----------
 const parasEl = $('paras');
@@ -341,6 +371,7 @@ function joinNeighbours() {
   for (const p of state.paras) {
     const last = out[out.length - 1];
     if (last && last.spk === p.spk && p.spk > 0) {
+      if (last.trFull != null || p.trFull != null) last.trFull = (translation(last) + ' ' + translation(p)).trim();
       last.text = (last.text + ' ' + p.text).trim();
       last.pieces = (last.pieces || []).concat(p.pieces || []); last.edited = last.edited || p.edited;
     }
@@ -354,9 +385,15 @@ function paraEl(p) {
   if (p.spk > 0) d.appendChild(whoSelect(p));
   const tx = document.createElement('div');
   tx.className = 'tx'; tx.contentEditable = 'true'; tx.spellcheck = false; tx.textContent = p.text;
-  tx.addEventListener('input', () => { p.text = tx.textContent; p.edited = true; updateMeta(); save(); });
-  tx.addEventListener('blur', () => { if (!p.text.trim()) { state.paras = state.paras.filter((x) => x !== p); render(); save(); } });
+  tx.addEventListener('input', () => { p.text = tx.textContent; p.edited = true; p.retr = true; updateMeta(); save(); });
+  tx.addEventListener('blur', () => {
+    if (!p.text.trim()) { state.paras = state.paras.filter((x) => x !== p); render(); save(); return; }
+    if (p.retr) { p.retr = false; retranslate(p); }   // elle düzeltilen paragrafı baştan çevir
+  });
   d.appendChild(tx);
+  const tr = document.createElement('div');
+  tr.className = 'trx'; tr.textContent = translation(p); tr.hidden = !tr.textContent;
+  d.appendChild(tr);
   return d;
 }
 function render() {
@@ -391,6 +428,7 @@ function addText(text, spk, u, emb) {
     last.text = (last.text.trimEnd() + ' ' + text).trim();
     (last.pieces ||= []).push(piece);
     lastNode.querySelector('.tx').textContent = last.text;
+    translatePiece(piece);
   } else {
     if (spk > 0 && !state.names[spk]) state.names[spk] = spkName(spk);
     const p = { id: uid(), spk, text, pieces: [piece] };
@@ -399,6 +437,7 @@ function addText(text, spk, u, emb) {
     // yeni konuşmacı çıktıysa açılır listeler güncellensin
     if (spk > 0 && parasEl.querySelectorAll(`.who option[value="${spk}"]`).length === 0 && state.paras.length > 1) render();
     else parasEl.appendChild(paraEl(p));
+    translatePiece(piece);
   }
   updateMeta(); save();
   if (nearBottom) window.scrollTo({ top: document.body.scrollHeight });
@@ -431,7 +470,7 @@ function regroup() {
     } else {
       let v = null, w = 0;
       for (const x of ps) if (x.e) { const a = unpackEmb(x.e); v = v ? v.map((y, i) => y + a[i] * x.d) : a.map((y) => y * x.d); w += x.d; }
-      units.push({ text: p.text, pieces: ps, v, w: w || 1, edited: true });
+      units.push({ text: p.text, pieces: ps, v, w: w || 1, edited: true, tr: p.trFull });
     }
   }
   const withV = units.filter((u) => u.v);
@@ -446,8 +485,9 @@ function regroup() {
   for (const u of units) {
     const last = paras[paras.length - 1];
     if (last && last.spk === u.spk && last.text.length < 1800) {
+      if (last.trFull != null || u.tr != null) last.trFull = (translation(last) + ' ' + (u.tr != null ? u.tr : u.pieces.map((x) => x.tr).filter(Boolean).join(' '))).trim();
       last.text = (last.text + ' ' + u.text).trim(); last.pieces = last.pieces.concat(u.pieces); if (u.edited) last.edited = true;
-    } else paras.push({ id: uid(), spk: u.spk, text: u.text, pieces: u.pieces.slice(), edited: !!u.edited });
+    } else paras.push({ id: uid(), spk: u.spk, text: u.text, pieces: u.pieces.slice(), edited: !!u.edited, trFull: u.tr != null ? u.tr : undefined });
   }
   const sig = (ps) => JSON.stringify(ps.map((p) => [p.spk, p.text]));
   const changed = sig(paras) !== sig(state.paras);
@@ -571,7 +611,7 @@ function maybeInterim() {
   if (performance.now() - interimAt < 700) return;
   interimAt = performance.now();
   busy = true; inflight = { interim: true, start: c.start, session };
-  worker.postMessage({ type: 'utt', id: 'interim', audio: c.audio, lang: state.set.lang, diar: false, interim: true }, [c.audio.buffer]);
+  worker.postMessage({ type: 'utt', id: 'interim', audio: c.audio, lang: recLang(), diar: false, interim: true }, [c.audio.buffer]);
 }
 async function pump() {
   updateWorking();
@@ -588,7 +628,7 @@ async function pump() {
   const u = queue.shift();
   busy = true; inflight = u;
   if (cloudOn()) { cloudJob(u); updateWorking(); return; }
-  worker.postMessage({ type: 'utt', id: u.id, audio: u.audio, lang: state.set.lang, diar: diarOn() });
+  worker.postMessage({ type: 'utt', id: u.id, audio: u.audio, lang: recLang(), diar: diarOn() });
   updateWorking();
 }
 
@@ -615,7 +655,7 @@ class CloudError extends Error { constructor(msg, fatal) { super(msg); this.fata
 async function cloudOnce(body) {
   let r;
   try {
-    r = await fetch(cloudBase() + '/?lang=' + encodeURIComponent(state.set.lang), {
+    r = await fetch(cloudBase() + '/?lang=' + encodeURIComponent(recLang()), {
       // HTTP başlıkları Türkçe harfleri taşıyamaz: kodu URL kodlamasıyla gönder (sunucu çözer)
       method: 'POST', headers: { 'content-type': 'audio/wav', 'x-access-code': encodeURIComponent((state.set.cloudCode || '').trim().normalize('NFC')) }, body,
     });
@@ -742,25 +782,96 @@ function cloudMissing() {
   }
   return false;
 }
+// Ses kaynaklarını aç: mikrofon ve/veya ekran paylaşımındaki sekme/sistem sesi
+let streams = [];
+async function openSources() {
+  const out = [];
+  const want = state.set.source;
+  try {
+    if (want === 'tab' || want === 'both') {
+      const ds = await navigator.mediaDevices.getDisplayMedia({
+        video: true,   // Chrome ses için görüntü paylaşımı da ister; görüntü kullanılmaz
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+        systemAudio: 'include', selfBrowserSurface: 'exclude', surfaceSwitching: 'include',
+      });
+      if (!ds.getAudioTracks().length) {
+        ds.getTracks().forEach((t) => t.stop());
+        throw Object.assign(new Error('Paylaşımda ses yok'), { name: 'NoAudio' });
+      }
+      ds.getVideoTracks().forEach((t) => { t.enabled = false; });
+      // kullanıcı tarayıcının "Paylaşımı durdur" düğmesine basarsa kaydı bitir
+      ds.getAudioTracks()[0].addEventListener('ended', () => { if (live) { stopLive(); toast('Paylaşım durduruldu.'); } });
+      out.push(ds);
+    }
+    if (want === 'mic' || want === 'both') {
+      out.push(await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: want === 'both', noiseSuppression: false, autoGainControl: true } }));
+    }
+    return out;
+  } catch (e) {
+    out.forEach((s0) => s0.getTracks().forEach((t) => t.stop()));
+    throw e;
+  }
+}
+
+// Canlı çeviri: Chrome'un cihaz içi Translator API'si (ücretsiz, internetsiz)
+let translator = null, translatorKey = '';
+async function prepareTranslator() {
+  if (!trOn()) return;
+  const [src, dst] = state.set.trMode.split('-');
+  if (translator && translatorKey === state.set.trMode) return;
+  translator = null;
+  if (!('Translator' in self)) { toast('Bu tarayıcıda cihaz içi çeviri yok (masaüstü Chrome 138+ gerekir). Yalnızca metin yazılacak.', 6000); return; }
+  try {
+    const opts = { sourceLanguage: src, targetLanguage: dst };
+    const av = await Translator.availability(opts);
+    if (av === 'unavailable') { toast('Bu dil çifti için çeviri desteklenmiyor.', 5000); return; }
+    if (av !== 'available') setStatus('Çeviri modeli indiriliyor (yalnızca ilk sefer)…');
+    translator = await Translator.create({ ...opts, monitor(m) { m.addEventListener('downloadprogress', (ev) => setStatus(`Çeviri modeli indiriliyor… %${Math.round(ev.loaded * 100)}`)); } });
+    translatorKey = state.set.trMode;
+  } catch (e) { toast('Çeviri hazırlanamadı: ' + e.message, 5000); }
+}
+async function translatePiece(piece) {
+  if (!trOn() || !translator) return;
+  try {
+    piece.tr = (await translator.translate(piece.t)).trim();
+    const p = state.paras.find((x) => (x.pieces || []).includes(piece));
+    if (p) { updateTr(p); save(); }
+  } catch {}
+}
+async function retranslate(p) {
+  if (!translator || !(trOn() || translation(p))) return;
+  try { p.trFull = (await translator.translate(p.text)).trim(); updateTr(p); save(); } catch {}
+}
+const translation = (p) => (p.trFull != null ? p.trFull : (p.pieces || []).map((x) => x.tr).filter(Boolean).join(' ')).trim();
+function updateTr(p) {
+  const el = parasEl.querySelector(`.para[data-id="${p.id}"] .trx`);
+  if (!el) return;
+  const t = translation(p);
+  el.textContent = t; el.hidden = !t;
+}
+
 async function startLive() {
   if (cloudMissing()) return;
+  await prepareTranslator();   // Başlat tıklamasıyla (kullanıcı hareketi) hazırlanmalı
   try {
-    // Yankı engelleme/gürültü bastırma kapalı: Android bunlar açıkken mikrofonu "telefon görüşmesi" moduna alıp
-    // sesi bozuyor; konuşma tanıma ham seste daha doğru çalışır.
-    stream = await navigator.mediaDevices.getUserMedia({ audio: { channelCount: 1, echoCancellation: false, noiseSuppression: false, autoGainControl: true } });
+    streams = await openSources();
   } catch (e) {
-    setStatus(!window.isSecureContext ? 'Mikrofon yalnızca güvenli (https://) adreste çalışır.'
+    setStatus(e.name === 'NoAudio' ? 'Paylaşımda ses yok: paylaşım penceresinde “Sekme sesini de paylaş” (ya da “Sistem sesini paylaş”) kutusunu işaretleyip tekrar deneyin.'
+      : e.name === 'NotAllowedError' && state.set.source !== 'mic' ? 'Paylaşım iptal edildi ya da izin verilmedi.'
+      : !window.isSecureContext ? 'Mikrofon yalnızca güvenli (https://) adreste çalışır.'
       : e.name === 'NotFoundError' ? 'Mikrofon bulunamadı.'
       : 'Mikrofona erişilemedi. Adres çubuğundaki kilit simgesinden mikrofon izni verin.', true);
     return;
   }
+  stream = streams[0];
   live = true; session++; t0 = performance.now();
   const sess = session;
   // Mümkünse tarayıcının kendi (yüksek kaliteli) dönüştürücüsüyle doğrudan 16 kHz al
   const AC = window.AudioContext || window.webkitAudioContext;
   let src;
-  try { actx = new AC({ sampleRate: SR }); src = actx.createMediaStreamSource(stream); }
-  catch { if (actx) actx.close(); actx = new AC(); src = actx.createMediaStreamSource(stream); }
+  let srcs;
+  try { actx = new AC({ sampleRate: SR }); srcs = streams.map((x) => actx.createMediaStreamSource(x)); }
+  catch { if (actx) actx.close(); actx = new AC(); srcs = streams.map((x) => actx.createMediaStreamSource(x)); }
   const rs = new Resampler(actx.sampleRate);
   seg = new Segmenter((u) => { lastPiece = u.audio.slice(); $('playLast').hidden = false; enqueue(u, { session: sess }); }, { endSilence: 0.6, maxLen: 14 });
   lastFinalStart = -1;
@@ -778,10 +889,13 @@ async function startLive() {
     node = actx.createScriptProcessor(4096, 1, 1);
     node.onaudioprocess = (e) => onSamples(e.inputBuffer.getChannelData(0));
   }
-  src.connect(node); node.connect(sink);
+  // birden fazla kaynak (toplantı + mikrofon) aynı girişe bağlanınca kendiliğinden karışır
+  srcs.forEach((x) => x.connect(node)); node.connect(sink);
   if ($('saveAudio').checked && window.MediaRecorder) {
     audioChunks = [];
-    mediaRec = new MediaRecorder(stream);
+    const mix = actx.createMediaStreamDestination();
+    srcs.forEach((x) => x.connect(mix));
+    mediaRec = new MediaRecorder(mix.stream);
     mediaRec.ondataavailable = (e) => e.data.size && audioChunks.push(e.data);
     mediaRec.onstop = () => { audioBlob = new Blob(audioChunks, { type: mediaRec.mimeType || 'audio/webm' }); $('recActions').hidden = false; };
     mediaRec.start(1000);
@@ -799,7 +913,7 @@ function stopLive() {
   if (seg) seg.flush();
   try { node && node.disconnect(); } catch {}
   if (mediaRec && mediaRec.state !== 'inactive') mediaRec.stop();
-  if (stream) stream.getTracks().forEach((t) => t.stop());
+  streams.forEach((x) => x.getTracks().forEach((t) => t.stop())); streams = [];
   if (actx) actx.close();
   stream = actx = node = seg = mediaRec = null;
   $('meter').style.width = '0';
@@ -904,7 +1018,11 @@ function plainText() {
   const out = [];
   if (state.title) out.push(state.title);
   out.push(new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' }), '');
-  state.paras.forEach((p) => out.push((p.spk > 0 ? spkName(p.spk) + ': ' : '') + p.text.trim(), ''));
+  state.paras.forEach((p) => {
+    out.push((p.spk > 0 ? spkName(p.spk) + ': ' : '') + p.text.trim());
+    const t = translation(p); if (t) out.push('→ ' + t);
+    out.push('');
+  });
   return out.join('\n');
 }
 $('exTxt').onclick = () => download(new Blob(['﻿' + plainText()], { type: 'text/plain;charset=utf-8' }), fileBase() + '.txt');
@@ -921,14 +1039,15 @@ function loadScript(src) {
   return new Promise((res, rej) => { const s = document.createElement('script'); s.crossOrigin = 'anonymous'; s.src = src; s.onload = res; s.onerror = () => rej(new Error(src)); document.head.appendChild(s); });
 }
 const PDFMAKE = 'https://cdn.jsdelivr.net/npm/pdfmake@0.2.20/build/';
+const trPdf = (p) => { const t = translation(p); return t ? [{ text: '→ ' + t, italics: true, color: '#1677D9', fontSize: 10.5, margin: [0, 2, 0, 0] }] : []; };
 const PDF_COLORS = ['#3346C8', '#B5481C', '#1D7F52', '#8A3FB0', '#A0711A', '#0F7A8A', '#B8336A', '#566070'];
 $('exPdf').onclick = async () => {
   const b = $('exPdf'); b.disabled = true;
   try {
     if (!window.pdfMake || !window.pdfMake.vfs) { toast('PDF hazırlanıyor…'); await loadScript(PDFMAKE + 'pdfmake.min.js'); await loadScript(PDFMAKE + 'vfs_fonts.js'); }
     const body = state.paras.map((p) => p.spk > 0
-      ? { stack: [{ text: spkName(p.spk), bold: true, fontSize: 9.5, color: PDF_COLORS[(p.spk - 1) % 8], margin: [0, 0, 0, 1] }, { text: p.text.trim() }], margin: [0, 0, 0, 10] }
-      : { text: p.text.trim(), margin: [0, 0, 0, 10] });
+      ? { stack: [{ text: spkName(p.spk), bold: true, fontSize: 9.5, color: PDF_COLORS[(p.spk - 1) % 8], margin: [0, 0, 0, 1] }, { text: p.text.trim() }, ...trPdf(p)], margin: [0, 0, 0, 10] }
+      : { stack: [{ text: p.text.trim() }, ...trPdf(p)], margin: [0, 0, 0, 10] });
     pdfMake.createPdf({
       info: { title: state.title || 'eFAM Transkript' },
       pageSize: 'A4', pageMargins: [52, 56, 52, 56],

@@ -47,4 +47,6 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
+    // telefonda çalışan ücretsiz çeviri (İngilizce ↔ Türkçe)
+    implementation("com.google.mlkit:translate:17.0.3")
 }

@@ -219,6 +219,16 @@
                 android:textColor="@color/muted"
                 android:textSize="13sp" />
 
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/swTranslate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:minHeight="40dp"
+                android:text="Canlı çeviri · İngilizce → Türkçe"
+                android:textColor="@color/ink"
+                android:textSize="14sp" />
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnRecord"
                 android:layout_width="match_parent"

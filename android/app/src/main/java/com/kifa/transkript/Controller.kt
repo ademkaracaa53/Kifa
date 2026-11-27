@@ -36,6 +36,9 @@ object Controller : Engine.Listener {
     val model get() = prefs.getString("model", Models.DEFAULT)!!
     val maxSpk get() = prefs.getInt("maxSpk", 0)
     val cloud get() = prefs.getString("engine", "local") == "cloud"
+    val nemo get() = prefs.getString("engine", "local") == "nemo"
+    /** İndirilmesi gereken cihaz modeli: Nemotron ya da seçili Whisper */
+    val modelKey get() = if (nemo) Models.NEMO else model
     val cloudUrl get() = prefs.getString("cloudUrl", "")!!
     val cloudCode get() = prefs.getString("cloudCode", "")!!
     val sens get() = prefs.getString("sens", "norm")!!
@@ -59,7 +62,7 @@ object Controller : Engine.Listener {
 
     fun start(ctx: Context): Boolean {
         sinceRegroup = 0
-        return Engine.start(ctx, Settings(model, lang, diarOn, cloud, Cloud.normalizeUrl(cloudUrl), cloudCode.trim()))
+        return Engine.start(ctx, Settings(model, lang, diarOn, cloud, Cloud.normalizeUrl(cloudUrl), cloudCode.trim(), nemo))
     }
 
     // ---------- Engine.Listener (ana iş parçacığı) ----------

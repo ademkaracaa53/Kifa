@@ -59,7 +59,11 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     private var downloading = false
 
     private val c = Controller
-    private val engines = listOf("local" to "Bu cihazda (Whisper · internetsiz)", "cloud" to "Bulut · Cloudflare (hızlı, en doğru)")
+    private val engines = listOf(
+        "nemo" to "Anlık · NVIDIA Nemotron (cihazda, internetsiz)",
+        "local" to "Bu cihazda · Whisper (internetsiz)",
+        "cloud" to "Bulut · Cloudflare (en doğru)",
+    )
     private val langs = listOf("tr" to "Türkçe", "en" to "İngilizce", "auto" to "Otomatik (dil algılama)")
     private val spks = listOf(0 to "Otomatik", 1 to "Tek konuşmacı (ayrım yok)", 2 to "2", 3 to "3", 4 to "4", 5 to "5", 6 to "6")
     private val senses = listOf("tol" to "Toleranslı (aynı kişiyi bölmez)", "norm" to "Normal", "sens" to "Hassas (benzer sesleri ayırır)")
@@ -94,7 +98,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         modelProgress = findViewById(R.id.modelProgress); btnDownload = findViewById(R.id.btnDownload)
         titleView = findViewById(R.id.title)
 
-        setupSpinner(findViewById(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else "local") }) {
+        setupSpinner(findViewById(R.id.spEngine), engines.map { it.second }, engines.indexOfFirst { it.first == (if (c.cloud) "cloud" else if (c.nemo) "nemo" else "local") }) {
             c.prefs.edit().putString("engine", engines[it].first).apply(); applyEngineUi()
         }
         bindPref(findViewById(R.id.cloudUrl), "cloudUrl")
@@ -167,7 +171,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     private fun applyEngineUi() {
         val cloud = c.cloud
         findViewById<View>(R.id.cloudBox).visibility = if (cloud) View.VISIBLE else View.GONE
-        findViewById<View>(R.id.localBox).visibility = if (cloud) View.GONE else View.VISIBLE
+        findViewById<View>(R.id.localBox).visibility = if (cloud || c.nemo) View.GONE else View.VISIBLE
         if (cloud) {
             modelInfo.text = "Bulut motorunda ses parçaları sizin Cloudflare sunucunuza gider; Whisper large-v3-turbo ile çevrilir. Konuşma algılama ve konuşmacı ayrımı telefonda yapılır."
             modelProgress.visibility = View.GONE; btnDownload.visibility = View.GONE
@@ -230,17 +234,18 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
     // ---------- model ----------
     private fun showModel() {
         if (downloading || c.cloud) return
-        val ready = Models.isReady(this, c.model)
+        val ready = Models.isReady(this, c.modelKey)
         modelProgress.visibility = View.GONE
         btnDownload.visibility = if (ready) View.GONE else View.VISIBLE
-        modelInfo.text = if (ready) "✓ Model hazır (%d MB)".format(Models.sizeOnDisk(this, c.model) / 1048576)
+        modelInfo.text = if (ready) "✓ Model hazır (%d MB)".format(Models.sizeOnDisk(this, c.modelKey) / 1048576) +
+            (if (c.nemo) " · NVIDIA Nemotron: metin konuşurken yazılır" else "")
         else "Seçili model henüz indirilmedi. Toplantıdan önce Wi-Fi’da indirin."
     }
 
     private fun downloadModel(thenStart: Boolean) {
         if (downloading) return
         downloading = true
-        val key = c.model
+        val key = c.modelKey
         btnDownload.isEnabled = false
         modelProgress.visibility = View.VISIBLE; modelProgress.progress = 0
         modelInfo.text = "İndirme başlıyor…"
@@ -269,7 +274,7 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
             toast("Bulut motoru için ayarlardan sunucu adresini ve erişim kodunu girin")
             return
         }
-        if (!c.cloud && !Models.isReady(this, c.model)) {
+        if (!c.cloud && !Models.isReady(this, c.modelKey)) {
             confirm("Seçili model henüz indirilmedi. Şimdi indirilsin mi? (Wi-Fi önerilir)") { downloadModel(true) }
             return
         }

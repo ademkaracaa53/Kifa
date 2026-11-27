@@ -14,6 +14,12 @@ import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 import com.k2fsa.sherpa.onnx.OfflineWhisperModelConfig
+import com.k2fsa.sherpa.onnx.EndpointConfig
+import com.k2fsa.sherpa.onnx.EndpointRule
+import com.k2fsa.sherpa.onnx.OnlineModelConfig
+import com.k2fsa.sherpa.onnx.OnlineRecognizer
+import com.k2fsa.sherpa.onnx.OnlineRecognizerConfig
+import com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig
 import com.k2fsa.sherpa.onnx.SileroVadModelConfig
 import com.k2fsa.sherpa.onnx.SpeakerEmbeddingExtractor
 import com.k2fsa.sherpa.onnx.SpeakerEmbeddingExtractorConfig
@@ -31,8 +37,10 @@ private const val SR = 16000
 class Settings(
     val model: String, val lang: String, val diar: Boolean,
     val cloud: Boolean = false, val url: String = "", val code: String = "",
+    val nemo: Boolean = false,
 ) {
-    fun same(o: Settings?) = o != null && o.model == model && o.lang == lang && o.diar == diar && o.cloud == cloud && o.url == url && o.code == code
+    fun same(o: Settings?) = o != null && o.model == model && o.lang == lang && o.diar == diar && o.cloud == cloud &&
+        o.url == url && o.code == code && o.nemo == nemo
 }
 
 /**
@@ -59,6 +67,7 @@ object Engine {
     var session = 0; private set
 
     private var recognizer: OfflineRecognizer? = null
+    private var online: OnlineRecognizer? = null   // NVIDIA Nemotron (akışlı)
     private var vad: Vad? = null
     private var extractor: SpeakerEmbeddingExtractor? = null
     private var loadedKey = ""
@@ -90,6 +99,7 @@ object Engine {
                 return false
             }
             lastSettings = s
+            active = s
             session++
             recording = true; working = true
         }
@@ -113,10 +123,39 @@ object Engine {
     private fun ensureModels(ctx: Context, s: Settings) {
         active = s
         val key = "${s.model}|${s.lang}"
-        if (!s.cloud && (recognizer == null || loadedKey != key)) {
+        val threads = min(4, max(1, Runtime.getRuntime().availableProcessors() / 2))
+        // kullanılmayan büyük modeli bellekten bırak (ikisi birden telefonu zorlar)
+        if (!s.nemo && online != null) { online?.release(); online = null }
+        if ((s.nemo || s.cloud) && recognizer != null) { recognizer?.release(); recognizer = null; loadedKey = "" }
+        if (s.nemo && online == null) {
+            status("NVIDIA Nemotron modeli yükleniyor…")
+            online = OnlineRecognizer(
+                null,
+                OnlineRecognizerConfig(
+                    featConfig = FeatureConfig(sampleRate = SR, featureDim = 80), // model kendi boyutunu kullanır
+                    modelConfig = OnlineModelConfig(
+                        transducer = OnlineTransducerModelConfig(
+                            encoder = Models.path(ctx, Models.NEMO, 0),
+                            decoder = Models.path(ctx, Models.NEMO, 1),
+                            joiner = Models.path(ctx, Models.NEMO, 2),
+                        ),
+                        tokens = Models.path(ctx, Models.NEMO, 3),
+                        numThreads = threads,
+                    ),
+                    // cümle sonu: konuşmadan sonra 0,8 sn sessizlik ya da 15 sn'lik cümle
+                    endpointConfig = EndpointConfig(
+                        rule1 = EndpointRule(false, 2.4f, 0.0f),
+                        rule2 = EndpointRule(true, 0.8f, 0.0f),
+                        rule3 = EndpointRule(false, 0.0f, 15.0f),
+                    ),
+                    enableEndpoint = true,
+                    decodingMethod = "greedy_search",
+                ),
+            )
+        }
+        if (!s.cloud && !s.nemo && (recognizer == null || loadedKey != key)) {
             recognizer?.release(); recognizer = null; modelReady = false
             status("Model yükleniyor…")
-            val threads = min(4, max(1, Runtime.getRuntime().availableProcessors() / 2))
             val cfg = OfflineRecognizerConfig(
                 featConfig = FeatureConfig(sampleRate = SR, featureDim = 80),
                 modelConfig = OfflineModelConfig(
@@ -134,7 +173,7 @@ object Engine {
             recognizer = OfflineRecognizer(null, cfg)
             loadedKey = key
         }
-        if (vad == null) {
+        if (vad == null && !s.nemo) {
             vad = Vad(
                 ctx.assets,
                 VadModelConfig(
@@ -193,6 +232,7 @@ object Engine {
             post { listener?.onStateChanged() }
             return
         }
+        if (s.nemo) { nemoLoop(s); return }
         var lastInterim = 0L
         var errMsg: String? = null
         while (true) {
@@ -253,6 +293,84 @@ object Engine {
         post { listener?.onInterim(null); listener?.onStateChanged() }
     }
 
+    // ---------- NVIDIA Nemotron: akışlı tanıma ----------
+    // Ses kesintisiz modele verilir; metin konuşurken büyür (ara metin), cümle sonunda (endpoint) kesinleşir.
+    private val TR = java.util.Locale("tr", "TR")
+
+    /** Modelin çıktısını cümleye çevir: baş harf büyük, sonda noktalama yoksa nokta. */
+    private fun sentence(t: String): String {
+        var x = t.replace(Regex("\\s+"), " ").trim()
+        if (x.isEmpty()) return x
+        x = x.substring(0, 1).uppercase(TR) + x.substring(1)
+        if (x.last() !in ".?!…") x += "."
+        return x
+    }
+
+    private fun nemoLoop(s: Settings) {
+        val rec = online ?: return
+        val st = rec.createStream()
+        st.setOption("language", if (s.lang == "auto") "auto" else s.lang)
+        status("Dinleniyor · anlık (NVIDIA Nemotron)")
+        post { listener?.onStateChanged() }
+        val seg = ArrayList<FloatArray>()
+        var segLen = 0
+        var sess = session
+        var last = ""
+
+        fun emit(raw: String) {
+            val text = sentence(cleanText(raw))
+            val audio = FloatArray(segLen)
+            var o = 0
+            for (c in seg) { System.arraycopy(c, 0, audio, o, c.size); o += c.size }
+            seg.clear(); segLen = 0; last = ""
+            val dur = audio.size / SR.toFloat()
+            val emb = if (text.isNotEmpty() && s.diar && dur >= 0.8f) {
+                try { embed(audio) } catch (e: Throwable) { null }
+            } else null
+            val ss = sess
+            post {
+                listener?.onInterim(null)
+                if (text.isNotEmpty()) listener?.onText(text, emb, dur, ss)
+            }
+        }
+
+        try {
+            while (true) {
+                synchronized(life) { if (!recording && finals.isEmpty()) working = false }
+                if (!working) break
+                val job = finals.poll(150, TimeUnit.MILLISECONDS) ?: continue
+                if (job.session != sess) {
+                    // yeni kayıt oturumu: önceki cümleyi kapat
+                    emit(rec.getResult(st).text); rec.reset(st); sess = job.session
+                }
+                st.acceptWaveform(job.samples, SR)
+                seg.add(job.samples); segLen += job.samples.size
+                while (rec.isReady(st)) rec.decode(st)
+                val text = rec.getResult(st).text.trim()
+                if (rec.isEndpoint(st)) {
+                    emit(text)
+                    rec.reset(st)
+                } else if (text != last) {
+                    last = text
+                    val shown = sentence(text).trimEnd('.')
+                    if (shown.isNotEmpty()) post { listener?.onInterim(shown) }
+                }
+            }
+            // kayıt bitti: son cümleyi tamamla
+            st.inputFinished()
+            while (rec.isReady(st)) rec.decode(st)
+            emit(rec.getResult(st).text)
+        } catch (e: Throwable) {
+            Log.e(TAG, "nemotron", e)
+            status("Nemotron hatası: ${e.message}", true)
+            synchronized(life) { recording = false; working = false; finals.clear() }
+        } finally {
+            st.release()
+        }
+        status("")
+        post { listener?.onInterim(null); listener?.onStateChanged() }
+    }
+
     // ---------- mikrofon iş parçacığı ----------
     @SuppressLint("MissingPermission")
     private fun recordLoop(ctx: Context, sess: Int) {
@@ -285,6 +403,12 @@ object Engine {
                 val now = SystemClock.elapsedRealtime()
                 if (now - lastLevel > 80) { lastLevel = now; val lv = sqrt(e / n).toFloat(); post { listener?.onLevel(lv) } }
 
+                if (active?.nemo == true) {
+                    if (!modelReady) { early.add(x); continue }
+                    if (early.isNotEmpty()) { for (e0 in early) finals.offer(Job(e0, sess)); early.clear() }
+                    finals.offer(Job(x, sess))
+                    continue
+                }
                 val v = vad
                 if (v == null || !modelReady) { early.add(x); continue }
                 if (early.isNotEmpty()) { // bekletilen sesi önce işle

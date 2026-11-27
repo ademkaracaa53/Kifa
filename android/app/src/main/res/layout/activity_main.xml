@@ -68,6 +68,7 @@
                             <EditText android:id="@+id/cloudUrl" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="ornek.alanadiniz.workers.dev" android:inputType="textUri" android:textColor="@color/ink" />
                             <TextView style="@style/Label" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Erişim kodu" />
                             <EditText android:id="@+id/cloudCode" android:layout_width="match_parent" android:layout_height="wrap_content" android:inputType="textPassword" android:textColor="@color/ink" />
+                            <CheckBox android:id="@+id/showCode" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Kodu göster" android:textColor="@color/ink" />
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnCloudTest"
                                 style="@style/Widget.Material3.Button.OutlinedButton"

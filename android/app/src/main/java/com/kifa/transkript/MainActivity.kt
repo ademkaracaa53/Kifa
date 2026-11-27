@@ -100,6 +100,11 @@ class MainActivity : AppCompatActivity(), Controller.Ui {
         bindPref(findViewById(R.id.cloudUrl), "cloudUrl")
         bindPref(findViewById(R.id.cloudCode), "cloudCode")
         findViewById<View>(R.id.btnCloudTest).setOnClickListener { testCloud() }
+        findViewById<android.widget.CheckBox>(R.id.showCode).setOnCheckedChangeListener { _, on ->
+            val et = findViewById<EditText>(R.id.cloudCode)
+            et.inputType = InputType.TYPE_CLASS_TEXT or (if (on) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD else InputType.TYPE_TEXT_VARIATION_PASSWORD)
+            et.setSelection(et.text.length)
+        }
         setupSpinner(findViewById(R.id.spLang), langs.map { it.second }, langs.indexOfFirst { it.first == c.lang }) {
             c.prefs.edit().putString("lang", langs[it].first).apply()
         }

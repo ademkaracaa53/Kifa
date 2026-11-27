@@ -33,6 +33,16 @@ function toBase64(bytes) {
   return btoa(s);
 }
 
+// Kodu karşılaştırmaya hazırla: baştaki/sondaki boşluk ve görünmez karakterleri at, Unicode'u tek biçime getir.
+// Uygulama kodu URL kodlamasıyla gönderir (HTTP başlıkları Türkçe harfleri bozar); eski sürümler düz gönderir.
+function clean(s) {
+  return String(s || '').normalize('NFC').replace(/[\u200B-\u200D\uFEFF]/g, '').trim();
+}
+function codeFromHeader(h) {
+  const raw = h || '';
+  try { return clean(decodeURIComponent(raw)); } catch { return clean(raw); }
+}
+
 // Zamanlamaya dayalı karşılaştırma sızıntısı olmasın
 function sameCode(a, b) {
   if (typeof a !== 'string' || typeof b !== 'string' || a.length !== b.length) return false;
@@ -44,12 +54,14 @@ function sameCode(a, b) {
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { headers: CORS });
-    if (request.method === 'GET') return json({ ok: true, service: 'eFAM Transkript', model: MODEL, ai: !!env.AI, code: !!env.ACCESS_CODE });
+    if (request.method === 'GET') return json({ ok: true, service: 'eFAM Transkript', version: 2, model: MODEL, ai: !!env.AI, code: !!env.ACCESS_CODE });
     if (request.method !== 'POST') return json({ error: 'Yalnızca POST' }, 405);
 
     if (!env.AI) return json({ error: 'Sunucuda Workers AI bağlantısı (AI) tanımlı değil' }, 500);
     if (!env.ACCESS_CODE) return json({ error: 'Sunucuda ACCESS_CODE tanımlı değil' }, 500);
-    if (!sameCode(request.headers.get('x-access-code') || '', env.ACCESS_CODE)) return json({ error: 'Erişim kodu yanlış' }, 401);
+    const secret = clean(env.ACCESS_CODE);
+    const got = request.headers.get('x-access-code');
+    if (!sameCode(codeFromHeader(got), secret) && !sameCode(clean(got), secret)) return json({ error: 'Erişim kodu yanlış' }, 401);
 
     const bytes = new Uint8Array(await request.arrayBuffer());
     if (bytes.length < 1000) return json({ text: '', language: null });

@@ -11,8 +11,8 @@
 <!-- Çok çekirdekli WASM için sayfayı "cross-origin isolated" yapar (GitHub Pages bu başlıkları göndermiyor) -->
 <script>window.coi = { coepCredentialless: () => !!(window.chrome || window.netscape), quiet: true };</script>
 <script src="coi-serviceworker.js"></script>
-<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32.png">
-<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <style>
 @font-face{font-family:'Bricolage Grotesque';font-weight:700;font-display:swap;src:url(../bricolage-grotesque-latin-ext-700-normal.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+1E00-1E9F}
 @font-face{font-family:'Bricolage Grotesque';font-weight:700;font-display:swap;src:url(../bricolage-grotesque-latin-700-normal.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+2000-206F,U+20AC,U+2122,U+2212,U+FEFF,U+FFFD}
@@ -38,9 +38,13 @@
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body);-webkit-text-size-adjust:100%}
 main{max-width:780px;margin:0 auto;padding:16px 16px 48px}
-header{display:flex;align-items:center;gap:10px;padding:4px 0 14px}
-header h1{font:700 1.45rem/1.1 var(--display);margin:0;letter-spacing:-.01em}
-header .back{margin-left:auto;font-size:.82rem;font-weight:600;text-decoration:none;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+/* eFAM marka bandı: her temada koyu lacivert → petrol */
+header{display:flex;align-items:center;gap:12px;padding:12px 16px;margin:0 0 14px;border-radius:16px;background:linear-gradient(90deg,#0B1220,#0D2236 55%,#0F3A48);color:#fff}
+header img{display:block;width:58px;height:auto;flex:none}
+header .ht{display:flex;flex-direction:column;min-width:0}
+header h1{font:700 1.3rem/1.15 var(--display);margin:0;letter-spacing:-.01em;color:#fff}
+header .ht span{font-size:.78rem;color:#B9DCEA}
+header .back{margin-left:auto;font-size:.82rem;font-weight:600;text-decoration:none;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.14);color:#fff;white-space:nowrap}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
 .card h2{font:600 .8rem/1 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 12px}
 .tabs{display:flex;gap:6px;background:var(--surface);border:1px solid var(--line);padding:4px;border-radius:12px;margin-bottom:14px}
@@ -105,13 +109,13 @@ details.set[open] summary{margin-bottom:12px}
 <body>
 <main>
   <header>
-    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="color:var(--accent)"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg>
-    <h1>eFAM Transkript</h1>
+    <img src="img/logo-mark.png" width="58" height="46" alt="eFAM">
+    <div class="ht"><h1>eFAM Transkript</h1><span>Konuşmadan metne</span></div>
     <a class="back" href="../" title="KİFA ana sayfası">← KİFA</a>
   </header>
 
   <section class="card">
-    <details class="set" id="setBox" open>
+    <details class="set" id="setBox">
       <summary>Ayarlar</summary>
       <div class="grid">
         <label class="f">Metne çeviren motor

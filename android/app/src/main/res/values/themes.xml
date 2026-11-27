@@ -5,7 +5,7 @@
         <item name="colorSecondaryContainer">@color/accent_soft</item>
         <item name="android:colorBackground">@color/bg</item>
         <item name="android:windowBackground">@color/bg</item>
-        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:statusBarColor">#0B1220</item>
         <item name="android:navigationBarColor">@color/bg</item>
         <item name="materialCardViewStyle">@style/Card</item>
     </style>
@@ -19,5 +19,18 @@
         <item name="android:textSize">12sp</item>
         <item name="android:textColor">@color/muted</item>
         <item name="android:layout_marginTop">10dp</item>
+    </style>
+    <style name="SaveButton" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:paddingStart">2dp</item>
+        <item name="android:paddingEnd">2dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/ink</item>
+        <item name="iconGravity">top</item>
+        <item name="iconPadding">2dp</item>
+        <item name="iconTint">@color/accent</item>
     </style>
 </resources>

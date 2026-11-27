@@ -1,11 +1,12 @@
 <resources>
-    <color name="bg">#0D1016</color>
-    <color name="surface">#161A22</color>
-    <color name="ink">#E8EBF1</color>
-    <color name="muted">#97A0AF</color>
-    <color name="line">#262C37</color>
-    <color name="accent">#8E9CFF</color>
-    <color name="accent_soft">#1E2442</color>
-    <color name="on_accent">#0D1016</color>
-    <color name="rec">#FF7A70</color>
+    <color name="accent">#4FB3FF</color>
+    <color name="accent_soft">#13314A</color>
+    <color name="on_accent">#06121C</color>
+    <color name="bg">#0A0F17</color>
+    <color name="surface">#121A24</color>
+    <color name="ink">#E6ECF3</color>
+    <color name="muted">#93A1B3</color>
+    <color name="line">#223042</color>
+    <color name="rec">#FF6B62</color>
+    <color name="brand_green">#7BD66A</color>
 </resources>

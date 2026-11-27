@@ -72,7 +72,8 @@ object Engine {
     private var extractor: SpeakerEmbeddingExtractor? = null
     private var loadedKey = ""
 
-    private class Job(val samples: FloatArray, val session: Int)
+    /** end = true: konuşma bitti (Nemotron'da cümleyi kapat), samples boş. */
+    private class Job(val samples: FloatArray, val session: Int, val end: Boolean = false)
     private val finals = LinkedBlockingQueue<Job>()
     private val curLock = Any()
     private val cur = ArrayList<FloatArray>()   // süren konuşmanın sesi (ara metin için)
@@ -140,7 +141,8 @@ object Engine {
                             joiner = Models.path(ctx, Models.NEMO, 2),
                         ),
                         tokens = Models.path(ctx, Models.NEMO, 3),
-                        numThreads = threads,
+                        // akışlı model sürekli çalışır: az çekirdek = az ısınma (güçlü telefonda 3)
+                        numThreads = if (Runtime.getRuntime().availableProcessors() >= 8) 3 else 2,
                     ),
                     // cümle sonu: konuşmadan sonra 0,8 sn sessizlik ya da 15 sn'lik cümle
                     endpointConfig = EndpointConfig(
@@ -173,7 +175,7 @@ object Engine {
             recognizer = OfflineRecognizer(null, cfg)
             loadedKey = key
         }
-        if (vad == null && !s.nemo) {
+        if (vad == null) {
             vad = Vad(
                 ctx.assets,
                 VadModelConfig(
@@ -334,21 +336,44 @@ object Engine {
             }
         }
 
+        // cümle sonunda modelin elindeki son parça da çözülsün diye eklenen kısa sessizlik
+        val tail = FloatArray(SR * 6 / 10)
+        fun close() {
+            if (segLen == 0) return
+            st.acceptWaveform(tail, SR)
+            while (rec.isReady(st)) rec.decode(st)
+            emit(rec.getResult(st).text)
+            rec.reset(st)
+        }
+        val batch = ArrayList<Job>()
+        var warned = false
         try {
             while (true) {
                 synchronized(life) { if (!recording && finals.isEmpty()) working = false }
                 if (!working) break
-                val job = finals.poll(150, TimeUnit.MILLISECONDS) ?: continue
-                if (job.session != sess) {
-                    // yeni kayıt oturumu: önceki cümleyi kapat
-                    emit(rec.getResult(st).text); rec.reset(st); sess = job.session
+                val first = finals.poll(150, TimeUnit.MILLISECONDS) ?: continue
+                batch.clear(); batch.add(first); finals.drainTo(batch)
+                // telefon yetişiyor mu? (sırada bekleyen ses)
+                val backlog = finals.sumOf { it.samples.size } + batch.sumOf { it.samples.size }
+                if (backlog > SR * 3 && !warned) { warned = true; status("Telefon yetişemiyor; metin gecikebilir. Whisper ya da Bulut motorunu deneyin.", true) }
+                else if (backlog < SR && warned) { warned = false; status("Dinleniyor · anlık (NVIDIA Nemotron)") }
+                var fed = false
+                for (job in batch) {
+                    if (job.session != sess) { close(); sess = job.session }
+                    if (job.end) {
+                        if (fed) { while (rec.isReady(st)) rec.decode(st); fed = false }
+                        close()
+                        continue
+                    }
+                    st.acceptWaveform(job.samples, SR)
+                    seg.add(job.samples); segLen += job.samples.size
+                    fed = true
                 }
-                st.acceptWaveform(job.samples, SR)
-                seg.add(job.samples); segLen += job.samples.size
+                if (!fed) continue
                 while (rec.isReady(st)) rec.decode(st)
                 val text = rec.getResult(st).text.trim()
                 if (rec.isEndpoint(st)) {
-                    emit(text)
+                    emit(text)   // modelin kendi cümle sonu (yedek; çok uzun konuşmada)
                     rec.reset(st)
                 } else if (text != last) {
                     last = text
@@ -357,9 +382,7 @@ object Engine {
                 }
             }
             // kayıt bitti: son cümleyi tamamla
-            st.inputFinished()
-            while (rec.isReady(st)) rec.decode(st)
-            emit(rec.getResult(st).text)
+            close()
         } catch (e: Throwable) {
             Log.e(TAG, "nemotron", e)
             status("Nemotron hatası: ${e.message}", true)
@@ -403,12 +426,7 @@ object Engine {
                 val now = SystemClock.elapsedRealtime()
                 if (now - lastLevel > 80) { lastLevel = now; val lv = sqrt(e / n).toFloat(); post { listener?.onLevel(lv) } }
 
-                if (active?.nemo == true) {
-                    if (!modelReady) { early.add(x); continue }
-                    if (early.isNotEmpty()) { for (e0 in early) finals.offer(Job(e0, sess)); early.clear() }
-                    finals.offer(Job(x, sess))
-                    continue
-                }
+                val nemo = active?.nemo == true
                 val v = vad
                 if (v == null || !modelReady) { early.add(x); continue }
                 if (early.isNotEmpty()) { // bekletilen sesi önce işle
@@ -421,7 +439,11 @@ object Engine {
                     val w = pending.copyOfRange(off, off + 512); off += 512
                     v.acceptWaveform(w)
                     if (v.isSpeechDetected()) {
-                        synchronized(curLock) {
+                        if (nemo) {
+                            // Nemotron: konuşma başlayınca önceki ~0,4 sn'yi ve sonra her parçayı hemen modele ver
+                            if (!inSpeech) { inSpeech = true; for (p in pre) finals.offer(Job(p, sess)); pre.clear(); preLen = 0 }
+                            finals.offer(Job(w, sess))
+                        } else synchronized(curLock) {
                             if (!inSpeech) { inSpeech = true; cur.clear(); curLen = 0; for (p in pre) { cur.add(p); curLen += p.size } }
                             cur.add(w); curLen += w.size
                         }
@@ -431,7 +453,8 @@ object Engine {
                     }
                     while (!v.empty()) {
                         val seg = v.front(); v.pop()
-                        finals.offer(Job(seg.samples, sess))
+                        // Nemotron sesi zaten aldı: yalnızca "cümle bitti" işareti gönder
+                        finals.offer(if (nemo) Job(FloatArray(0), sess, end = true) else Job(seg.samples, sess))
                         synchronized(curLock) { inSpeech = false; cur.clear(); curLen = 0 }
                     }
                 }
@@ -443,7 +466,9 @@ object Engine {
             vad?.let { v ->
                 if (pending.isNotEmpty()) v.acceptWaveform(pending)
                 v.flush()
-                while (!v.empty()) { finals.offer(Job(v.front().samples, sess)); v.pop() }
+                val nemoEnd = active?.nemo == true
+                while (!v.empty()) { finals.offer(if (nemoEnd) Job(FloatArray(0), sess, end = true) else Job(v.front().samples, sess)); v.pop() }
+                if (nemoEnd) finals.offer(Job(FloatArray(0), sess, end = true))
                 v.reset()
             }
             synchronized(curLock) { cur.clear(); curLen = 0 }

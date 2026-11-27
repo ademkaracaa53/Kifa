@@ -61,6 +61,18 @@ jobs:
             done
           done
 
+      - name: NVIDIA Nemotron model adreslerini kontrol et
+        run: |
+          m=sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11
+          for f in encoder.int8.onnx decoder.int8.onnx joiner.int8.onnx tokens.txt; do
+            url="https://huggingface.co/csukuangfj2/$m/resolve/main/$f"
+            size=$(curl -sIL "$url" | grep -i '^content-length' | tail -1 | tr -d '\r' | awk '{print $2}')
+            code=$(curl -s -o /dev/null -w '%{http_code}' -IL "$url")
+            echo "$code  $((${size:-0} / 1048576)) MB  $f"
+          done
+          echo "GitHub sürüm arşivi:"
+          curl -s -o /dev/null -w '%{http_code}\n' -IL "https://github.com/k2-fsa/sherpa-onnx/releases/download/asr-models/$m.tar.bz2"
+
       - name: APK derle
         run: gradle -p android assembleRelease --no-daemon --stacktrace
 

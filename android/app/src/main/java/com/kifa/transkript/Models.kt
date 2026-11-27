@@ -24,9 +24,20 @@ object Models {
     const val VAD_ASSET = "silero_vad.onnx"
     const val SPK_ASSET = "speaker.onnx"
 
-    fun dir(ctx: Context, key: String) = File(ctx.filesDir, "models/whisper-$key")
-    fun files(key: String) = listOf("$key-encoder.int8.onnx", "$key-decoder.int8.onnx", "$key-tokens.txt")
-    private fun url(key: String, f: String) = "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-$key/resolve/main/$f"
+    /**
+     * NVIDIA Nemotron 3.5 ASR Streaming 0.6B (akışlı, çok dilli, Türkçe dahil) — sherpa-onnx int8 sürümü.
+     * 560 ms parça: gecikme ile doğruluk arasında denge. https://huggingface.co/nvidia/nemotron-3.5-asr-streaming-0.6b
+     */
+    const val NEMO = "nemotron"
+    const val NEMO_NAME = "sherpa-onnx-nemotron-3.5-asr-streaming-0.6b-560ms-int8-2026-06-11"
+
+    fun dir(ctx: Context, key: String) = File(ctx.filesDir, if (key == NEMO) "models/$NEMO_NAME" else "models/whisper-$key")
+    fun files(key: String) =
+        if (key == NEMO) listOf("encoder.int8.onnx", "decoder.int8.onnx", "joiner.int8.onnx", "tokens.txt")
+        else listOf("$key-encoder.int8.onnx", "$key-decoder.int8.onnx", "$key-tokens.txt")
+    private fun url(key: String, f: String) =
+        if (key == NEMO) "https://huggingface.co/csukuangfj2/$NEMO_NAME/resolve/main/$f"
+        else "https://huggingface.co/csukuangfj/sherpa-onnx-whisper-$key/resolve/main/$f"
 
     fun isReady(ctx: Context, key: String) = files(key).all { File(dir(ctx, key), it).let { f -> f.exists() && f.length() > 0 } }
     fun path(ctx: Context, key: String, i: Int) = File(dir(ctx, key), files(key)[i]).absolutePath
